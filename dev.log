@@ -1,0 +1,33 @@
+▲ Next.js 16.2.11 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.10.248:3000
+✓ Ready in 1384ms
+
+○ Compiling / ...
+⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+ GET / 200 in 8.2s (next.js: 7.5s, application-code: 708ms)
+⨯ Error: @prisma/client did not initialize yet. Please run "prisma generate" and try to import it again.
+    at module evaluation (lib/db.ts:9:3)
+    at module evaluation (app/api/public/data/route.ts:1:1)
+    at Object.<anonymous> (.next/dev/server/app/api/public/data/route.js:6:3)
+   7 | export const db =
+   8 |   globalForPrisma.prisma ??
+>  9 |   new PrismaClient({
+     |   ^
+  10 |     log: process.env.NODE_ENV === 'development' ? ['query'] : [],
+  11 |   })
+  12 | {
+  page: '/api/public/data'
+}
+○ Compiling /icon ...
+ GET /icon?af462d8e397ddfd8 200 in 3.7s
+ GET /api/public/data 500 in 5.7s (next.js: 5.3s, application-code: 406ms)
+[browser] Failed to load site data: Error: HTTP 500
+    at loadData (lib/store.ts:111:26)
+  109 |     try {
+  110 |       const res = await fetch('/api/public/data');
+> 111 |       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      |                          ^
+  112 |       const data = await res.json();
+  113 |       set({
+  114 |         settings: { ...get().settings, ...data.settings }, (lib/store.ts:121:15)
