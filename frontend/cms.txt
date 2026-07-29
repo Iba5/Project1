@@ -1,0 +1,546 @@
+/**
+ * CMS abstraction layer
+ * ====================
+ *
+ * This folder is the single integration point for content. The rest of the
+ * app imports data ONLY from here:
+ *
+ *     import { getProducts, getIndustries, getGalleryItems } from "@/lib/cms";
+ *
+ * Two adapters exist:
+ *   - static-adapter.ts  reads from the seed files in content/
+ *   - sanity-adapter.ts  fetches from Sanity (see lib/sanity/)
+ *
+ * Which one is active is decided below, automatically: Sanity is used once
+ * NEXT_PUBLIC_SANITY_PROJECT_ID is set, otherwise the static seed data is
+ * used so the site keeps working with zero configuration.
+ *
+ * To add a different CMS later (Strapi, Contentful, Payload...), implement
+ * the same six functions in a new adapter file and select it below. No page
+ * or component needs to change.
+ */
+
+export type { Product, ProductCategory } from "@content/products";
+export type { Industry, CompanyValue, GalleryItem } from "@content/content";
+
+import * as staticAdapter from "./static-adapter";
+
+const useSanity = Boolean(process.env.NEXT_PUBLIC_SANITY_PROJECT_ID);
+
+// Sanity's client throws at import time if env vars are missing, so it's
+// only imported when actually configured. This keeps the static fallback
+// working out of the box for anyone who clones the repo without Sanity set up.
+const adapter = useSanity
+  ? await import("./sanity-adapter")
+  : staticAdapter;
+
+export const getProducts = adapter.getProducts;
+export const getFeaturedProducts = adapter.getFeaturedProducts;
+export const getProductsByCategory = adapter.getProductsByCategory;
+export const getProductCategories = adapter.getProductCategories;
+export const getIndustries = adapter.getIndustries;
+export const getGalleryItems = adapter.getGalleryItems;
+export const getCompanyValues = adapter.getCompanyValues;
+/**
+ * Sanity adapter.
+ *
+ * Fetches content from Sanity, reshaped to match the same types the static
+ * adapter returns, so components never need to know which one is active.
+ */
+
+import { sanityClient } from "@/lib/sanity/client";
+import {
+  productsQuery,
+  featuredProductsQuery,
+  productsByCategoryQuery,
+  industriesQuery,
+  galleryItemsQuery,
+  companyValuesQuery,
+} from "@/lib/sanity/queries";
+import type { Product, ProductCategory } from "@content/products";
+import type { Industry, CompanyValue, GalleryItem } from "@content/content";
+
+const PRODUCT_CATEGORIES: ProductCategory[] = [
+  "Tools & Hardware",
+  "Fabrication",
+  "PPE",
+  "Stationery",
+  "Ice Blocks",
+];
+
+export async function getProducts(): Promise<Product[]> {
+  return sanityClient.fetch(productsQuery);
+}
+
+export async function getFeaturedProducts(): Promise<Product[]> {
+  return sanityClient.fetch(featuredProductsQuery);
+}
+
+export async function getProductsByCategory(
+  category: string,
+): Promise<Product[]> {
+  if (category === "All") return getProducts();
+  return sanityClient.fetch(productsByCategoryQuery, { category });
+}
+
+export async function getProductCategories(): Promise<ProductCategory[]> {
+  // Categories are a fixed enum in the schema (see sanity/schemaTypes/product.ts),
+  // not their own document type, so this is returned directly rather than queried.
+  return PRODUCT_CATEGORIES;
+}
+
+export async function getIndustries(): Promise<Industry[]> {
+  return sanityClient.fetch(industriesQuery);
+}
+
+export async function getGalleryItems(): Promise<GalleryItem[]> {
+  return sanityClient.fetch(galleryItemsQuery);
+}
+
+export async function getCompanyValues(): Promise<CompanyValue[]> {
+  return sanityClient.fetch(companyValuesQuery);
+}
+/**
+ * Static-seed adapter.
+ *
+ * Reads content straight from the seed files in `content/`. This is the
+ * fallback used automatically if Sanity isn't configured (no
+ * NEXT_PUBLIC_SANITY_PROJECT_ID set), and can also be selected explicitly.
+ */
+
+import { seedProducts, productCategories } from "@content/products";
+import {
+  industries as seedIndustries,
+  galleryItems as seedGalleryItems,
+  companyValues as seedCompanyValues,
+} from "@content/content";
+import type { Product, ProductCategory } from "@content/products";
+import type { Industry, CompanyValue, GalleryItem } from "@content/content";
+
+export async function getProducts(): Promise<Product[]> {
+  return seedProducts;
+}
+
+export async function getFeaturedProducts(): Promise<Product[]> {
+  return seedProducts.filter((p) => p.featured);
+}
+
+export async function getProductsByCategory(
+  category: string,
+): Promise<Product[]> {
+  if (category === "All") return seedProducts;
+  return seedProducts.filter((p) => p.category === category);
+}
+
+export async function getProductCategories(): Promise<ProductCategory[]> {
+  return productCategories;
+}
+
+export async function getIndustries(): Promise<Industry[]> {
+  return seedIndustries;
+}
+
+export async function getGalleryItems(): Promise<GalleryItem[]> {
+  return seedGalleryItems;
+}
+
+export async function getCompanyValues(): Promise<CompanyValue[]> {
+  return seedCompanyValues;
+}
+/**
+ * Static seed data for industries, gallery and company values.
+ * Replaceable by CMS, see `src/lib/cms/README.md`.
+ */
+
+export type Industry = {
+  slug: string;
+  name: string;
+  description: string;
+};
+
+export const industries: Industry[] = [
+  {
+    slug: "construction",
+    name: "Construction & Contracting",
+    description:
+      "Tools, hardware, fabrication and PPE for builders, site contractors and subcontractors across Harare and Murewa.",
+  },
+  {
+    slug: "hospitality",
+    name: "Restaurants & Hotels",
+    description:
+      "Ice blocks, kitchen equipment and PPE supplied to restaurants, hotels and catering operations, with reliable cold-chain delivery.",
+  },
+  {
+    slug: "retail",
+    name: "Retail & Supermarkets",
+    description:
+      "Wholesale tools, stationery, PPE and packaged ice for retail hardware stores, supermarkets and tuck-shops.",
+  },
+  {
+    slug: "manufacturing",
+    name: "Manufacturing & Fabrication",
+    description:
+      "Steel fabrication, hardware, PPE and stationery supplied to workshops, fabricators and light industrial operations.",
+  },
+  {
+    slug: "events",
+    name: "Events & Catering",
+    description:
+      "Bulk ice blocks and on-site equipment supply for event organisers, caterers and outdoor functions.",
+  },
+  {
+    slug: "fisheries",
+    name: "Fisheries & Cold Chain",
+    description:
+      "Ice blocks for fisheries, fishmongers and cold-chain handling, delivered on schedule to preserve freshness.",
+  },
+  {
+    slug: "schools",
+    name: "Schools & Offices",
+    description:
+      "Stationery, hardware and PPE supplied to schools, colleges, churches and offices in bulk and on standing order.",
+  },
+  {
+    slug: "households",
+    name: "Households",
+    description:
+      "Tools, hardware, stationery and ice for everyday household needs, small orders welcome, delivery available.",
+  },
+];
+
+export type CompanyValue = {
+  title: string;
+  description: string;
+};
+
+export const companyValues: CompanyValue[] = [
+  {
+    title: "Premium Quality",
+    description:
+      "Tools, hardware, PPE and ice that meet a real standard, sourced from trusted manufacturers and produced under controlled conditions.",
+  },
+  {
+    title: "Reliable Delivery",
+    description:
+      "Scheduled deliveries across Harare and Murewa, with cold-chain handling for ice and site-ready supply for hardware and fabrication.",
+  },
+  {
+    title: "Bulk Orders Welcome",
+    description:
+      "Case, pallet and recurring supply for businesses, sites, schools and events, with standing-order support and bulk pricing.",
+  },
+  {
+    title: "Excellent Customer Service",
+    description:
+      "Quote-driven pricing, real people on WhatsApp and phone, and a record of getting the right product to the right place on time.",
+  },
+];
+
+export type GalleryItem = {
+  slug: string;
+  title: string;
+  category: "Factory" | "Production" | "Packaging" | "Deliveries" | "Products" | "Team";
+  description: string;
+  /** SVG placeholder path, replace with real photos when supplied. */
+  image: string;
+  placeholder?: boolean;
+};
+
+export const galleryItems: GalleryItem[] = [
+  {
+    slug: "factory-exterior",
+    title: "Canbri Facility",
+    category: "Factory",
+    description: "Our production and dispatch facility, full photos to follow.",
+    image: "/gallery/factory.svg",
+    placeholder: true,
+  },
+  {
+    slug: "ice-production",
+    title: "Ice Production",
+    category: "Production",
+    description: "Ice block manufacturing under hygienic conditions.",
+    image: "/gallery/production.svg",
+    placeholder: true,
+  },
+  {
+    slug: "packaging",
+    title: "Packaging",
+    category: "Packaging",
+    description: "Sealed, labelled and ready for cold-chain dispatch.",
+    image: "/gallery/packaging.svg",
+    placeholder: true,
+  },
+  {
+    slug: "deliveries",
+    title: "Deliveries",
+    category: "Deliveries",
+    description: "Daily delivery routes across Harare and Murewa.",
+    image: "/gallery/deliveries.svg",
+    placeholder: true,
+  },
+  {
+    slug: "tools-hardware",
+    title: "Tools & Hardware",
+    category: "Products",
+    description: "Hand tools, power tools and builders' hardware range.",
+    image: "/gallery/tools.svg",
+    placeholder: true,
+  },
+  {
+    slug: "ppe-range",
+    title: "PPE Range",
+    category: "Products",
+    description: "Protective wear, gloves, eyewear and footwear.",
+    image: "/gallery/ppe.svg",
+    placeholder: true,
+  },
+  {
+    slug: "fabrication-work",
+    title: "Fabrication Work",
+    category: "Products",
+    description: "Gates, frames, brackets and structural fabrication.",
+    image: "/gallery/fabrication.svg",
+    placeholder: true,
+  },
+  {
+    slug: "stationery",
+    title: "Stationery",
+    category: "Products",
+    description: "Office and school stationery supplies.",
+    image: "/gallery/stationery.svg",
+    placeholder: true,
+  },
+];
+/**
+ * Product catalogue data, static seed.
+ *
+ * To add a new product later (without redesigning the site) you can either:
+ *   1. Append an entry to `seedProducts` below, quick, no code changes elsewhere.
+ *   2. Or wire a CMS (see `src/lib/cms/README.md`) and replace `getProducts()`
+ *      with a fetch call. Components do not change.
+ *
+ * The image field accepts either a remote URL (recommended once a CMS serves
+ * images) or a local path under `/public`.
+ */
+
+export type ProductCategory =
+  | "Tools & Hardware"
+  | "Fabrication"
+  | "PPE"
+  | "Stationery"
+  | "Ice Blocks";
+
+export type Product = {
+  slug: string;
+  name: string;
+  category: ProductCategory;
+  shortDescription: string;
+  /** Longer copy used on the products page and the future product detail page. */
+  longDescription?: string;
+  /** Image URL, replace with real product photography when supplied. */
+  image: string;
+  /** Marks products still using placeholder art, so the UI can flag it. */
+  placeholder?: boolean;
+  /** When the product can be added later, surfaced in the gallery/CMS. */
+  featured?: boolean;
+};
+
+export const productCategories: ProductCategory[] = [
+  "Tools & Hardware",
+  "Fabrication",
+  "PPE",
+  "Stationery",
+  "Ice Blocks",
+];
+
+export const seedProducts: Product[] = [
+  {
+    slug: "tools-and-hardware",
+    name: "Tools & Hardware",
+    category: "Tools & Hardware",
+    shortDescription:
+      "Hand tools, power tools, fasteners and builders' hardware for tradespeople, contractors and home users.",
+    longDescription:
+      "A dependable range of hand tools, power tools, fasteners and builders' hardware, sourced from trusted manufacturers. Stocked for tradespeople, contractors, retail hardware stores and household projects. Bulk orders and recurring supply for sites are welcome.",
+    image: "/products/tools-and-hardware.svg",
+    placeholder: true,
+    featured: true,
+  },
+  {
+    slug: "fabrication",
+    name: "Fabrication",
+    category: "Fabrication",
+    shortDescription:
+      "Mild-steel and stainless fabrication, gates, frames, brackets and custom structural work.",
+    longDescription:
+      "Custom metal fabrication in mild and stainless steel: gates, window frames, brackets, stairs, railings and structural components. Built to spec from drawings or site measurements, with finishing and delivery available across Harare and Murewa.",
+    image: "/products/fabrication.svg",
+    placeholder: true,
+    featured: true,
+  },
+  {
+    slug: "ppe",
+    name: "PPE",
+    category: "PPE",
+    shortDescription:
+      "Personal protective equipment, safety wear, gloves, eyewear, footwear and respiratory protection.",
+    longDescription:
+      "Personal protective equipment for industrial, construction, food-handling and healthcare settings. Coveralls, high-visibility wear, safety gloves, protective eyewear, safety footwear and respiratory protection. Supplied in case and bulk quantities with ongoing contracts available.",
+    image: "/products/ppe.svg",
+    placeholder: true,
+    featured: true,
+  },
+  {
+    slug: "stationery",
+    name: "Stationery",
+    category: "Stationery",
+    shortDescription:
+      "Office and school stationery, printer consumables and writing supplies in bulk.",
+    longDescription:
+      "General office and school stationery, printer consumables, writing instruments, paper products and filing supplies. Ideal for offices, schools, retailers and procurement teams. Bulk pricing and standing orders are supported.",
+    image: "/products/stationery.svg",
+    placeholder: true,
+    featured: true,
+  },
+  {
+    slug: "ice-blocks",
+    name: "Ice Blocks",
+    category: "Ice Blocks",
+    shortDescription:
+      "Manufactured ice blocks for commercial, retail and events use, delivered cold across Harare and Murewa.",
+    longDescription:
+      "Manufactured ice blocks produced under hygienic conditions and supplied to restaurants, hotels, bars, supermarkets, fisheries, caterers, event organisers and households. Delivered cold across Harare and Murewa. Bulk orders and recurring deliveries are welcome.",
+    image: "/products/ice-blocks.svg",
+    placeholder: true,
+    featured: true,
+  },
+];
+/**
+ * Canbri site configuration, single source of truth.
+ *
+ * This file is what the CMS layer (see `src/lib/cms/README.md`) will eventually
+ * replace. Components read from here, never from hard-coded strings, so swapping
+ * the implementation of `getCms()` to call Strapi / Sanity / a database only
+ * touches this folder.
+ */
+
+export type ContactMethod = {
+  label: string;
+  href: string;
+  /** The literal value shown to the user (phone, email, handle). */
+  value: string;
+};
+
+export type Branch = {
+  city: string;
+  label: string;
+  addressLines: string[];
+  phone: string;
+  phoneHref: string;
+  hours: string;
+  /** Optional Google Maps embed URL, client will supply the real one. */
+  mapsEmbedUrl?: string;
+};
+
+export type NavLink = { label: string; href: string };
+
+export const siteConfig = {
+  name: "Canbri Private Limited",
+  shortName: "Canbri",
+  tagline: "Cool & Cold",
+  legalName: "Canbri Private Limited",
+  description:
+    "Canbri Private Limited supplies tools and hardware, fabrication services, personal protective equipment, stationery and ice blocks. We serve businesses and households across Harare and Murewa with reliable delivery and bulk-order support.",
+  deliveryAreas: ["Harare", "Murewa"],
+  url: "https://canbri.co.zw",
+  email: "info@canbri.co.zw",
+  emailHref: "mailto:info@canbri.co.zw",
+  /** Primary WhatsApp business number, client will supply the real one. */
+  whatsappNumber: "+263770000000",
+  whatsappDisplay: "+263 77 000 0000",
+  whatsappHref:
+    "https://wa.me/263770000000?text=Hello%20Canbri%2C%20I%27d%20like%20to%20request%20a%20quote.",
+  /** Primary call number, client will supply the real one. */
+  callNumber: "+263770000000",
+  callDisplay: "+263 77 000 0000",
+  callHref: "tel:+263770000000",
+  social: {
+    facebook: "https://www.facebook.com/canbri",
+    instagram: "https://www.instagram.com/canbri",
+  },
+  businessHours: "Mon – Fri: 08:00 – 17:00 · Sat: 08:00 – 13:00 · Sun: Closed",
+  foundingYear: 2024,
+} as const;
+
+export const navLinks: NavLink[] = [
+  { label: "Home", href: "/" },
+  { label: "About Us", href: "/about" },
+  { label: "Products", href: "/products" },
+  { label: "Industries", href: "/industries" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Contact", href: "/contact" },
+];
+
+export const branches: Branch[] = [
+  {
+    city: "Harare",
+    label: "Harare Branch, Head Office",
+    addressLines: ["Address to be supplied", "Harare, Zimbabwe"],
+    phone: siteConfig.callDisplay,
+    phoneHref: siteConfig.callHref,
+    hours: "Mon – Fri: 08:00 – 17:00 · Sat: 08:00 – 13:00",
+    mapsEmbedUrl: undefined,
+  },
+  {
+    city: "Murewa",
+    label: "Murewa Branch",
+    addressLines: ["Address to be supplied", "Murewa, Zimbabwe"],
+    phone: siteConfig.callDisplay,
+    phoneHref: siteConfig.callHref,
+    hours: "Mon – Fri: 08:00 – 17:00 · Sat: 08:00 – 13:00",
+    mapsEmbedUrl: undefined,
+  },
+];
+
+export const quoteWhatsAppHref = (productName?: string) => {
+  const text = productName
+    ? `Hello Canbri, I'd like to request a quote for ${productName}.`
+    : "Hello Canbri, I'd like to request a quote.";
+  return `https://wa.me/${siteConfig.whatsappNumber.replace(/[^\d]/g, "")}?text=${encodeURIComponent(
+    text,
+  )}`;
+};
+import { defineConfig } from "sanity";
+import { structureTool } from "sanity/structure";
+import { schemaTypes } from "./sanity/schemaTypes";
+
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "jf48ftd4";
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
+
+export default defineConfig({
+  name: "canbri",
+  title: "Canbri Content",
+  projectId: projectId,
+  dataset: dataset,
+  basePath: '/studio',
+   vite: (prev) => ({
+    ...prev,
+    css: {
+      postcss: {
+        plugins: []
+      }
+    }
+  }),
+  plugins: [structureTool()],
+  schema: {
+    types: schemaTypes,
+  },
+});
+import { product } from "./product";
+import { industry } from "./industry";
+import { galleryItem } from "./galleryItem";
+import { companyValue } from "./companyValue";
+
+export const schemaTypes = [product, industry, galleryItem, companyValue];

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+  <rect width="400" height="300" fill="#F2F8FC"/>
+  <rect x="0" y="0" width="400" height="6" fill="#7FB8DC"/>
+  <g transform="translate(200 150)" fill="none" stroke="#1F3A5F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Ice block -->
+    <rect x="-80" y="-50" width="160" height="100" rx="6" fill="#1F3A5F" fill-opacity="0.06"/>
+    <!-- Cracks -->
+    <path d="M -50 -20 L -10 10 L 30 -10" stroke-opacity="0.4"/>
+    <path d="M -10 10 L -20 40" stroke-opacity="0.4"/>
+    <path d="M 30 -10 L 60 20" stroke-opacity="0.4"/>
+    <!-- Frost -->
+    <circle cx="-40" cy="-30" r="2" fill="#7FB8DC" stroke="none"/>
+    <circle cx="20" cy="-15" r="2" fill="#7FB8DC" stroke="none"/>
+    <circle cx="-20" cy="20" r="2" fill="#7FB8DC" stroke="none"/>
+    <circle cx="50" cy="10" r="2" fill="#7FB8DC" stroke="none"/>
+  </g>
+  <text x="200" y="265" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="600" fill="#1F3A5F" letter-spacing="0.12em">ICE BLOCKS</text>
+</svg>

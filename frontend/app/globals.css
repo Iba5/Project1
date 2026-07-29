@@ -1,0 +1,1694 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+  Canbri Private Limited — brand design system
+  Palette: Dark Blue (deep navy), White, Ice Blue
+  Typography: Bricolage Grotesque (display) + IBM Plex Sans (body)
+*/
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-plex-sans);
+  --font-display: var(--font-bricolage);
+  --font-mono: var(--font-plex-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  /* Brand tokens */
+  --color-brand-navy: var(--brand-navy);
+  --color-brand-navy-deep: var(--brand-navy-deep);
+  --color-brand-ice: var(--brand-ice);
+  --color-brand-ice-soft: var(--brand-ice-soft);
+  --color-brand-frost: var(--brand-frost);
+
+  /* Semantic brand tokens */
+  --color-brand-heading: var(--brand-heading);
+  --color-brand-body: var(--brand-body);
+  --color-brand-surface-strong: var(--brand-surface-strong);
+  --color-brand-surface-strong-fg: var(--brand-surface-strong-fg);
+  --color-brand-surface-soft: var(--brand-surface-soft);
+  --color-brand-surface-soft-fg: var(--brand-surface-soft-fg);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-accent-fg: var(--brand-accent-fg);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.75rem;
+
+  /* Brand palette — Dark Blue / White / Ice Blue */
+  --brand-navy: oklch(0.28 0.13 250);
+  --brand-navy-deep: oklch(0.20 0.10 255);
+  --brand-ice: oklch(0.88 0.08 220);
+  --brand-ice-soft: oklch(0.95 0.04 220);
+  --brand-frost: oklch(0.97 0.02 220);
+
+  /* Semantic brand tokens — light mode values */
+  --brand-heading: var(--brand-navy);
+  --brand-body: var(--foreground);
+  --brand-surface-strong: var(--brand-navy);
+  --brand-surface-strong-fg: oklch(0.99 0 0);
+  --brand-surface-soft: var(--brand-ice-soft);
+  --brand-surface-soft-fg: var(--brand-navy);
+  --brand-accent: var(--brand-ice);
+  --brand-accent-fg: var(--brand-navy);
+
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.20 0.04 250);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.20 0.04 250);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.20 0.04 250);
+
+  /* Primary = brand navy */
+  --primary: var(--brand-navy);
+  --primary-foreground: oklch(0.99 0 0);
+
+  /* Secondary = soft ice surface */
+  --secondary: var(--brand-ice-soft);
+  --secondary-foreground: var(--brand-navy);
+
+  --muted: oklch(0.97 0.01 230);
+  --muted-foreground: oklch(0.45 0.04 245);
+  --accent: var(--brand-ice);
+  --accent-foreground: var(--brand-navy);
+
+  --destructive: oklch(0.55 0.22 25);
+  --border: oklch(0.92 0.02 230);
+  --input: oklch(0.94 0.02 230);
+  --ring: var(--brand-navy);
+
+  --chart-1: var(--brand-navy);
+  --chart-2: var(--brand-ice);
+  --chart-3: oklch(0.55 0.10 240);
+  --chart-4: oklch(0.70 0.12 200);
+  --chart-5: oklch(0.85 0.06 220);
+
+  --sidebar: var(--brand-navy-deep);
+  --sidebar-foreground: oklch(0.97 0.02 220);
+  --sidebar-primary: var(--brand-ice);
+  --sidebar-primary-foreground: var(--brand-navy);
+  --sidebar-accent: oklch(0.30 0.10 250);
+  --sidebar-accent-foreground: oklch(0.97 0.02 220);
+  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-ring: var(--brand-ice);
+}
+
+/*
+  Dark mode — preserves the brand palette.
+*/
+.dark {
+  --background: var(--brand-navy-deep);
+  --foreground: oklch(0.99 0 0);
+  --card: oklch(0.24 0.06 255);
+  --card-foreground: oklch(0.99 0 0);
+  --popover: oklch(0.24 0.06 255);
+  --popover-foreground: oklch(0.99 0 0);
+
+  --brand-heading: oklch(0.99 0 0);
+  --brand-body: oklch(0.97 0.02 220);
+  --brand-surface-strong: oklch(0.30 0.10 250);
+  --brand-surface-strong-fg: oklch(0.99 0 0);
+  --brand-surface-soft: oklch(0.30 0.06 250);
+  --brand-surface-soft-fg: oklch(0.99 0 0);
+  --brand-accent: var(--brand-ice);
+  --brand-accent-fg: var(--brand-navy);
+
+  --primary: oklch(0.36 0.10 250);
+  --primary-foreground: oklch(0.99 0 0);
+
+  --secondary: oklch(0.30 0.06 250);
+  --secondary-foreground: oklch(0.99 0 0);
+
+  --muted: oklch(0.28 0.05 250);
+  --muted-foreground: oklch(0.78 0.04 225);
+  --accent: var(--brand-ice);
+  --accent-foreground: var(--brand-navy);
+
+  --destructive: oklch(0.70 0.19 22);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: var(--brand-ice);
+
+  --chart-1: var(--brand-ice);
+  --chart-2: oklch(0.55 0.10 240);
+  --chart-3: oklch(0.70 0.12 200);
+  --chart-4: oklch(0.85 0.06 220);
+  --chart-5: oklch(0.65 0.08 250);
+
+  --sidebar: oklch(0.14 0.05 255);
+  --sidebar-foreground: oklch(0.99 0 0);
+  --sidebar-primary: var(--brand-ice);
+  --sidebar-primary-foreground: var(--brand-navy);
+  --sidebar-accent: oklch(0.28 0.08 250);
+  --sidebar-accent-foreground: oklch(0.99 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: var(--brand-ice);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection {
+    background: rgba(136, 168, 216, 0.88);
+    color: rgba(28, 25, 50, 1);
+  }
+}
+
+/* Typographic primitives */
+.font-display {
+  font-family: var(--font-display), var(--font-sans), sans-serif;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+
+/* Brand surface helpers */
+.surface-navy {
+  background: var(--brand-surface-strong);
+  color: var(--brand-surface-strong-fg);
+}
+.surface-ice {
+  background: var(--brand-surface-soft);
+  color: var(--brand-surface-soft-fg);
+}
+
+/* Top-band accent */
+.band-top {
+  position: relative;
+}
+.band-top::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(136, 168, 216, 0.88);
+}
+
+/* Long-form readability */
+.prose-canbri {
+  max-width: 70ch;
+  line-height: 1.7;
+}
+.prose-canbri p + p {
+  margin-top: 1.25em;
+}
+
+/* Subtle entrance */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.rise-in {
+  animation: rise-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Focus ring for keyboard navigation */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid rgba(136, 168, 216, 0.88);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Decorative background patterns */
+.pattern-dots {
+  background-image: radial-gradient(circle, rgba(136, 168, 216, 0.08) 0.5px, transparent 0.5px);
+  background-size: 24px 24px;
+}
+
+.pattern-grid {
+  background-image:
+    linear-gradient(rgba(136, 168, 216, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(136, 168, 216, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* Section separator decoration */
+.section-divider {
+  position: relative;
+}
+.section-divider::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: rgba(136, 168, 216, 0.88);
+  border-radius: 2px;
+}
+
+/* Smooth transitions for all interactive elements */
+.transition-brand {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Slow ambient pulse for hero gradient blobs */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.08);
+  }
+}
+.animate-pulse-slow {
+  animation: pulse-slow 8s ease-in-out infinite;
+}
+.animate-pulse-slow-delayed {
+  animation: pulse-slow 10s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+/* Custom scrollbar — premium feel */
+@media (min-width: 1024px) {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(136, 168, 216, 0.35);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(136, 168, 216, 0.6);
+    background-clip: content-box;
+  }
+}
+
+/* Reduce motion preference — disable non-essential animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Premium micro-interactions & animations ──────────────────────────── */
+
+/* Shimmer keyframes for skeleton placeholders */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s linear infinite;
+}
+
+/* Subtle floating animation for badges & decorative elements */
+@keyframes float-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+.animate-float-subtle {
+  animation: float-subtle 3.5s ease-in-out infinite;
+}
+
+/* Hero badge pulse — for the "Latest from Canbri" floating card */
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 12px 32px -8px rgba(15, 31, 51, 0.18); }
+  50% { box-shadow: 0 18px 40px -8px rgba(15, 31, 51, 0.28); }
+}
+.animate-badge-pulse {
+  animation: badge-pulse 4s ease-in-out infinite;
+}
+
+/* Underline grow effect for inline links */
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.3s ease;
+}
+.link-underline:hover {
+  background-size: 100% 1px;
+}
+
+/* Subtle text shimmer for highlighted numbers/stats */
+@keyframes text-shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.text-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--brand-heading) 0%,
+    var(--brand-accent) 50%,
+    var(--brand-heading) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: text-shimmer 6s ease-in-out infinite;
+}
+
+/* Card lift on hover — applies subtle elevation + ring */
+.lift-on-hover {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s ease;
+}
+.lift-on-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -16px rgba(15, 31, 51, 0.18);
+}
+
+/* Image zoom on hover (for cards with image overlays) */
+.img-zoom {
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.group:hover .img-zoom {
+  transform: scale(1.06);
+}
+
+/* Bottom-bar gradient for image overlays (premium fade) */
+.img-bottom-fade::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 60%,
+    rgba(15, 31, 51, 0.55) 100%
+  );
+  pointer-events: none;
+}
+
+/* Skip link — visible only on focus, for accessibility */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--brand-navy);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0 0 6px 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.skip-link:focus {
+  left: 0;
+  outline: 2px solid var(--brand-ice);
+  outline-offset: 2px;
+}
+
+/* Mobile safe-area padding helper */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* ── Round 7 premium styling additions ────────────────────────────────── */
+
+/* Gradient border — animated, for premium cards */
+.gradient-border {
+  position: relative;
+  background-clip: padding-box;
+  border: 1px solid transparent;
+}
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  margin: -1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(136, 168, 216, 0.5),
+    transparent 40%,
+    transparent 60%,
+    rgba(136, 168, 216, 0.3)
+  );
+}
+.dark .gradient-border::before {
+  background: linear-gradient(
+    135deg,
+    rgba(136, 168, 216, 0.4),
+    transparent 40%,
+    transparent 60%,
+    rgba(136, 168, 216, 0.2)
+  );
+}
+
+/* Glow ring on focus — premium button treatment */
+.glow-ring {
+  position: relative;
+}
+.glow-ring::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(136, 168, 216, 0.5),
+    transparent 50%,
+    rgba(136, 168, 216, 0.3)
+  );
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+  filter: blur(8px);
+}
+.glow-ring:hover::after {
+  opacity: 1;
+}
+
+/* Animated underline for nav links */
+.nav-underline {
+  position: relative;
+}
+.nav-underline::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  width: 0;
+  height: 2px;
+  background: var(--brand-accent);
+  border-radius: 1px;
+  transform: translateX(-50%);
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-underline:hover::after,
+.nav-underline[aria-current="true"]::after {
+  width: 60%;
+}
+
+/* Section entrance animation — subtle slide up + fade */
+@keyframes section-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-section-enter {
+  animation: section-enter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Pulsing dot indicator (for live/active states) */
+@keyframes pulse-dot {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+}
+.pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Premium card with subtle inner glow on hover */
+.card-glow {
+  position: relative;
+  overflow: hidden;
+}
+.card-glow::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(136, 168, 216, 0.6),
+    transparent
+  );
+  transform: translateX(-50%) translateY(-1px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.card-glow:hover::before {
+  opacity: 1;
+}
+
+/* Print-friendly styles */
+@media print {
+  header,
+  footer,
+  .no-print,
+  button[aria-label*="theme" i],
+  .fixed {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  main {
+    padding: 0 !important;
+  }
+  section {
+    page-break-inside: avoid;
+    border: 1px solid #ddd !important;
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+  a {
+    color: black !important;
+    text-decoration: underline !important;
+  }
+  a[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+}
+
+/* Smooth scroll for anchor links (respecting reduced motion) */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem; /* offset for sticky header */
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Selection styling — premium brand color */
+::selection {
+  background: rgba(136, 168, 216, 0.35);
+  color: var(--brand-heading);
+}
+
+/* ─── Round 8 styling polish ──────────────────────────────────────── */
+
+/* Hero parallax — image moves slower than scroll for depth effect */
+.parallax-layer {
+  will-change: transform;
+  transition: transform 0.05s linear;
+}
+
+/* Section divider — soft gradient curve between sections */
+.divider-curve {
+  position: relative;
+  height: 64px;
+  pointer-events: none;
+}
+.divider-curve svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  shape-rendering: geometricPrecision;
+}
+.divider-curve.flip svg {
+  transform: scaleY(-1);
+}
+
+/* Gradient mesh background — multi-color radial gradient blend */
+.gradient-mesh {
+  background-image:
+    radial-gradient(at 20% 20%, rgba(136, 168, 216, 0.18) 0px, transparent 50%),
+    radial-gradient(at 80% 10%, rgba(99, 179, 237, 0.14) 0px, transparent 50%),
+    radial-gradient(at 70% 80%, rgba(64, 145, 220, 0.12) 0px, transparent 50%),
+    radial-gradient(at 10% 90%, rgba(173, 216, 230, 0.10) 0px, transparent 50%);
+}
+.dark .gradient-mesh {
+  background-image:
+    radial-gradient(at 20% 20%, rgba(99, 145, 200, 0.18) 0px, transparent 50%),
+    radial-gradient(at 80% 10%, rgba(50, 110, 170, 0.20) 0px, transparent 50%),
+    radial-gradient(at 70% 80%, rgba(40, 90, 150, 0.18) 0px, transparent 50%),
+    radial-gradient(at 10% 90%, rgba(80, 130, 180, 0.12) 0px, transparent 50%);
+}
+
+/* Button ripple effect — premium click feedback */
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-ripple::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--rx, 50%) var(--ry, 50%), rgba(255, 255, 255, 0.35), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+  pointer-events: none;
+  z-index: -1;
+}
+.btn-ripple:active::after {
+  opacity: 1;
+  transition: opacity 0s;
+}
+
+/* Animated section number — large faded number that scales on hover */
+.section-number {
+  font-feature-settings: "tnum" on, "lnum" on;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Glassmorphism card — frosted glass effect */
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.dark .glass-card {
+  background: rgba(20, 30, 50, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Animated underline grow — for inline links */
+.link-grow {
+  position: relative;
+  display: inline-block;
+}
+.link-grow::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 1px;
+  width: 0;
+  background: currentColor;
+  transition: width 0.3s ease-out;
+}
+.link-grow:hover::after {
+  width: 100%;
+}
+
+/* Conic gradient ring — animated decorative ring */
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+.conic-ring {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    var(--brand-accent) 90deg,
+    transparent 180deg,
+    var(--brand-ice) 270deg,
+    transparent 360deg
+  );
+  animation: spin-slow 12s linear infinite;
+}
+
+/* Soft drop shadow — used for floating cards */
+.shadow-soft {
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 4px 12px rgba(15, 23, 42, 0.06),
+    0 12px 32px rgba(15, 23, 42, 0.08);
+}
+.dark .shadow-soft {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Hover lift — for cards that should feel tactile */
+.hover-lift {
+  transition:
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+}
+
+/* Animated dot trail — used for loading and live indicators */
+@keyframes dot-trail {
+  0%, 80%, 100% { opacity: 0.2; }
+  40% { opacity: 1; }
+}
+.dot-trail > span {
+  display: inline-block;
+  animation: dot-trail 1.4s ease-in-out infinite;
+}
+.dot-trail > span:nth-child(2) { animation-delay: 0.2s; }
+.dot-trail > span:nth-child(3) { animation-delay: 0.4s; }
+
+/* Scrollbar styling — premium thin custom scrollbar */
+.scrollbar-premium {
+  scrollbar-width: thin;
+  scrollbar-color: var(--brand-accent) transparent;
+}
+.scrollbar-premium::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-premium::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-premium::-webkit-scrollbar-thumb {
+  background-color: var(--brand-accent);
+  border-radius: 9999px;
+  opacity: 0.5;
+}
+.scrollbar-premium::-webkit-scrollbar-thumb:hover {
+  background-color: var(--brand-accent-fg);
+}
+
+/* Reduced motion — disable non-essential animations */
+@media (prefers-reduced-motion: reduce) {
+  .parallax-layer,
+  .conic-ring,
+  .dot-trail > span {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ─── Round 9 styling polish ──────────────────────────────────────── */
+
+/* Aurora animated background — slow-moving multi-color gradient blend */
+@keyframes aurora-shift {
+  0%, 100% {
+    background-position:
+      0% 50%,
+      100% 50%,
+      50% 0%,
+      50% 100%;
+  }
+  50% {
+    background-position:
+      100% 50%,
+      0% 50%,
+      50% 100%,
+      50% 0%;
+  }
+}
+.aurora-bg {
+  background-image:
+    radial-gradient(at 20% 30%, rgba(99, 179, 237, 0.18) 0px, transparent 50%),
+    radial-gradient(at 80% 70%, rgba(136, 168, 216, 0.16) 0px, transparent 50%),
+    radial-gradient(at 50% 20%, rgba(173, 216, 230, 0.12) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, rgba(64, 145, 220, 0.10) 0px, transparent 50%);
+  background-size: 200% 200%, 200% 200%, 200% 200%, 200% 200%;
+  background-attachment: fixed;
+  animation: aurora-shift 22s ease-in-out infinite;
+}
+.dark .aurora-bg {
+  background-image:
+    radial-gradient(at 20% 30%, rgba(50, 110, 170, 0.20) 0px, transparent 50%),
+    radial-gradient(at 80% 70%, rgba(99, 145, 200, 0.18) 0px, transparent 50%),
+    radial-gradient(at 50% 20%, rgba(40, 90, 150, 0.14) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, rgba(80, 130, 180, 0.12) 0px, transparent 50%);
+}
+
+/* Card with gradient border on hover — uses mask technique */
+.card-border-gradient {
+  position: relative;
+  isolation: isolate;
+}
+.card-border-gradient::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(136, 168, 216, 0.6),
+    transparent 30%,
+    transparent 70%,
+    rgba(136, 168, 216, 0.4)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+.card-border-gradient:hover::before {
+  opacity: 1;
+}
+
+/* Button shine sweep — diagonal shine that crosses the button on hover */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-shine::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 80%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.35),
+    transparent
+  );
+  transform: skewX(-18deg);
+  transition: left 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  z-index: 0;
+}
+.btn-shine:hover::before {
+  left: 130%;
+}
+.btn-shine > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Large faded section numeral — decorative number watermark */
+.section-numeral {
+  position: absolute;
+  top: -0.25em;
+  right: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(4rem, 8vw, 7rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: rgba(136, 168, 216, 0.10);
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+.dark .section-numeral {
+  color: rgba(136, 168, 216, 0.08);
+}
+
+/* 3D icon tilt — subtle perspective tilt on hover */
+.icon-tilt-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.icon-tilt-3d:hover {
+  transform: perspective(500px) rotateX(8deg) rotateY(-8deg) scale(1.08);
+}
+
+/* Cursor spotlight — generic mouse-follow radial gradient (set --mx, --my on parent) */
+.cursor-spotlight {
+  position: relative;
+}
+.cursor-spotlight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    280px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(136, 168, 216, 0.10),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.cursor-spotlight:hover::after {
+  opacity: 1;
+}
+
+/* Typewriter cursor — for rotating words */
+@keyframes cursor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.typewriter-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 4px;
+  background: currentColor;
+  vertical-align: text-bottom;
+  animation: cursor-blink 1s step-end infinite;
+}
+
+/* Magnetic button — reads --tx, --my CSS vars set by JS */
+.magnetic-btn {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+/* Scroll progress ring — conic gradient ring showing scroll percentage */
+.scroll-ring {
+  background: conic-gradient(
+    var(--brand-accent) calc(var(--scroll-pct, 0) * 1%),
+    rgba(136, 168, 216, 0.18) 0
+  );
+}
+
+/* Marquee edge mask — premium fade-in/out for marquee items */
+.edge-fade-mask {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
+}
+
+/* Star rating — accessible star icons via SVG background */
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.star-rating .star {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* Hover-rotate icon — for small icon accents that rotate on parent hover */
+.group:hover .icon-rotate-on-hover {
+  transform: rotate(12deg) scale(1.1);
+}
+.icon-rotate-on-hover {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Pulse ring — for live/new badges (similar to pulse-dot but as a ring) */
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(136, 168, 216, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(136, 168, 216, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(136, 168, 216, 0);
+  }
+}
+.pulse-ring {
+  animation: pulse-ring 2.2s cubic-bezier(0.66, 0, 0, 1) infinite;
+}
+
+/* Promo banner slide-down */
+@keyframes slide-down {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.animate-slide-down {
+  animation: slide-down 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Cart badge bounce */
+@keyframes badge-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+}
+.animate-badge-bounce {
+  animation: badge-bounce 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Quantity stepper input — hidden spinners */
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.qty-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Floating tag chip — for product tags/badges */
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(136, 168, 216, 0.12);
+  color: var(--brand-accent-fg);
+  border: 1px solid rgba(136, 168, 216, 0.25);
+}
+.dark .tag-chip {
+  background: rgba(136, 168, 216, 0.18);
+  color: var(--brand-ice);
+}
+
+/* Reduced motion — disable Round 9 animations too */
+@media (prefers-reduced-motion: reduce) {
+  .aurora-bg,
+  .pulse-ring,
+  .animate-slide-down,
+  .animate-badge-bounce,
+  .typewriter-cursor,
+  .icon-tilt-3d,
+  .magnetic-btn {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* ─── Round 10 styling enhancements ────────────────────────────────── */
+
+/* ── a. Shimmer sparkle for text — enhanced shimmer with oklch gradient ── */
+@keyframes shimmer-sparkle {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.text-shimmer-sparkle {
+  background: linear-gradient(
+    90deg,
+    var(--brand-heading) 0%,
+    oklch(0.75 0.15 220) 25%,
+    oklch(0.88 0.08 220) 50%,
+    oklch(0.75 0.15 220) 75%,
+    var(--brand-heading) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-sparkle 4s ease-in-out infinite;
+}
+.dark .text-shimmer-sparkle {
+  background: linear-gradient(
+    90deg,
+    oklch(0.99 0 0) 0%,
+    oklch(0.88 0.12 220) 25%,
+    oklch(0.95 0.06 220) 50%,
+    oklch(0.88 0.12 220) 75%,
+    oklch(0.99 0 0) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── b. Rotating gradient border animation — animated conic gradient border ── */
+@keyframes rotate-gradient-border {
+  0% { --gradient-angle: 0deg; }
+  100% { --gradient-angle: 360deg; }
+}
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.gradient-border-animated {
+  position: relative;
+  isolation: isolate;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+.gradient-border-animated::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--gradient-angle, 0deg),
+    oklch(0.75 0.15 220),
+    oklch(0.88 0.08 220) 25%,
+    transparent 50%,
+    oklch(0.70 0.12 250) 75%,
+    oklch(0.75 0.15 220)
+  );
+  z-index: -2;
+  animation: rotate-gradient-border 4s linear infinite;
+}
+.gradient-border-animated::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background: var(--card);
+  z-index: -1;
+}
+.dark .gradient-border-animated::after {
+  background: var(--card);
+}
+
+/* ── c. Floating animation — more pronounced floating for decorative elements ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-6px) rotate(0.5deg); }
+  50% { transform: translateY(-10px) rotate(0deg); }
+  75% { transform: translateY(-6px) rotate(-0.5deg); }
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+.animate-float-delayed {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+/* ── d. Pulse ring for CTA buttons — expanding ring effect ── */
+@keyframes cta-pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(136, 168, 216, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(136, 168, 216, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(136, 168, 216, 0);
+  }
+}
+.cta-pulse-ring {
+  animation: cta-pulse-ring 2.5s cubic-bezier(0.66, 0, 0, 1) infinite;
+}
+.dark .cta-pulse-ring {
+  animation: cta-pulse-ring 2.5s cubic-bezier(0.66, 0, 0, 1) infinite;
+}
+
+/* ── e. Glass morphism utility — enhanced with hover effect ── */
+.glass-card-enhanced {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px) saturate(200%);
+  -webkit-backdrop-filter: blur(20px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.glass-card-enhanced:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 8px 32px rgba(136, 168, 216, 0.15);
+}
+.dark .glass-card-enhanced {
+  background: rgba(20, 30, 50, 0.50);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+.dark .glass-card-enhanced:hover {
+  background: rgba(20, 30, 50, 0.60);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ── f. Animated gradient mesh — shifts colors over time ── */
+@keyframes mesh-shift {
+  0%, 100% {
+    background-position:
+      0% 0%,
+      100% 0%,
+      100% 100%,
+      0% 100%;
+  }
+  25% {
+    background-position:
+      50% 0%,
+      50% 0%,
+      100% 50%,
+      0% 50%;
+  }
+  50% {
+    background-position:
+      100% 0%,
+      0% 0%,
+      0% 100%,
+      100% 100%;
+  }
+  75% {
+    background-position:
+      50% 0%,
+      50% 0%,
+      0% 50%,
+      100% 50%;
+  }
+}
+.gradient-mesh-animated {
+  background-image:
+    radial-gradient(at 20% 20%, oklch(0.78 0.12 220 / 0.18) 0px, transparent 50%),
+    radial-gradient(at 80% 10%, oklch(0.70 0.14 240 / 0.14) 0px, transparent 50%),
+    radial-gradient(at 70% 80%, oklch(0.65 0.10 250 / 0.12) 0px, transparent 50%),
+    radial-gradient(at 10% 90%, oklch(0.82 0.08 200 / 0.10) 0px, transparent 50%);
+  background-size: 200% 200%;
+  animation: mesh-shift 16s ease-in-out infinite;
+}
+.dark .gradient-mesh-animated {
+  background-image:
+    radial-gradient(at 20% 20%, oklch(0.50 0.12 220 / 0.22) 0px, transparent 50%),
+    radial-gradient(at 80% 10%, oklch(0.40 0.14 240 / 0.18) 0px, transparent 50%),
+    radial-gradient(at 70% 80%, oklch(0.35 0.10 250 / 0.16) 0px, transparent 50%),
+    radial-gradient(at 10% 90%, oklch(0.45 0.08 200 / 0.12) 0px, transparent 50%);
+}
+
+/* ── g. Smooth scroll behavior — reinforced ── */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+    scroll-padding-top: 5rem;
+  }
+}
+
+/* ── h. Enhanced custom scrollbar styling ── */
+/* Page-level scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: oklch(0.75 0.10 220 / 0.35);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(0.65 0.12 220 / 0.55);
+  background-clip: content-box;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background-color: oklch(0.50 0.10 220 / 0.40);
+  background-clip: content-box;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(0.60 0.12 220 / 0.60);
+  background-clip: content-box;
+}
+/* Scrollbar for scrollable containers */
+.scrollable-container {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(0.75 0.10 220 / 0.35) transparent;
+}
+.scrollable-container::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollable-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollable-container::-webkit-scrollbar-thumb {
+  background-color: oklch(0.75 0.10 220 / 0.35);
+  border-radius: 9999px;
+}
+.scrollable-container::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(0.65 0.12 220 / 0.55);
+}
+.dark .scrollable-container {
+  scrollbar-color: oklch(0.50 0.10 220 / 0.40) transparent;
+}
+.dark .scrollable-container::-webkit-scrollbar-thumb {
+  background-color: oklch(0.50 0.10 220 / 0.40);
+}
+.dark .scrollable-container::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(0.60 0.12 220 / 0.60);
+}
+
+/* ── Micro-interaction utilities ── */
+
+/* Card hover effects — consistent lift, shadow, border accent */
+.card-hover {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px -12px rgba(15, 31, 51, 0.15);
+  border-color: oklch(0.75 0.10 220 / 0.40);
+}
+.dark .card-hover:hover {
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.35);
+  border-color: oklch(0.60 0.12 220 / 0.35);
+}
+
+/* Button hover effects — subtle scale and shadow */
+.btn-hover {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-hover:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 8px 24px -8px rgba(15, 31, 51, 0.20);
+}
+.btn-hover:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 8px -4px rgba(15, 31, 51, 0.15);
+}
+
+/* Link hover effects — underline animation */
+.link-hover-underline {
+  position: relative;
+  display: inline;
+}
+.link-hover-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 0;
+  height: 1.5px;
+  background: currentColor;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.link-hover-underline:hover::after {
+  width: 100%;
+}
+
+/* Section divider entrance animation */
+@keyframes divider-enter {
+  from {
+    opacity: 0;
+    transform: scaleX(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+.divider-animated {
+  animation: divider-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* CTA button shimmer sweep — diagonal shine across button */
+@keyframes cta-shimmer {
+  0% { left: -120%; }
+  100% { left: 130%; }
+}
+.cta-shimmer-sweep {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.cta-shimmer-sweep::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  transform: skewX(-18deg);
+  pointer-events: none;
+  z-index: 0;
+  animation: cta-shimmer 3s ease-in-out infinite;
+  animation-delay: 1s;
+}
+.cta-shimmer-sweep > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Reduced motion — disable Round 10 animations */
+@media (prefers-reduced-motion: reduce) {
+  .text-shimmer-sparkle,
+  .gradient-border-animated::before,
+  .animate-float,
+  .animate-float-delayed,
+  .cta-pulse-ring,
+  .gradient-mesh-animated,
+  .cta-shimmer-sweep::before,
+  .divider-animated {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+  .card-hover:hover,
+  .btn-hover:hover,
+  .btn-hover:active {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ─── Round 11 styling polish — new sections ───────────────────────── */
+
+/* Gradient sweep — slow diagonal sheen for premium card backgrounds */
+@keyframes gradient-sweep {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.gradient-sweep {
+  background-size: 200% 200%;
+  animation: gradient-sweep 14s ease-in-out infinite;
+}
+
+/* Leaf sway — subtle rotation for sustainability icons */
+@keyframes leaf-sway {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-4deg); }
+  75% { transform: rotate(4deg); }
+}
+.animate-leaf-sway {
+  animation: leaf-sway 5s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+/* Number flip — for stat counter entrance */
+@keyframes number-flip {
+  0% {
+    opacity: 0;
+    transform: rotateX(-90deg);
+  }
+  100% {
+    opacity: 1;
+    transform: rotateX(0deg);
+  }
+}
+.animate-number-flip {
+  animation: number-flip 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: bottom;
+  perspective: 600px;
+}
+
+/* Card sheen — diagonal highlight pass on hover */
+.card-sheen {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.card-sheen::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.18),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: left 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  z-index: 1;
+}
+.card-sheen:hover::after {
+  left: 130%;
+}
+
+/* Tilt card — subtle 3D tilt that follows the cursor (set --tx, --ty via JS) */
+.tilt-card {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Avatar ring — animated rotating gradient border for team avatars */
+@keyframes avatar-ring-spin {
+  to { transform: rotate(360deg); }
+}
+.avatar-ring {
+  position: relative;
+}
+.avatar-ring::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from 0deg,
+    var(--brand-accent),
+    transparent 30%,
+    var(--brand-ice) 60%,
+    transparent 90%,
+    var(--brand-accent)
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+  animation: avatar-ring-spin 8s linear infinite;
+}
+.avatar-ring:hover::before {
+  opacity: 0.6;
+}
+
+/* Badge stamp — slightly rotated, official-feel certificate stamp */
+.badge-stamp {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed currentColor;
+  border-radius: 9999px;
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transform: rotate(-3deg);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.badge-stamp:hover {
+  transform: rotate(0deg) scale(1.05);
+}
+
+/* Truncate at 2 lines — for card excerpts */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Soft section glow — for sustainability section ambient light */
+.soft-glow-emerald {
+  position: relative;
+}
+.soft-glow-emerald::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 0%,
+    rgba(16, 185, 129, 0.08),
+    transparent 60%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Live pulse dot — green status indicator */
+@keyframes live-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+}
+.live-dot {
+  animation: live-pulse 2s ease-in-out infinite;
+}
+
+/* Reduced motion — disable Round 11 animations */
+@media (prefers-reduced-motion: reduce) {
+  .gradient-sweep,
+  .animate-leaf-sway,
+  .animate-number-flip,
+  .card-sheen::after,
+  .avatar-ring::before,
+  .live-dot {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
