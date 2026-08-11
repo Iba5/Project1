@@ -50,6 +50,20 @@ async def create_category(
     return await svc.create_category(body.model_dump(exclude_unset=True))
 
 
+@router.patch("/categories/{category_id}", response_model=CategoryPublic)
+async def update_category(
+    category_id: str,
+    body: CategoryUpdate,
+    session: AsyncSession = Depends(get_db_session),
+    _user: User = Depends(require_permission(Permission.CATALOGUE_WRITE)),
+):
+    svc = CatalogueService(session)
+    category = await svc.update_category(category_id, body.model_dump(exclude_unset=True))
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    return category
+
+
 # ── Items ─────────────────────────────────────────────────────────
 
 @router.get("/items", response_model=PaginatedResponse[CatalogueItemPublic])

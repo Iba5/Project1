@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Keyboard, X, Search, BarChart3, HelpCircle, Moon, Sun, ArrowUp, ArrowDown, Home, Mail } from "lucide-react";
+import { Keyboard, X, Search, HelpCircle, Sun, ArrowUp, ArrowDown, Home, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Shortcut = {
@@ -19,13 +19,6 @@ const SHORTCUTS: Shortcut[] = [
     label: "Open search",
     description: "Search products, industries, and sections",
     icon: Search,
-    category: "Modals",
-  },
-  {
-    keys: ["⌘", "⇧", "A"],
-    label: "Open admin dashboard",
-    description: "View enquiries, newsletter, and analytics",
-    icon: BarChart3,
     category: "Modals",
   },
   {
@@ -124,7 +117,6 @@ export function KeyboardShortcutsModal() {
       }
 
       // ⌘K / Ctrl+K opens search (let SearchBar handle it via its own listener)
-      // ⌘⇧A / Ctrl+Shift+A opens admin (handled by useAdminDashboard hook)
       // ? opens this modal (only when not typing)
       if (e.key === "?" && !isTyping && !e.metaKey && !e.ctrlKey && !e.altKey) {
         e.preventDefault();

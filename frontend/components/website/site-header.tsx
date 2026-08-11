@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Menu, X, Snowflake } from "lucide-react";
+import Image from "next/image";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/website/theme-toggle";
 import { SearchBar } from "@/components/website/search-bar";
@@ -82,11 +83,23 @@ export function SiteHeader({
           className="flex shrink-0 items-center gap-2.5 text-brand-heading"
           aria-label={`${companyName} home`}
         >
-          <span
-            className="flex h-9 w-9 items-center justify-center rounded-md bg-brand-surface-strong text-white shadow-sm"
-            aria-hidden
-          >
-            <Snowflake className="h-5 w-5" strokeWidth={2.25} />
+          <span className="relative flex h-9 w-9 shrink-0 items-center justify-center" aria-hidden>
+            <Image
+              src="/logo-mark.png"
+              alt=""
+              fill
+              sizes="36px"
+              className="object-contain dark:hidden"
+              priority
+            />
+            <Image
+              src="/logo-mark-light.png"
+              alt=""
+              fill
+              sizes="36px"
+              className="hidden object-contain dark:block"
+              priority
+            />
           </span>
           <span className="flex flex-col leading-tight">
             <span className="font-display text-base font-semibold tracking-tight">
@@ -134,16 +147,18 @@ export function SiteHeader({
           />
           <CartTrigger />
           <ThemeToggle />
-          <Button asChild size="sm">
-            <a
-              href={whatsappHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={handleQuoteClick}
-            >
-              Request a Quote
-            </a>
-          </Button>
+          {whatsappHref && (
+            <Button asChild size="sm">
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={handleQuoteClick}
+              >
+                Request a Quote
+              </a>
+            </Button>
+          )}
         </div>
 
         {/* Tablet cluster: search + cart + theme + menu */}
@@ -230,18 +245,20 @@ export function SiteHeader({
               </Link>
             );
           })}
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-white"
-            onClick={() => {
-              setOpen(false);
-              handleQuoteClick();
-            }}
-          >
-            Request a Quote
-          </a>
+          {whatsappHref && (
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-white"
+              onClick={() => {
+                setOpen(false);
+                handleQuoteClick();
+              }}
+            >
+              Request a Quote
+            </a>
+          )}
         </nav>
       </div>
     </header>

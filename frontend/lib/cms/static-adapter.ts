@@ -1,33 +1,13 @@
-import { seedProducts, productCategories } from "@/content/products";
 import {
   industries as seedIndustries,
   galleryItems as seedGalleryItems,
   companyValues as seedCompanyValues,
 } from "@/content/content";
-import { siteConfig, branches, navLinks } from "@/content/site";
+import { siteConfig, branches } from "@/content/site";
 
-import type { Product, ProductCategory } from "@/content/products";
 import type { Industry, CompanyValue, GalleryItem } from "@/content/content";
-import type { Homepage, About, Contact, SiteSettings } from "./types";
+import type { Homepage, About, Contact } from "./types";
 
-export async function getProducts(): Promise<Product[]> {
-  return seedProducts;
-}
-
-export async function getFeaturedProducts(): Promise<Product[]> {
-  return seedProducts.filter((p) => p.featured);
-}
-
-export async function getProductsByCategory(
-  category: string,
-): Promise<Product[]> {
-  if (category === "All") return seedProducts;
-  return seedProducts.filter((p) => p.category === category);
-}
-
-export async function getProductCategories(): Promise<ProductCategory[]> {
-  return productCategories;
-}
 
 export async function getIndustries(): Promise<Industry[]> {
   return seedIndustries;
@@ -119,28 +99,5 @@ export async function getContact(): Promise<Contact> {
       "Send a WhatsApp message, call, or fill in the form below. The fastest route to a quote is WhatsApp.",
     branches,
     googleMaps: undefined,
-  };
-}
-
-export async function getSiteSettings(): Promise<SiteSettings> {
-  return {
-    companyName: siteConfig.name,
-    legalName: siteConfig.legalName,
-    shortName: siteConfig.shortName,
-    tagline: siteConfig.tagline,
-    description: siteConfig.description,
-    url: siteConfig.url,
-    deliveryAreas: [...siteConfig.deliveryAreas],
-    email: siteConfig.email,
-    emailHref: siteConfig.emailHref,
-    whatsappNumber: siteConfig.whatsappNumber,
-    whatsappDisplay: siteConfig.whatsappDisplay,
-    callNumber: siteConfig.callNumber,
-    callDisplay: siteConfig.callDisplay,
-    callHref: siteConfig.callHref,
-    facebook: siteConfig.social.facebook,
-    instagram: siteConfig.social.instagram,
-    businessHours: siteConfig.businessHours,
-    navLinks: [...navLinks],
   };
 }

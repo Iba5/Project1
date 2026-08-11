@@ -37,6 +37,7 @@ type MobileBottomNavProps = {
 export function MobileBottomNav({ callHref }: MobileBottomNavProps) {
   const [visible, setVisible] = useState(false);
   const [active, setActive] = useState<string>("home");
+  const hasCall = Boolean(callHref);
 
   useEffect(() => {
     const onScroll = () => {
@@ -74,7 +75,7 @@ export function MobileBottomNav({ callHref }: MobileBottomNavProps) {
           className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-background/95 backdrop-blur-lg md:hidden"
           style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
         >
-          <ul className="grid grid-cols-5">
+          <ul className={cn("grid", hasCall ? "grid-cols-5" : "grid-cols-4")}>
             {NAV_ITEMS.map((item) => {
               const isActive = active === item.id;
               const Icon = item.icon;
@@ -110,19 +111,21 @@ export function MobileBottomNav({ callHref }: MobileBottomNavProps) {
                 </li>
               );
             })}
-            <li>
-              <a
-                href={callHref}
-                aria-label="Call Canbri"
-                className="flex h-14 w-full flex-col items-center justify-center gap-0.5 text-[10px] font-medium text-white"
-                style={{ background: "var(--primary)" }}
-              >
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20">
-                  <Phone className="h-4 w-4" strokeWidth={2.25} />
-                </span>
-                <span className="font-semibold">Call</span>
-              </a>
-            </li>
+            {hasCall && (
+              <li>
+                <a
+                  href={callHref}
+                  aria-label="Call Canbri"
+                  className="flex h-14 w-full flex-col items-center justify-center gap-0.5 text-[10px] font-medium text-white"
+                  style={{ background: "var(--primary)" }}
+                >
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20">
+                    <Phone className="h-4 w-4" strokeWidth={2.25} />
+                  </span>
+                  <span className="font-semibold">Call</span>
+                </a>
+              </li>
+            )}
           </ul>
         </motion.nav>
       )}

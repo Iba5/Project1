@@ -35,15 +35,27 @@ async def login(body: LoginRequest, session: AsyncSession = Depends(get_db_sessi
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc))
 
 
+@router.get("/bootstrap-status")
+async def bootstrap_status(session: AsyncSession = Depends(get_db_session)):
+    """Whether the one-time admin signup is still available (no admin exists yet)."""
+    svc = AuthService(session)
+    return {"needs_setup": await svc.bootstrap_needed()}
+
+
 @router.post("/register", response_model=UserPublic, status_code=status.HTTP_201_CREATED)
 async def register(body: RegisterRequest, session: AsyncSession = Depends(get_db_session)):
-    """Register a new user (invite-only in production)."""
+    """Create the site's one-time bootstrap admin account.
+
+    Only succeeds while no admin/super_admin account exists yet. Once that
+    account is created, this endpoint always refuses — the site has exactly
+    one admin, created once, authenticated via /login thereafter.
+    """
     svc = AuthService(session)
     try:
-        user = await svc.register(body.email, body.name, body.password, body.role or "viewer")
+        user = await svc.register(body.email, body.name, body.password)
         return UserPublic.model_validate(user)
     except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc))
 
 
 @router.post("/refresh", response_model=TokenResponse)

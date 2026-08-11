@@ -1,20 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Lock, Cookie, RotateCcw, Keyboard } from "lucide-react";
 
 /**
  * Small client component for footer utility links:
- * - Admin Dashboard (dispatches canbri:open-admin event)
+ * - Admin Dashboard (links to /admin)
  * - Keyboard Shortcuts (dispatches canbri:open-shortcuts event)
  * - Cookie Preferences (re-opens cookie consent)
  */
 export function FooterUtilityLinks() {
   const [cookieReset, setCookieReset] = useState(false);
-
-  const openAdmin = () => {
-    window.dispatchEvent(new CustomEvent("canbri:open-admin"));
-  };
 
   const openShortcuts = () => {
     window.dispatchEvent(new CustomEvent("canbri:open-shortcuts"));
@@ -29,15 +26,14 @@ export function FooterUtilityLinks() {
 
   return (
     <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-white/40">
-      <button
-        type="button"
-        onClick={openAdmin}
+      <Link
+        href="/admin"
         className="inline-flex items-center gap-1 transition-colors hover:text-white/70"
-        title="Open admin dashboard (Ctrl+Shift+A)"
+        title="Open admin dashboard"
       >
         <Lock className="h-3 w-3" strokeWidth={2.25} />
         Admin
-      </button>
+      </Link>
       <button
         type="button"
         onClick={openShortcuts}

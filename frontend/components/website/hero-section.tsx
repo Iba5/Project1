@@ -97,12 +97,14 @@ export function HeroSection({
   companyName,
   shortName,
 }: HeroSectionProps) {
-  const ctaOneHref = ctaOneStyle === "whatsapp" ? whatsappHref : ctaOneLink;
-  const ctaOneTarget = ctaOneStyle === "whatsapp" ? "_blank" : undefined;
-  const ctaOneRel = ctaOneStyle === "whatsapp" ? "noopener noreferrer" : undefined;
-  const ctaTwoHref = ctaTwoStyle === "whatsapp" ? whatsappHref : ctaTwoLink;
-  const ctaTwoTarget = ctaTwoStyle === "whatsapp" ? "_blank" : undefined;
-  const ctaTwoRel = ctaTwoStyle === "whatsapp" ? "noopener noreferrer" : undefined;
+  const ctaOneIsWhatsapp = ctaOneStyle === "whatsapp" && Boolean(whatsappHref);
+  const ctaOneHref = ctaOneIsWhatsapp ? whatsappHref : ctaOneStyle === "whatsapp" ? "#contact" : ctaOneLink;
+  const ctaOneTarget = ctaOneIsWhatsapp ? "_blank" : undefined;
+  const ctaOneRel = ctaOneIsWhatsapp ? "noopener noreferrer" : undefined;
+  const ctaTwoIsWhatsapp = ctaTwoStyle === "whatsapp" && Boolean(whatsappHref);
+  const ctaTwoHref = ctaTwoIsWhatsapp ? whatsappHref : ctaTwoStyle === "whatsapp" ? "#contact" : ctaTwoLink;
+  const ctaTwoTarget = ctaTwoIsWhatsapp ? "_blank" : undefined;
+  const ctaTwoRel = ctaTwoIsWhatsapp ? "noopener noreferrer" : undefined;
 
   return (
     <section id="home" className="relative overflow-hidden bg-background aurora-bg">

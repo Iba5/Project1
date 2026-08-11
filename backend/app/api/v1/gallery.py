@@ -15,7 +15,14 @@ from app.dependencies.pagination import get_pagination_params
 from app.models.user import User
 from app.permissions.rbac import Permission
 from app.schemas.common import PaginatedResponse
-from app.schemas.gallery import MediaCollectionPublic, MediaItemCreate, MediaItemPublic, MediaCollectionCreate
+from app.schemas.gallery import (
+    MediaCollectionCreate,
+    MediaCollectionPublic,
+    MediaCollectionUpdate,
+    MediaItemCreate,
+    MediaItemPublic,
+    MediaItemUpdate,
+)
 from app.services.gallery import GalleryService
 
 router = APIRouter()
@@ -55,6 +62,20 @@ async def create_item(
     return await svc.create_item(body.model_dump(exclude_unset=True))
 
 
+@router.patch("/items/{item_id}", response_model=MediaItemPublic)
+async def update_item(
+    item_id: str,
+    body: MediaItemUpdate,
+    session: AsyncSession = Depends(get_db_session),
+    _user: User = Depends(require_permission(Permission.GALLERY_WRITE)),
+):
+    svc = GalleryService(session)
+    item = await svc.update_item(item_id, body.model_dump(exclude_unset=True))
+    if not item:
+        raise HTTPException(status_code=404, detail="Media item not found")
+    return item
+
+
 @router.delete("/items/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_item(
     item_id: str,
@@ -87,3 +108,29 @@ async def create_collection(
 ):
     svc = GalleryService(session)
     return await svc.create_collection(body.model_dump(exclude_unset=True))
+
+
+@router.patch("/collections/{collection_id}", response_model=MediaCollectionPublic)
+async def update_collection(
+    collection_id: str,
+    body: MediaCollectionUpdate,
+    session: AsyncSession = Depends(get_db_session),
+    _user: User = Depends(require_permission(Permission.GALLERY_WRITE)),
+):
+    svc = GalleryService(session)
+    collection = await svc.update_collection(collection_id, body.model_dump(exclude_unset=True))
+    if not collection:
+        raise HTTPException(status_code=404, detail="Collection not found")
+    return collection
+
+
+@router.delete("/collections/{collection_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_collection(
+    collection_id: str,
+    session: AsyncSession = Depends(get_db_session),
+    _user: User = Depends(require_permission(Permission.GALLERY_DELETE)),
+):
+    svc = GalleryService(session)
+    collection = await svc.delete_collection(collection_id)
+    if not collection:
+        raise HTTPException(status_code=404, detail="Collection not found")

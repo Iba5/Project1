@@ -5,13 +5,13 @@ Settings schemas.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel
 
 
 class SettingUpdate(BaseModel):
-    value: Optional[Dict[str, Any]] = None
+    value: Optional[Any] = None
     description: Optional[str] = None
 
 

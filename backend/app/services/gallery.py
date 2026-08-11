@@ -38,6 +38,9 @@ class GalleryService:
         logger.info("Media item created", extra={"structured": {"title": data.get("title")}})
         return item
 
+    async def update_item(self, item_id: str, data: Dict[str, Any]):
+        return await self.item_repo.update(item_id, data)
+
     async def delete_item(self, item_id: str):
         return await self.item_repo.soft_delete(item_id)
 
@@ -59,3 +62,9 @@ class GalleryService:
         collection = await self.collection_repo.create(data)
         logger.info("Collection created", extra={"structured": {"slug": slug}})
         return collection
+
+    async def update_collection(self, collection_id: str, data: Dict[str, Any]):
+        return await self.collection_repo.update(collection_id, data)
+
+    async def delete_collection(self, collection_id: str):
+        return await self.collection_repo.soft_delete(collection_id)

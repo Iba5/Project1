@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Snowflake, Phone, Mail, MapPin, Facebook, Instagram } from "lucide-react";
+import Image from "next/image";
+import { Phone, Mail, MapPin, Facebook, Instagram } from "lucide-react";
 import { NewsletterForm } from "@/components/website/newsletter-form";
 import { FooterUtilityLinks } from "@/components/website/footer-utility-links";
 import type { NavLink as NavLinkType, Branch } from "@/lib/cms";
@@ -63,11 +64,14 @@ export function SiteFooter({
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2.5 text-white">
-              <span
-                className="flex h-9 w-9 items-center justify-center rounded-md bg-white/10"
-                aria-hidden
-              >
-                <Snowflake className="h-5 w-5" strokeWidth={2.25} />
+              <span className="relative flex h-9 w-9 shrink-0 items-center justify-center" aria-hidden>
+                <Image
+                  src="/logo-mark-light.png"
+                  alt=""
+                  fill
+                  sizes="36px"
+                  className="object-contain"
+                />
               </span>
               <span className="flex flex-col leading-tight">
                 <span className="font-display text-base font-semibold">
@@ -132,24 +136,28 @@ export function SiteFooter({
               Contact
             </h2>
             <ul className="mt-4 space-y-3 text-sm text-white/75">
-              <li>
-                <a
-                  href={callHref}
-                  className="flex items-start gap-2.5 hover:text-white"
-                >
-                  <Phone className="mt-0.5 h-4 w-4 shrink-0 text-brand-ice" aria-hidden />
-                  <span>{callDisplay}</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href={emailHref}
-                  className="flex items-start gap-2.5 hover:text-white"
-                >
-                  <Mail className="mt-0.5 h-4 w-4 shrink-0 text-brand-ice" aria-hidden />
-                  <span>{email}</span>
-                </a>
-              </li>
+              {callHref && (
+                <li>
+                  <a
+                    href={callHref}
+                    className="flex items-start gap-2.5 hover:text-white"
+                  >
+                    <Phone className="mt-0.5 h-4 w-4 shrink-0 text-brand-ice" aria-hidden />
+                    <span>{callDisplay}</span>
+                  </a>
+                </li>
+              )}
+              {emailHref && (
+                <li>
+                  <a
+                    href={emailHref}
+                    className="flex items-start gap-2.5 hover:text-white"
+                  >
+                    <Mail className="mt-0.5 h-4 w-4 shrink-0 text-brand-ice" aria-hidden />
+                    <span>{email}</span>
+                  </a>
+                </li>
+              )}
               {branches.map((b) => (
                 <li key={b.city} className="flex items-start gap-2.5">
                   <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-ice" aria-hidden />

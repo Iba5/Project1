@@ -14,6 +14,7 @@ import {
 import type { Product } from "@/lib/cms";
 import { quoteWhatsAppHref } from "@/lib/cms";
 import { ShareButtons } from "@/components/website/share-buttons";
+import { cn } from "@/lib/utils";
 
 type ProductQuickViewProps = {
   product: Product | null;
@@ -43,9 +44,13 @@ function QuickViewImage({ src, alt }: { src: string; alt: string }) {
 }
 
 export function ProductQuickView({ product, whatsappNumber, onClose }: ProductQuickViewProps) {
+  const [activeImage, setActiveImage] = useState(0);
+  const gallery = product ? [product.image, ...(product.images ?? [])] : [];
+
   // Lock body scroll while modal is open + close on Escape
   useEffect(() => {
     if (!product) return;
+    setActiveImage(0);
     const original = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => {
@@ -98,13 +103,33 @@ export function ProductQuickView({ product, whatsappNumber, onClose }: ProductQu
 
             <div className="grid overflow-y-auto md:grid-cols-2">
               {/* Image */}
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-secondary md:aspect-auto md:min-h-[420px]">
-                <QuickViewImage src={product.image} alt={product.name} />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/40 via-transparent to-transparent md:bg-gradient-to-r" />
-                <span className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-white/95 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-brand-heading shadow-sm">
-                  <span className="h-1.5 w-1.5 rounded-full bg-brand-accent" aria-hidden />
-                  {product.category}
-                </span>
+              <div className="flex flex-col">
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-secondary md:aspect-auto md:min-h-[420px]">
+                  <QuickViewImage src={gallery[activeImage] ?? product.image} alt={product.name} />
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/40 via-transparent to-transparent md:bg-gradient-to-r" />
+                  <span className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-white/95 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-brand-heading shadow-sm">
+                    <span className="h-1.5 w-1.5 rounded-full bg-brand-accent" aria-hidden />
+                    {product.category}
+                  </span>
+                </div>
+                {gallery.length > 1 && (
+                  <div className="flex gap-2 overflow-x-auto bg-background p-3">
+                    {gallery.map((src, i) => (
+                      <button
+                        key={`${src}-${i}`}
+                        type="button"
+                        onClick={() => setActiveImage(i)}
+                        aria-label={`View photo ${i + 1}`}
+                        className={cn(
+                          "relative h-14 w-14 shrink-0 overflow-hidden rounded-lg ring-2 transition-colors",
+                          activeImage === i ? "ring-brand-accent" : "ring-transparent hover:ring-border",
+                        )}
+                      >
+                        <Image src={src} alt="" fill sizes="56px" className="object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Details */}

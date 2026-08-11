@@ -12,6 +12,7 @@ from app.api.v1.cms import router as cms_router
 from app.api.v1.enquiries import router as enquiries_router
 from app.api.v1.gallery import router as gallery_router
 from app.api.v1.health import router as health_router
+from app.api.v1.media import router as media_router
 from app.api.v1.newsletter import router as newsletter_router
 from app.api.v1.settings import router as settings_router
 
@@ -23,5 +24,6 @@ router.include_router(catalogue_router, prefix="/catalogue", tags=["Catalogue"])
 router.include_router(enquiries_router, prefix="/enquiries", tags=["Enquiries"])
 router.include_router(cms_router, prefix="/cms", tags=["CMS"])
 router.include_router(gallery_router, prefix="/gallery", tags=["Gallery"])
+router.include_router(media_router, prefix="/media", tags=["Media"])
 router.include_router(newsletter_router, prefix="/newsletter", tags=["Newsletter"])
 router.include_router(settings_router, prefix="/settings", tags=["Settings"])

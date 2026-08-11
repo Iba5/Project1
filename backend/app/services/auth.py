@@ -65,7 +65,22 @@ class AuthService:
             user=UserPublic.model_validate(user),
         )
 
-    async def register(self, email: str, name: str, password: str, role: str = "viewer") -> User:
+    async def bootstrap_needed(self) -> bool:
+        """Whether no admin account exists yet — signup is only offered in this state."""
+        return not await self.repo.admin_exists()
+
+    async def register(self, email: str, name: str, password: str) -> User:
+        """Create the one-time bootstrap admin account.
+
+        Signup is intentionally locked to a single use: once any admin/super_admin
+        account exists, further registration is refused and the site is expected
+        to authenticate via /login only. The role is always forced to
+        super_admin regardless of what's requested, since this account is the
+        site's sole administrator.
+        """
+        if await self.repo.admin_exists():
+            raise ValueError("An admin account already exists. Please log in instead.")
+
         existing = await self.repo.get_by_email(email)
         if existing:
             raise ValueError("Email already registered")
@@ -74,11 +89,11 @@ class AuthService:
             "email": email,
             "name": name,
             "password_hash": hash_password(password),
-            "role": role,
+            "role": "super_admin",
             "is_active": True,
-            "is_verified": False,
+            "is_verified": True,
         })
-        logger.info("User registered", extra={"structured": {"email": email}})
+        logger.info("Bootstrap admin registered", extra={"structured": {"email": email}})
         return user
 
     async def refresh_tokens(self, refresh_token: str) -> dict:

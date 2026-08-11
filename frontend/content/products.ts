@@ -2,12 +2,8 @@
  * Product catalogue data, static seed.
  */
 
-export type ProductCategory =
-  | "Tools & Hardware"
-  | "Fabrication"
-  | "PPE"
-  | "Stationery"
-  | "Ice Blocks";
+/** Category names now come from the backend's admin-managed catalogue categories. */
+export type ProductCategory = string;
 
 export type ProductSpec = {
   label: string;
@@ -29,6 +25,8 @@ export type Product = {
   shortDescription: string;
   longDescription?: string;
   image: string;
+  /** Up to 5 additional photos shown alongside the display image in quick view. */
+  images?: string[];
   placeholder?: boolean;
   featured?: boolean;
   /** Bullet-point key features shown in quick view */

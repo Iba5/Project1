@@ -26,7 +26,6 @@ import { ContactForm } from "@/components/website/contact-form";
 import { FaqSectionClient } from "@/components/website/faq-section-client";
 import { GalleryGrid } from "@/components/website/gallery-lightbox";
 import { ProductFilter } from "@/components/website/product-filter";
-import { TestimonialsSection } from "@/components/website/testimonials-section";
 import { FaqJsonLd, ProductCatalogJsonLd, BreadcrumbJsonLd } from "@/components/website/seo-schema";
 import { TrustBar } from "@/components/website/trust-bar";
 import { MarqueeBar } from "@/components/website/marquee-bar";
@@ -34,13 +33,9 @@ import { FeaturedSpotlight } from "@/components/website/featured-spotlight";
 import { QuoteWizard } from "@/components/website/quote-wizard";
 import { SpotlightCard } from "@/components/website/spotlight-card";
 import { HowItWorks } from "@/components/website/how-it-works";
-import { PartnersSection } from "@/components/website/partners-section";
 import { HeroSection } from "@/components/website/hero-section";
 import { DeliveryAreas } from "@/components/website/delivery-areas";
 import { SustainabilitySection } from "@/components/website/sustainability-section";
-import { AwardsSection } from "@/components/website/awards-section";
-import { TeamSection } from "@/components/website/team-section";
-import { BlogSection } from "@/components/website/blog-section";
 import {
   getFeaturedProducts,
   getProducts,
@@ -277,9 +272,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Partners & Brands ──────────────────────────────────────────── */}
-      <PartnersSection />
-
       {/* ── Why choose Canbri ────────────────────────────────────────────── */}
       <SectionDivider from="secondary" to="navy" variant="wave" className="divider-animated" />
       <section className="surface-navy band-top relative overflow-hidden">
@@ -371,12 +363,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Testimonials ─────────────────────────────────────────────────── */}
-      <TestimonialsSection />
-
-      {/* ── Awards & Certifications ─────────────────────────────────────── */}
-      <AwardsSection />
-
       {/* ── FAQ ──────────────────────────────────────────────────────────── */}
       <section id="faq" className="relative overflow-hidden bg-background">
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-brand-accent/5 via-transparent to-transparent" aria-hidden />
@@ -399,22 +385,19 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Resources & Insights ────────────────────────────────────────── */}
-      <BlogSection />
-
       {/* ── Branches ─────────────────────────────────────────────────────── */}
       <section className="bg-secondary/40 relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 pattern-dots opacity-50" aria-hidden />
         <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
           <ScrollReveal>
             <SectionHeading
-              kicker="Our Branches"
+              kicker="Visit Us"
               numeral="07"
-              title="Two locations, one standard of service."
-              description="Visit us in Harare or Murewa, or call ahead and we will have your order ready for collection or delivery."
+              title="Come see us, or call ahead."
+              description="Visit our Harare office, or call ahead and we will have your order ready for collection or delivery."
             />
           </ScrollReveal>
-          <StaggerContainer className="mt-10 grid gap-6 lg:grid-cols-2" staggerDelay={0.15}>
+          <StaggerContainer className="mt-10 grid gap-6 sm:max-w-xl" staggerDelay={0.15}>
             {contact.branches.map((b) => (
               <StaggerItem key={b.city}>
                 <div className="group card-hover relative h-full overflow-hidden rounded-xl border border-border bg-card p-6 sm:p-8">
@@ -460,9 +443,6 @@ export default async function HomePage() {
           </StaggerContainer>
         </div>
       </section>
-
-      {/* ── Leadership Team ──────────────────────────────────────────────── */}
-      <TeamSection />
 
       {/* ── Delivery Areas ──────────────────────────────────────────────── */}
       <DeliveryAreas />
@@ -528,46 +508,52 @@ export default async function HomePage() {
               />
 
               <div className="mt-8 space-y-4">
-                <a
-                  href={site.callHref}
-                  className="group card-hover flex items-center gap-3 rounded-lg border border-border bg-card p-4"
-                >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-accent text-brand-accent-fg transition-colors group-hover:bg-primary group-hover:text-white">
-                    <Phone className="h-5 w-5" strokeWidth={2.25} />
-                  </span>
-                  <div>
-                    <p className="text-sm font-medium text-brand-heading">Call Us</p>
-                    <p className="text-sm text-muted-foreground">{site.callDisplay}</p>
-                  </div>
-                </a>
+                {site.callHref && (
+                  <a
+                    href={site.callHref}
+                    className="group card-hover flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+                  >
+                    <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-accent text-brand-accent-fg transition-colors group-hover:bg-primary group-hover:text-white">
+                      <Phone className="h-5 w-5" strokeWidth={2.25} />
+                    </span>
+                    <div>
+                      <p className="text-sm font-medium text-brand-heading">Call Us</p>
+                      <p className="text-sm text-muted-foreground">{site.callDisplay}</p>
+                    </div>
+                  </a>
+                )}
 
-                <a
-                  href={whatsappHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group card-hover flex items-center gap-3 rounded-lg border border-border bg-card p-4"
-                >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-md bg-[#25D366] text-white">
-                    <MessageCircle className="h-5 w-5" strokeWidth={2.25} />
-                  </span>
-                  <div>
-                    <p className="text-sm font-medium text-brand-heading">WhatsApp</p>
-                    <p className="text-sm text-muted-foreground">{site.whatsappDisplay}</p>
-                  </div>
-                </a>
+                {whatsappHref && (
+                  <a
+                    href={whatsappHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group card-hover flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+                  >
+                    <span className="flex h-10 w-10 items-center justify-center rounded-md bg-[#25D366] text-white">
+                      <MessageCircle className="h-5 w-5" strokeWidth={2.25} />
+                    </span>
+                    <div>
+                      <p className="text-sm font-medium text-brand-heading">WhatsApp</p>
+                      <p className="text-sm text-muted-foreground">{site.whatsappDisplay}</p>
+                    </div>
+                  </a>
+                )}
 
-                <a
-                  href={site.emailHref}
-                  className="group card-hover flex items-center gap-3 rounded-lg border border-border bg-card p-4"
-                >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-accent text-brand-accent-fg transition-colors group-hover:bg-primary group-hover:text-white">
-                    <Mail className="h-5 w-5" strokeWidth={2.25} />
-                  </span>
-                  <div>
-                    <p className="text-sm font-medium text-brand-heading">Email</p>
-                    <p className="text-sm text-muted-foreground">{site.email}</p>
-                  </div>
-                </a>
+                {site.emailHref && (
+                  <a
+                    href={site.emailHref}
+                    className="group card-hover flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+                  >
+                    <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-accent text-brand-accent-fg transition-colors group-hover:bg-primary group-hover:text-white">
+                      <Mail className="h-5 w-5" strokeWidth={2.25} />
+                    </span>
+                    <div>
+                      <p className="text-sm font-medium text-brand-heading">Email</p>
+                      <p className="text-sm text-muted-foreground">{site.email}</p>
+                    </div>
+                  </a>
+                )}
 
                 <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
                   <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-accent text-brand-accent-fg">
@@ -604,9 +590,9 @@ export default async function HomePage() {
           <CtaBand
             title={homepage.ctaBandTitle}
             description={homepage.ctaBandDescription}
-            primaryLabel="WhatsApp Us"
-            primaryHref={whatsappHref}
-            external
+            primaryLabel={whatsappHref ? "WhatsApp Us" : "Get in Touch"}
+            primaryHref={whatsappHref || "#contact"}
+            external={Boolean(whatsappHref)}
             secondaryLabel="Go to Contact"
             secondaryHref="#contact"
           />

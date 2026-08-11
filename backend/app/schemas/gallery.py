@@ -21,6 +21,16 @@ class MediaItemCreate(BaseModel):
     category: Optional[str] = None
 
 
+class MediaItemUpdate(BaseModel):
+    title: Optional[str] = None
+    alt_text: Optional[str] = None
+    file_url: Optional[str] = None
+    file_type: Optional[str] = None
+    file_size: Optional[int] = None
+    mime_type: Optional[str] = None
+    category: Optional[str] = None
+
+
 class MediaItemPublic(BaseModel):
     id: str
     title: str
@@ -40,6 +50,11 @@ class MediaItemPublic(BaseModel):
 class MediaCollectionCreate(BaseModel):
     name: str
     slug: Optional[str] = None
+    description: Optional[str] = None
+
+
+class MediaCollectionUpdate(BaseModel):
+    name: Optional[str] = None
     description: Optional[str] = None
 
 

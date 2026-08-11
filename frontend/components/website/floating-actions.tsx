@@ -14,6 +14,8 @@ type FloatingActionsProps = {
 export function FloatingActions({ callHref, callDisplay, whatsappHref }: FloatingActionsProps) {
   const [visible, setVisible] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const hasCall = Boolean(callHref);
+  const hasWhatsapp = Boolean(whatsappHref);
 
   useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > 80);
@@ -35,6 +37,8 @@ export function FloatingActions({ callHref, callDisplay, whatsappHref }: Floatin
   const trackCall = () => trackEvent("call_click", "fab_call", { number: callDisplay });
   const trackWhats = () => trackEvent("whatsapp_click", "fab_whatsapp", {});
 
+  if (!hasCall && !hasWhatsapp) return null;
+
   return (
     <div
       className={`fixed bottom-4 right-4 z-40 flex flex-col items-end gap-2.5 transition-all duration-300 sm:bottom-6 sm:right-6 ${
@@ -52,52 +56,60 @@ export function FloatingActions({ callHref, callDisplay, whatsappHref }: Floatin
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col items-end gap-2"
           >
-            <a
-              href={callHref}
-              onClick={trackCall}
-              aria-label={`Call Canbri on ${callDisplay}`}
-              className="flex h-11 items-center gap-2 rounded-full bg-primary pl-3.5 pr-4 text-sm font-medium text-white shadow-lg shadow-brand-navy/30 ring-1 ring-white/10 transition-transform hover:scale-[1.03]"
-            >
-              <Phone className="h-4 w-4" strokeWidth={2.25} />
-              <span>Call Now</span>
-            </a>
-            <a
-              href={whatsappHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={trackWhats}
-              aria-label="Message Canbri on WhatsApp"
-              className="flex h-11 items-center gap-2 rounded-full bg-[#25D366] pl-3.5 pr-4 text-sm font-semibold text-[#06351B] shadow-lg shadow-[#25D366]/30 ring-1 ring-white/10 transition-transform hover:scale-[1.03]"
-            >
-              <MessageCircle className="h-4 w-4" strokeWidth={2.5} fill="currentColor" />
-              <span>WhatsApp Us</span>
-            </a>
+            {hasCall && (
+              <a
+                href={callHref}
+                onClick={trackCall}
+                aria-label={`Call Canbri on ${callDisplay}`}
+                className="flex h-11 items-center gap-2 rounded-full bg-primary pl-3.5 pr-4 text-sm font-medium text-white shadow-lg shadow-brand-navy/30 ring-1 ring-white/10 transition-transform hover:scale-[1.03]"
+              >
+                <Phone className="h-4 w-4" strokeWidth={2.25} />
+                <span>Call Now</span>
+              </a>
+            )}
+            {hasWhatsapp && (
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={trackWhats}
+                aria-label="Message Canbri on WhatsApp"
+                className="flex h-11 items-center gap-2 rounded-full bg-[#25D366] pl-3.5 pr-4 text-sm font-semibold text-[#06351B] shadow-lg shadow-[#25D366]/30 ring-1 ring-white/10 transition-transform hover:scale-[1.03]"
+              >
+                <MessageCircle className="h-4 w-4" strokeWidth={2.5} fill="currentColor" />
+                <span>WhatsApp Us</span>
+              </a>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Desktop: always show two pill buttons */}
       <div className="hidden sm:flex sm:flex-col sm:items-end sm:gap-2.5">
-        <a
-          href={callHref}
-          onClick={trackCall}
-          aria-label={`Call Canbri on ${callDisplay}`}
-          className="flex h-12 items-center gap-2 rounded-full bg-primary px-4 text-sm font-medium text-white shadow-lg shadow-brand-navy/30 transition-transform hover:scale-[1.03]"
-        >
-          <Phone className="h-4 w-4" strokeWidth={2.25} />
-          <span>Call Now</span>
-        </a>
-        <a
-          href={whatsappHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={trackWhats}
-          aria-label="Message Canbri on WhatsApp"
-          className="flex h-14 items-center gap-2 rounded-full bg-[#25D366] px-5 text-sm font-semibold text-[#06351B] shadow-lg shadow-[#25D366]/30 transition-transform hover:scale-[1.03]"
-        >
-          <MessageCircle className="h-5 w-5" strokeWidth={2.5} fill="currentColor" />
-          <span>WhatsApp Us</span>
-        </a>
+        {hasCall && (
+          <a
+            href={callHref}
+            onClick={trackCall}
+            aria-label={`Call Canbri on ${callDisplay}`}
+            className="flex h-12 items-center gap-2 rounded-full bg-primary px-4 text-sm font-medium text-white shadow-lg shadow-brand-navy/30 transition-transform hover:scale-[1.03]"
+          >
+            <Phone className="h-4 w-4" strokeWidth={2.25} />
+            <span>Call Now</span>
+          </a>
+        )}
+        {hasWhatsapp && (
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={trackWhats}
+            aria-label="Message Canbri on WhatsApp"
+            className="flex h-14 items-center gap-2 rounded-full bg-[#25D366] px-5 text-sm font-semibold text-[#06351B] shadow-lg shadow-[#25D366]/30 transition-transform hover:scale-[1.03]"
+          >
+            <MessageCircle className="h-5 w-5" strokeWidth={2.5} fill="currentColor" />
+            <span>WhatsApp Us</span>
+          </a>
+        )}
       </div>
 
       {/* Mobile: single toggle FAB that expands to show both options */}

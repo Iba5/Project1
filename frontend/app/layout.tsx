@@ -12,7 +12,6 @@ import { ScrollProgress } from "@/components/website/scroll-progress";
 import { SectionNavigator } from "@/components/website/section-navigator";
 import { MobileBottomNav } from "@/components/website/mobile-bottom-nav";
 import { CompareTray } from "@/components/website/compare-tray";
-import { AdminDashboardMount } from "@/components/website/admin-dashboard-mount";
 import { KeyboardShortcutsModal } from "@/components/website/keyboard-shortcuts-modal";
 import { PromoBanner } from "@/components/website/promo-banner";
 import { QuoteCartDrawer } from "@/components/website/quote-cart-drawer";
@@ -45,6 +44,13 @@ const plexMono = IBM_Plex_Mono({
 });
 
 const siteUrl = "https://canbri.co.zw";
+
+// The root layout fetches live site settings/products/industries from the
+// backend on every request. Forcing dynamic rendering means every page is
+// fetched at request time instead of frozen into the build — required so
+// `next build` doesn't need a reachable backend, and so admin-edited
+// settings (prices, contact info, etc.) show up without a redeploy.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -100,7 +106,12 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true },
   },
   icons: {
-    icon: "/favicon.svg",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
   },
 };
 
@@ -111,24 +122,16 @@ const orgJsonLd = {
   alternateName: "Canbri Ice",
   slogan: "Cool & Cold",
   url: siteUrl,
-  logo: `${siteUrl}/favicon.svg`,
+  logo: `${siteUrl}/icon-512.png`,
   description:
     "Canbri Private Limited supplies tools and hardware, fabrication services, PPE, stationery and ice blocks across Harare and Murewa.",
   areaServed: ["Harare", "Murewa", "Zimbabwe"],
-  address: [
-    {
-      "@type": "PostalAddress",
-      streetAddress: "Workington Industrial Area",
-      addressLocality: "Harare",
-      addressCountry: "ZW",
-    },
-    {
-      "@type": "PostalAddress",
-      streetAddress: "Murewa Growth Point",
-      addressLocality: "Murewa",
-      addressCountry: "ZW",
-    },
-  ],
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "7th Floor, ZB Chambers, Corner First Street & George Silundika Avenue",
+    addressLocality: "Harare",
+    addressCountry: "ZW",
+  },
   sameAs: [
     "https://www.facebook.com/canbri",
     "https://www.instagram.com/canbri",
@@ -214,7 +217,6 @@ export default async function RootLayout({
           <MobileBottomNav callHref={site.callHref} />
           <BackToTop />
           <CookieConsent />
-          <AdminDashboardMount />
           <KeyboardShortcutsModal />
           <QuoteCartDrawer whatsappNumber={site.whatsappNumber} />
           <SonnerToaster position="bottom-left" richColors closeButton />

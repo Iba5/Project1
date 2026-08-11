@@ -254,19 +254,27 @@ export function QuoteCartDrawer({ whatsappNumber }: QuoteCartDrawerProps) {
                     Clear all
                   </button>
                 </div>
-                <a
-                  href={buildWhatsAppHref()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={handleSendQuote}
-                  className="btn-shine glow-ring flex h-12 w-full items-center justify-center gap-2 rounded-md bg-[#25D366] px-5 text-sm font-bold text-white shadow-lg shadow-[#25D366]/20 transition-all hover:bg-[#1ebe5b] hover:shadow-xl hover:shadow-[#25D366]/30 hover:-translate-y-0.5"
-                >
-                  <MessageCircle className="h-5 w-5" strokeWidth={2.25} />
-                  Send combined quote via WhatsApp
-                </a>
-                <p className="mt-2 text-center text-[11px] text-muted-foreground">
-                  Opens WhatsApp with all items pre-filled — just hit send.
-                </p>
+                {whatsappNumber ? (
+                  <>
+                    <a
+                      href={buildWhatsAppHref()}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={handleSendQuote}
+                      className="btn-shine glow-ring flex h-12 w-full items-center justify-center gap-2 rounded-md bg-[#25D366] px-5 text-sm font-bold text-white shadow-lg shadow-[#25D366]/20 transition-all hover:bg-[#1ebe5b] hover:shadow-xl hover:shadow-[#25D366]/30 hover:-translate-y-0.5"
+                    >
+                      <MessageCircle className="h-5 w-5" strokeWidth={2.25} />
+                      Send combined quote via WhatsApp
+                    </a>
+                    <p className="mt-2 text-center text-[11px] text-muted-foreground">
+                      Opens WhatsApp with all items pre-filled — just hit send.
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-center text-sm text-muted-foreground">
+                    WhatsApp quotes aren&apos;t available right now — please use the contact form instead.
+                  </p>
+                )}
               </div>
             )}
           </motion.aside>

@@ -7,7 +7,15 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+MAX_GALLERY_IMAGES = 5
+
+
+def _check_gallery_size(v: Optional[List[str]]) -> Optional[List[str]]:
+    if v is not None and len(v) > MAX_GALLERY_IMAGES:
+        raise ValueError(f"A product can have at most {MAX_GALLERY_IMAGES} additional images")
+    return v
 
 
 # ── Category ──────────────────────────────────────────────────────
@@ -47,12 +55,16 @@ class CatalogueItemCreate(BaseModel):
     short_description: Optional[str] = None
     long_description: Optional[str] = None
     image_url: Optional[str] = None
+    gallery_image_urls: Optional[List[str]] = None
     is_featured: bool = False
+    is_out_of_stock: bool = False
     features: Optional[List[str]] = None
     specs: Optional[List[Dict[str, str]]] = None
     min_order: Optional[str] = None
     lead_time: Optional[str] = None
     status: Optional[str] = "draft"
+
+    _check_gallery = field_validator("gallery_image_urls")(_check_gallery_size)
 
 
 class CatalogueItemUpdate(BaseModel):
@@ -61,7 +73,9 @@ class CatalogueItemUpdate(BaseModel):
     short_description: Optional[str] = None
     long_description: Optional[str] = None
     image_url: Optional[str] = None
+    gallery_image_urls: Optional[List[str]] = None
     is_featured: Optional[bool] = None
+    is_out_of_stock: Optional[bool] = None
     features: Optional[List[str]] = None
     specs: Optional[List[Dict[str, str]]] = None
     min_order: Optional[str] = None
@@ -70,6 +84,8 @@ class CatalogueItemUpdate(BaseModel):
     review_count: Optional[int] = None
     status: Optional[str] = None
     version: Optional[int] = None
+
+    _check_gallery = field_validator("gallery_image_urls")(_check_gallery_size)
 
 
 class CatalogueItemPublic(BaseModel):
@@ -81,7 +97,9 @@ class CatalogueItemPublic(BaseModel):
     short_description: Optional[str] = None
     long_description: Optional[str] = None
     image_url: Optional[str] = None
+    gallery_image_urls: Optional[List[str]] = None
     is_featured: bool
+    is_out_of_stock: bool
     features: Optional[Any] = None
     specs: Optional[Any] = None
     min_order: Optional[str] = None

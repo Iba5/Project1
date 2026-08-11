@@ -69,6 +69,13 @@ class Settings(BaseSettings):
     RATE_LIMIT_REQUESTS: int = 60  # max requests per window
     RATE_LIMIT_WINDOW_SECONDS: int = 60  # sliding window size
 
+    # ── Cloudflare R2 (media uploads, S3-compatible) ────────────
+    R2_ACCOUNT_ID: str = ""
+    R2_ACCESS_KEY_ID: str = ""
+    R2_SECRET_ACCESS_KEY: str = ""
+    R2_BUCKET_NAME: str = ""
+    R2_PUBLIC_URL: str = ""  # public bucket domain or custom domain, no trailing slash
+
     model_config = {
         "env_file": ".env",
         "env_file_encoding": "utf-8",

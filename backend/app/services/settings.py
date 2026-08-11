@@ -51,7 +51,7 @@ class SettingsService:
     async def get_setting(self, key: str):
         return await self.repo.get_by_key(key)
 
-    async def update_setting(self, key: str, value: Dict[str, Any], description: Optional[str] = None):
+    async def update_setting(self, key: str, value: Any, description: Optional[str] = None):
         setting = await self.repo.upsert(key, value, description)
         logger.info("Setting updated", extra={"structured": {"key": key}})
         return setting

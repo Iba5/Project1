@@ -59,25 +59,17 @@ export const navLinks: NavLink[] = [
 export const branches: Branch[] = [
   {
     city: "Harare",
-    label: "Harare Branch, Head Office",
+    label: "Head Office",
     addressLines: [
-      "Workington Industrial Area",
+      "7th Floor, ZB Chambers",
+      "Corner First Street & George Silundika Avenue",
       "Harare, Zimbabwe",
     ],
-    phone: siteConfig.callDisplay,
-    phoneHref: siteConfig.callHref,
-    hours: "Mon – Fri: 08:00 – 17:00 · Sat: 08:00 – 13:00",
-    mapsEmbedUrl: undefined,
-  },
-  {
-    city: "Murewa",
-    label: "Murewa Branch",
-    addressLines: [
-      "Murewa Growth Point",
-      "Mashonaland East, Zimbabwe",
-    ],
-    phone: siteConfig.callDisplay,
-    phoneHref: siteConfig.callHref,
+    // Uses the site-wide phone/WhatsApp number set via the admin dashboard
+    // (Settings tab) rather than a hardcoded duplicate — see site-wide
+    // call/WhatsApp CTAs, which already pull from backend settings.
+    phone: "",
+    phoneHref: "",
     hours: "Mon – Fri: 08:00 – 17:00 · Sat: 08:00 – 13:00",
     mapsEmbedUrl: undefined,
   },

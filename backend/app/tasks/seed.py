@@ -207,9 +207,9 @@ GALLERY_ITEMS = [
 SITE_SETTINGS = [
     {"key": "site_name", "value": "Canbri Private Limited", "description": "Company name"},
     {"key": "site_description", "value": "Canbri Private Limited supplies tools and hardware, fabrication services, personal protective equipment, stationery and ice blocks. We serve businesses and households across Harare and Murewa with reliable delivery and bulk-order support.", "description": "Site meta description"},
-    {"key": "site_email", "value": "info@canbri.co.zw", "description": "Contact email"},
-    {"key": "site_phone", "value": "+263 77 000 0000", "description": "Phone number"},
-    {"key": "site_whatsapp", "value": "+263770000000", "description": "WhatsApp number"},
+    {"key": "site_email", "value": "Canbrifinance@gmail.com", "description": "Contact email"},
+    {"key": "site_phone", "value": "+263 71 427 8269", "description": "Phone number"},
+    {"key": "site_whatsapp", "value": "+263 77 327 8269", "description": "WhatsApp number"},
     {"key": "site_url", "value": "https://canbri.co.zw", "description": "Website URL"},
     {"key": "business_hours", "value": "Mon – Fri: 08:00 – 17:00 · Sat: 08:00 – 13:00 · Sun: Closed", "description": "Business hours"},
     {"key": "delivery_areas", "value": ["Harare", "Murewa"], "description": "Delivery areas"},
@@ -248,22 +248,27 @@ async def seed() -> None:
 
     async with async_session_factory() as session:
         # ── Admin user ────────────────────────────────────────────
-        result = await session.execute(select(User).where(User.email == ADMIN_EMAIL))
-        admin = result.scalar_one_or_none()
-        if not admin:
-            admin = User(
-                email=ADMIN_EMAIL,
-                name="Super Admin",
-                password_hash=hash_password(ADMIN_PASSWORD),
-                role="super_admin",
-                is_active=True,
-                is_verified=True,
-            )
-            session.add(admin)
-            await session.flush()
-            logger.info("Admin user created", extra={"structured": {"email": ADMIN_EMAIL}})
+        # Production relies on the one-time bootstrap signup at /admin instead
+        # of a seeded credential — never plant a known admin account there.
+        if settings.ENVIRONMENT == "production":
+            logger.info("[seed] Skipping admin user seed in production — use the /admin bootstrap signup instead")
         else:
-            logger.info("Admin user already exists")
+            result = await session.execute(select(User).where(User.email == ADMIN_EMAIL))
+            admin = result.scalar_one_or_none()
+            if not admin:
+                admin = User(
+                    email=ADMIN_EMAIL,
+                    name="Super Admin",
+                    password_hash=hash_password(ADMIN_PASSWORD),
+                    role="super_admin",
+                    is_active=True,
+                    is_verified=True,
+                )
+                session.add(admin)
+                await session.flush()
+                logger.info("Admin user created", extra={"structured": {"email": ADMIN_EMAIL}})
+            else:
+                logger.info("Admin user already exists")
 
         # ── Categories ────────────────────────────────────────────
         category_map: dict[str, str] = {}
