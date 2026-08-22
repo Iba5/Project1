@@ -1,20 +1,15 @@
 import {
   industries as seedIndustries,
-  galleryItems as seedGalleryItems,
   companyValues as seedCompanyValues,
 } from "@/content/content";
 import { siteConfig, branches } from "@/content/site";
 
-import type { Industry, CompanyValue, GalleryItem } from "@/content/content";
+import type { Industry, CompanyValue } from "@/content/content";
 import type { Homepage, About, Contact } from "./types";
 
 
 export async function getIndustries(): Promise<Industry[]> {
   return seedIndustries;
-}
-
-export async function getGalleryItems(): Promise<GalleryItem[]> {
-  return seedGalleryItems;
 }
 
 export async function getCompanyValues(): Promise<CompanyValue[]> {

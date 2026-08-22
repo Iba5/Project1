@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { apiProxy } from "@/lib/api-proxy";
+import { getBackendAuthHeaders } from "@/lib/admin-auth-server";
 
 /**
  * GET /api/admin/enquiries
@@ -9,11 +10,7 @@ import { apiProxy } from "@/lib/api-proxy";
  */
 export async function GET(request: NextRequest) {
   try {
-    const authHeader = request.headers.get("authorization");
-    const headers: Record<string, string> = {};
-    if (authHeader) {
-      headers["Authorization"] = authHeader;
-    }
+    const headers = await getBackendAuthHeaders();
 
     // Forward any query params (e.g. ?status=new)
     const { searchParams } = new URL(request.url);
@@ -92,11 +89,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const authHeader = request.headers.get("authorization");
-    const headers: Record<string, string> = {};
-    if (authHeader) {
-      headers["Authorization"] = authHeader;
-    }
+    const headers = await getBackendAuthHeaders();
 
     const { data, status } = await apiProxy({
       method: "PATCH",
@@ -142,11 +135,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const authHeader = request.headers.get("authorization");
-    const headers: Record<string, string> = {};
-    if (authHeader) {
-      headers["Authorization"] = authHeader;
-    }
+    const headers = await getBackendAuthHeaders();
 
     const { status } = await apiProxy({
       method: "DELETE",

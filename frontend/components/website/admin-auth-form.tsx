@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { LogIn, RefreshCw, UserPlus } from "lucide-react";
-import { setAdminToken } from "@/lib/admin-auth";
 
 type AdminAuthFormProps = {
   mode: "login" | "signup";
@@ -22,6 +21,8 @@ export function AdminAuthForm({ mode, onSuccess }: AdminAuthFormProps) {
   const [error, setError] = useState<string | null>(null);
 
   const login = async () => {
+    // The login route sets an httpOnly session cookie on success — no token
+    // ever reaches this code, so there's nothing to store client-side.
     const res = await fetch("/api/admin/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -31,7 +32,6 @@ export function AdminAuthForm({ mode, onSuccess }: AdminAuthFormProps) {
     if (!res.ok || !data.ok) {
       throw new Error(data.error ?? "Invalid credentials");
     }
-    setAdminToken(data.access_token);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Share2, Link2, Check, Facebook, Twitter, MessageCircle } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
+import { SITE_URL } from "@/lib/site-url";
 
 type ShareButtonsProps = {
   productName: string;
@@ -20,7 +21,7 @@ export function ShareButtons({ productName, productSlug, className }: ShareButto
 
   const shareUrl = typeof window !== "undefined"
     ? `${window.location.origin}/#products`
-    : `https://canbri.co.zw/#products`;
+    : `${SITE_URL}/#products`;
   const shareText = `Check out ${productName} from Canbri Private Limited`;
   const encodedUrl = encodeURIComponent(shareUrl);
   const encodedText = encodeURIComponent(shareText);

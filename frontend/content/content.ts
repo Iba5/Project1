@@ -90,7 +90,8 @@ export const companyValues: CompanyValue[] = [
 export type GalleryItem = {
   slug: string;
   title: string;
-  category: "Factory" | "Production" | "Packaging" | "Deliveries" | "Products" | "Team";
+  // Free text — an admin can enter any category via the Gallery tab.
+  category: string;
   description: string;
   image: string;
   placeholder?: boolean;

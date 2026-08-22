@@ -31,7 +31,6 @@ import {
   Layers,
 } from "lucide-react";
 import { getEvents, clearEvents, type AnalyticsEvent } from "@/lib/analytics";
-import { clearAdminToken, getAuthHeaders } from "@/lib/admin-auth";
 import { cn } from "@/lib/utils";
 
 type Enquiry = {
@@ -188,16 +187,18 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
 
   // ── Auth ──────────────────────────────────────────────────────
   // The dashboard only ever mounts once the caller (the /admin page) has
-  // confirmed a valid session, so there's no login gate here. If a token
-  // expires mid-session, clear it and hand control back to the caller,
-  // which will show the login form again.
+  // confirmed a valid session, so there's no login gate here. The session
+  // lives in an httpOnly cookie, so ending it means asking the server to
+  // clear it — client JS can't touch it directly. If a token expires
+  // mid-session, clear it and hand control back to the caller, which will
+  // show the login form again.
   const handleSessionExpired = useCallback(() => {
-    clearAdminToken();
+    fetch("/api/admin/logout", { method: "POST" }).catch(() => {});
     onClose();
   }, [onClose]);
 
   const handleLogout = () => {
-    clearAdminToken();
+    fetch("/api/admin/logout", { method: "POST" }).catch(() => {});
     setEnquiries([]);
     setStats(null);
     onClose();
@@ -207,10 +208,9 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
     setLoading(true);
     setError(null);
     try {
-      const authHeaders = getAuthHeaders();
       const [enqRes, statsRes] = await Promise.all([
-        fetch("/api/admin/enquiries?limit=100", { headers: authHeaders }),
-        fetch("/api/admin/stats", { headers: authHeaders }),
+        fetch("/api/admin/enquiries?limit=100"),
+        fetch("/api/admin/stats"),
       ]);
       if (enqRes.status === 401 || enqRes.status === 403) {
         handleSessionExpired();
@@ -251,7 +251,7 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
     setSettingsLoading(true);
     setSettingsError(null);
     try {
-      const res = await fetch("/api/admin/settings", { headers: getAuthHeaders() });
+      const res = await fetch("/api/admin/settings");
       if (res.status === 401 || res.status === 403) {
         handleSessionExpired();
         setSettingsError("Session expired — please log in again.");
@@ -278,7 +278,7 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
     try {
       const res = await fetch("/api/admin/settings", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key, value: draft }),
       });
       const data = await res.json();
@@ -301,10 +301,9 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
     setCatalogueLoading(true);
     setCatalogueError(null);
     try {
-      const authHeaders = getAuthHeaders();
       const [catRes, itemRes] = await Promise.all([
-        fetch("/api/admin/catalogue/categories", { headers: authHeaders }),
-        fetch("/api/admin/catalogue/items", { headers: authHeaders }),
+        fetch("/api/admin/catalogue/categories"),
+        fetch("/api/admin/catalogue/items"),
       ]);
       if (catRes.status === 401 || catRes.status === 403) {
         handleSessionExpired();
@@ -334,7 +333,7 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
     try {
       await fetch("/api/admin/catalogue/items", {
         method: "DELETE",
-        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
     } finally {
@@ -347,10 +346,9 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
     setGalleryLoading(true);
     setGalleryError(null);
     try {
-      const authHeaders = getAuthHeaders();
       const [itemRes, colRes] = await Promise.all([
-        fetch("/api/admin/gallery/items", { headers: authHeaders }),
-        fetch("/api/admin/gallery/collections", { headers: authHeaders }),
+        fetch("/api/admin/gallery/items"),
+        fetch("/api/admin/gallery/collections"),
       ]);
       if (itemRes.status === 401 || itemRes.status === 403) {
         handleSessionExpired();
@@ -380,7 +378,7 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
     try {
       await fetch("/api/admin/gallery/items", {
         method: "DELETE",
-        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
     } finally {
@@ -394,7 +392,7 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
     try {
       await fetch("/api/admin/gallery/collections", {
         method: "DELETE",
-        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
     } finally {
@@ -407,7 +405,7 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
     try {
       const res = await fetch("/api/admin/gallery/collections", {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newCollectionName.trim() }),
       });
       const data = await res.json();
@@ -424,7 +422,6 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
     formData.append("file", file);
     const res = await fetch("/api/admin/upload", {
       method: "POST",
-      headers: getAuthHeaders(),
       body: formData,
     });
     const data = await res.json();
@@ -476,7 +473,7 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
     try {
       const res = await fetch("/api/admin/enquiries", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, status }),
       });
       if (!res.ok) throw new Error("Failed to update");
@@ -491,7 +488,7 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
     try {
       await fetch("/api/admin/enquiries", {
         method: "DELETE",
-        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
       fetchData();
@@ -1357,7 +1354,7 @@ function CategoryManager({ categories, onRefresh }: { categories: Category[]; on
     try {
       const res = await fetch("/api/admin/catalogue/categories", {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newName.trim() }),
       });
       const data = await res.json();
@@ -1373,7 +1370,7 @@ function CategoryManager({ categories, onRefresh }: { categories: Category[]; on
     if (!editingName.trim()) return;
     await fetch("/api/admin/catalogue/categories", {
       method: "PATCH",
-      headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, name: editingName.trim() }),
     });
     setEditingId(null);
@@ -1390,12 +1387,12 @@ function CategoryManager({ categories, onRefresh }: { categories: Category[]; on
     await Promise.all([
       fetch("/api/admin/catalogue/categories", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: a.id, sort_order: b.sort_order }),
       }),
       fetch("/api/admin/catalogue/categories", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: b.id, sort_order: a.sort_order }),
       }),
     ]);
@@ -1549,7 +1546,7 @@ function CatalogueItemForm({
       };
       const res = await fetch("/api/admin/catalogue/items", {
         method: item ? "PATCH" : "POST",
-        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(item ? { id: item.id, ...payload, version: item.version } : payload),
       });
       const data = await res.json();
@@ -1789,7 +1786,7 @@ function GalleryTab({
       if (!url) return;
       const res = await fetch("/api/admin/gallery/items", {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: file.name, file_url: url, mime_type: file.type }),
       });
       const data = await res.json();

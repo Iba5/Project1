@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { RefreshCw } from "lucide-react";
-import { getAdminToken } from "@/lib/admin-auth";
 import { AdminAuthForm } from "@/components/website/admin-auth-form";
 
 const AdminDashboard = dynamic(
@@ -24,11 +23,14 @@ export function AdminEntry() {
   const router = useRouter();
 
   const checkStatus = useCallback(async () => {
-    if (getAdminToken()) {
-      setStatus("authed");
-      return;
-    }
     try {
+      // The session lives in an httpOnly cookie, invisible to this code —
+      // ask the server whether it's valid rather than reading a token.
+      const meRes = await fetch("/api/admin/me");
+      if (meRes.ok) {
+        setStatus("authed");
+        return;
+      }
       const res = await fetch("/api/admin/bootstrap-status");
       const data = await res.json();
       setStatus(data.ok && data.needsSetup ? "needs-setup" : "needs-login");

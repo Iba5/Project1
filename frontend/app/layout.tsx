@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Bricolage_Grotesque, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { SITE_URL as siteUrl } from "@/lib/site-url";
 import "./globals.css";
 import { Toaster as SonnerToaster } from "sonner";
 import { ThemeProvider } from "@/components/website/theme-provider";
@@ -42,8 +44,6 @@ const plexMono = IBM_Plex_Mono({
   weight: ["400", "500"],
   display: "swap",
 });
-
-const siteUrl = "https://canbri.co.zw";
 
 // The root layout fetches live site settings/products/industries from the
 // backend on every request. Forcing dynamic rendering means every page is
@@ -148,6 +148,10 @@ export default async function RootLayout({
     getIndustries(),
   ]);
   const whatsappHref = quoteWhatsAppHref(site.whatsappNumber);
+  // next-themes injects an inline anti-flash-of-wrong-theme script that
+  // Next.js's own CSP nonce auto-injection doesn't cover — pass the
+  // per-request nonce (set in proxy.ts) through explicitly.
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
 
   // Map to minimal searchable shape (avoid passing full Product objects)
   const searchableProducts = products.map((p) => ({
@@ -176,6 +180,7 @@ export default async function RootLayout({
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
+          nonce={nonce}
         >
           <div className="flex min-h-screen flex-col">
             <PromoBanner />

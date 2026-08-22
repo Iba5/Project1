@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { apiProxy } from "@/lib/api-proxy";
+import { setAdminSessionCookies } from "@/lib/admin-auth-server";
 
 /**
  * POST /api/admin/login
  *
- * Proxies to FastAPI's POST /api/v1/auth/login.
- * On success, returns { ok: true, access_token, refresh_token, user }.
+ * Proxies to FastAPI's POST /api/v1/auth/login. On success, sets the access
+ * and refresh tokens as httpOnly cookies and returns only { ok: true, user }
+ * — the token itself never reaches browser JavaScript.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -31,12 +33,12 @@ export async function POST(request: NextRequest) {
     });
 
     if (status >= 200 && status < 300) {
-      return NextResponse.json({
-        ok: true,
-        access_token: (data as Record<string, unknown>).access_token,
-        refresh_token: (data as Record<string, unknown>).refresh_token,
-        user: (data as Record<string, unknown>).user,
+      const response = NextResponse.json({ ok: true, user: data.user });
+      setAdminSessionCookies(response.cookies, {
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token,
       });
+      return response;
     }
 
     const error =

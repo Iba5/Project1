@@ -1,6 +1,7 @@
 /**
  * Canbri site configuration, single source of truth.
  */
+import { SITE_URL } from "@/lib/site-url";
 
 export type ContactMethod = {
   label: string;
@@ -28,7 +29,7 @@ export const siteConfig = {
   description:
     "Canbri Private Limited supplies tools and hardware, fabrication services, personal protective equipment, stationery and ice blocks. We serve businesses and households across Harare and Murewa with reliable delivery and bulk-order support.",
   deliveryAreas: ["Harare", "Murewa"],
-  url: "https://canbri.co.zw",
+  url: SITE_URL,
   email: "info@canbri.co.zw",
   emailHref: "mailto:info@canbri.co.zw",
   whatsappNumber: "+263770000000",

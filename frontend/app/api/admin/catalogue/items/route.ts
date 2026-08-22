@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { apiProxy } from "@/lib/api-proxy";
-
-function authHeaders(request: NextRequest): Record<string, string> {
-  const authHeader = request.headers.get("authorization");
-  return authHeader ? { Authorization: authHeader } : {};
-}
+import { getBackendAuthHeaders } from "@/lib/admin-auth-server";
 
 function errorFrom(data: unknown, fallback: string): string {
   const error = (data as Record<string, unknown>)?.detail ?? fallback;
@@ -24,7 +20,7 @@ export async function GET(request: NextRequest) {
     const { data, status } = await apiProxy<{ items: unknown[]; total: number }>({
       method: "GET",
       path: "/catalogue/items",
-      headers: authHeaders(request),
+      headers: await getBackendAuthHeaders(),
       searchParams: proxyParams,
     });
     if (status >= 200 && status < 300) return NextResponse.json({ ok: true, items: data.items, total: data.total });
@@ -43,7 +39,7 @@ export async function POST(request: NextRequest) {
       method: "POST",
       path: "/catalogue/items",
       body,
-      headers: authHeaders(request),
+      headers: await getBackendAuthHeaders(),
     });
     if (status >= 200 && status < 300) return NextResponse.json({ ok: true, item: data });
     return NextResponse.json({ ok: false, error: errorFrom(data, "Failed to create item") }, { status });
@@ -62,7 +58,7 @@ export async function PATCH(request: NextRequest) {
       method: "PATCH",
       path: `/catalogue/items/${encodeURIComponent(id)}`,
       body: fields,
-      headers: authHeaders(request),
+      headers: await getBackendAuthHeaders(),
     });
     if (status >= 200 && status < 300) return NextResponse.json({ ok: true, item: data });
     return NextResponse.json({ ok: false, error: errorFrom(data, "Failed to update item") }, { status });
@@ -80,7 +76,7 @@ export async function DELETE(request: NextRequest) {
     const { status } = await apiProxy({
       method: "DELETE",
       path: `/catalogue/items/${encodeURIComponent(id)}`,
-      headers: authHeaders(request),
+      headers: await getBackendAuthHeaders(),
     });
     if (status >= 200 && status < 300) return NextResponse.json({ ok: true });
     return NextResponse.json({ ok: false, error: "Failed to delete item" }, { status });

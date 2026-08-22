@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { apiProxy } from "@/lib/api-proxy";
+import { getBackendAuthHeaders } from "@/lib/admin-auth-server";
 
 /**
  * GET /api/admin/stats
@@ -9,13 +10,9 @@ import { apiProxy } from "@/lib/api-proxy";
  *
  * Returns: { ok: true, stats: { total, new, contacted, resolved, recent, today } }
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const authHeader = request.headers.get("authorization");
-    const headers: Record<string, string> = {};
-    if (authHeader) {
-      headers["Authorization"] = authHeader;
-    }
+    const headers = await getBackendAuthHeaders();
 
     const { data, status } = await apiProxy<{
       total: number;

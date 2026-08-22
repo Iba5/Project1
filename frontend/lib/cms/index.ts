@@ -22,13 +22,13 @@ export const getFeaturedProducts = apiAdapter.getFeaturedProducts;
 export const getProductsByCategory = apiAdapter.getProductsByCategory;
 export const getProductCategories = apiAdapter.getProductCategories;
 export const getSiteSettings = apiAdapter.getSiteSettings;
+export const getGalleryItems = apiAdapter.getGalleryItems;
 
 export const getHomepage = staticAdapter.getHomepage;
 export const getAbout = staticAdapter.getAbout;
 export const getContact = staticAdapter.getContact;
 
 export const getIndustries = staticAdapter.getIndustries;
-export const getGalleryItems = staticAdapter.getGalleryItems;
 export const getCompanyValues = staticAdapter.getCompanyValues;
 
 /**

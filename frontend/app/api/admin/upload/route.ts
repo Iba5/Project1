@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { API_BASE } from "@/lib/api-proxy";
+import { getBackendAuthHeaders } from "@/lib/admin-auth-server";
 
 /**
  * POST /api/admin/upload
@@ -10,16 +11,16 @@ import { API_BASE } from "@/lib/api-proxy";
  */
 export async function POST(request: NextRequest) {
   try {
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader) {
-      return NextResponse.json({ ok: false, error: "Missing Authorization header" }, { status: 401 });
+    const headers = await getBackendAuthHeaders();
+    if (!headers.Authorization) {
+      return NextResponse.json({ ok: false, error: "Not authenticated" }, { status: 401 });
     }
 
     const formData = await request.formData();
 
     const response = await fetch(`${API_BASE}/media/upload`, {
       method: "POST",
-      headers: { Authorization: authHeader },
+      headers,
       body: formData,
       signal: AbortSignal.timeout(30000),
     });

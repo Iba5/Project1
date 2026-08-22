@@ -11,6 +11,7 @@
 
 import { apiProxy } from "@/lib/api-proxy";
 import type { Product, ProductCategory } from "@/content/products";
+import type { GalleryItem } from "@/content/content";
 import { navLinks } from "@/content/site";
 import type { SiteSettings } from "./types";
 
@@ -103,6 +104,33 @@ export async function getProductCategories(): Promise<ProductCategory[]> {
     .filter((c) => c.is_active)
     .sort((a, b) => a.sort_order - b.sort_order)
     .map((c) => c.name);
+}
+
+type BackendMediaItem = {
+  id: string;
+  title: string;
+  alt_text: string | null;
+  file_url: string;
+  category: string | null;
+};
+
+export async function getGalleryItems(): Promise<GalleryItem[]> {
+  const { data, status } = await apiProxy<{ items: BackendMediaItem[] }>({
+    method: "GET",
+    path: "/gallery/items",
+    searchParams: { limit: "200" },
+  });
+  if (status < 200 || status >= 300) {
+    throw new Error(`Gallery request failed (${status})`);
+  }
+  return (data.items ?? []).map((item) => ({
+    slug: item.id,
+    title: item.title,
+    category: item.category ?? "Gallery",
+    description: item.alt_text ?? item.title,
+    image: item.file_url,
+    placeholder: false,
+  }));
 }
 
 function str(value: unknown, fallback = ""): string {

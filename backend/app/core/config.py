@@ -8,8 +8,10 @@ from __future__ import annotations
 import json
 from typing import List
 
-from pydantic import field_validator
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings
+
+DEFAULT_JWT_SECRET = "change-me-in-production"
 
 
 class Settings(BaseSettings):
@@ -39,7 +41,7 @@ class Settings(BaseSettings):
     REDIS_URL: str = ""  # empty = in-memory cache fallback
 
     # ── JWT / Auth ───────────────────────────────────────────────
-    JWT_SECRET_KEY: str = "change-me-in-production"
+    JWT_SECRET_KEY: str = DEFAULT_JWT_SECRET
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
@@ -82,6 +84,20 @@ class Settings(BaseSettings):
         "case_sensitive": True,
         "extra": "ignore",
     }
+
+    @model_validator(mode="after")
+    def _refuse_insecure_production_config(self) -> "Settings":
+        """Fail startup loudly rather than silently run production on a
+        known, public default secret — anyone who reads this source file
+        could otherwise forge admin JWTs against a misconfigured deploy."""
+        if self.ENVIRONMENT == "production" and self.JWT_SECRET_KEY == DEFAULT_JWT_SECRET:
+            raise ValueError(
+                "JWT_SECRET_KEY is still the default placeholder value with "
+                "ENVIRONMENT=production. Set a real, random JWT_SECRET_KEY "
+                "(e.g. `openssl rand -hex 32`) in the production environment "
+                "before starting the app."
+            )
+        return self
 
 
 # Singleton instance

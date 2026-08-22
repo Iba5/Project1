@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { apiProxy } from "@/lib/api-proxy";
+import { getBackendAuthHeaders } from "@/lib/admin-auth-server";
 
 /**
  * GET /api/admin/settings
@@ -8,9 +9,7 @@ import { apiProxy } from "@/lib/api-proxy";
  */
 export async function GET(request: NextRequest) {
   try {
-    const authHeader = request.headers.get("authorization");
-    const headers: Record<string, string> = {};
-    if (authHeader) headers["Authorization"] = authHeader;
+    const headers = await getBackendAuthHeaders();
 
     const { data, status } = await apiProxy<unknown>({
       method: "GET",
@@ -48,9 +47,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ ok: false, error: "Missing key or value" }, { status: 400 });
     }
 
-    const authHeader = request.headers.get("authorization");
-    const headers: Record<string, string> = {};
-    if (authHeader) headers["Authorization"] = authHeader;
+    const headers = await getBackendAuthHeaders();
 
     const { data, status } = await apiProxy({
       method: "PATCH",

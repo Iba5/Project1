@@ -5,8 +5,7 @@
  * - BreadcrumbJsonLd: BreadcrumbList for the single-page site
  */
 import type { Product } from "@/lib/cms";
-
-const siteUrl = "https://canbri.co.zw";
+import { SITE_URL as siteUrl } from "@/lib/site-url";
 
 const faqSchema = {
   "@context": "https://schema.org",
