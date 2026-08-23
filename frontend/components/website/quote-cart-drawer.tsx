@@ -15,7 +15,6 @@ import {
 import { useProductStore } from "@/lib/stores/product-store";
 import { trackEvent } from "@/lib/analytics";
 import { SmartImage } from "@/components/website/smart-image";
-import { StarRating } from "@/components/website/star-rating";
 import { cn } from "@/lib/utils";
 
 type QuoteCartDrawerProps = {
@@ -149,7 +148,7 @@ export function QuoteCartDrawer({ whatsappNumber }: QuoteCartDrawerProps) {
                   {cart.map((item) => (
                     <li
                       key={item.slug}
-                      className="card-border-gradient relative flex gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:border-brand-accent/30"
+                      className="relative flex gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:border-brand-accent/30"
                     >
                       <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md bg-secondary">
                         <SmartImage
@@ -169,14 +168,6 @@ export function QuoteCartDrawer({ whatsappNumber }: QuoteCartDrawerProps) {
                             <h4 className="font-display text-sm font-semibold text-brand-heading">
                               {item.name}
                             </h4>
-                            {item.rating !== undefined && (
-                              <StarRating
-                                rating={item.rating}
-                                size="sm"
-                                showValue={false}
-                                className="mt-0.5"
-                              />
-                            )}
                           </div>
                           <button
                             type="button"
@@ -261,7 +252,7 @@ export function QuoteCartDrawer({ whatsappNumber }: QuoteCartDrawerProps) {
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={handleSendQuote}
-                      className="btn-shine glow-ring flex h-12 w-full items-center justify-center gap-2 rounded-md bg-[#25D366] px-5 text-sm font-bold text-white shadow-lg shadow-[#25D366]/20 transition-all hover:bg-[#1ebe5b] hover:shadow-xl hover:shadow-[#25D366]/30 hover:-translate-y-0.5"
+                      className="flex h-12 w-full items-center justify-center gap-2 rounded-md bg-[#25D366] px-5 text-sm font-bold text-white shadow-lg shadow-[#25D366]/20 transition-all hover:bg-[#1ebe5b] hover:shadow-xl hover:shadow-[#25D366]/30 hover:-translate-y-0.5"
                     >
                       <MessageCircle className="h-5 w-5" strokeWidth={2.25} />
                       Send combined quote via WhatsApp

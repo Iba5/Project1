@@ -1,19 +1,20 @@
 "use client";
 
-import { Users, Truck, Award, Eye } from "lucide-react";
+import { MapPin, Truck, Award, Eye } from "lucide-react";
 import { AnimatedCounter } from "@/components/website/animated-counter";
 import { ScrollReveal } from "@/components/website/scroll-reveal";
 
 type Stat = {
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
-  numeric: number;
+  numeric?: number;
+  value?: string;
   suffix: string;
   label: string;
   desc: string;
 };
 
 const stats: Stat[] = [
-  { icon: Users, numeric: 500, suffix: "+", label: "Customers", desc: "Businesses & households" },
+  { icon: MapPin, value: "Harare + Murewa", suffix: "", label: "Coverage", desc: "Businesses & households" },
   { icon: Truck, numeric: 2, suffix: "", label: "Branches", desc: "Harare & Murewa" },
   { icon: Award, numeric: 5, suffix: "", label: "Divisions", desc: "Under one roof" },
   { icon: Eye, numeric: 100, suffix: "%", label: "Quote-Driven", desc: "Accurate pricing" },
@@ -35,7 +36,7 @@ export function TrustBar() {
                 </span>
                 <div className="mt-2 sm:mt-0 sm:ml-3">
                   <div className="flex items-baseline justify-center font-display text-2xl font-bold text-brand-heading sm:text-3xl">
-                    <AnimatedCounter numeric={stat.numeric} />
+                    <AnimatedCounter numeric={stat.numeric} value={stat.value} />
                     <span className="text-brand-accent-fg">{stat.suffix}</span>
                   </div>
                   <p className="mt-0.5 text-sm font-semibold text-brand-heading">

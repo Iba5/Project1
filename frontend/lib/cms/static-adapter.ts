@@ -21,7 +21,7 @@ export async function getHomepage(): Promise<Homepage> {
     heroKicker: `${siteConfig.name} · ${siteConfig.tagline}`,
     heroTitle: "Premium supply solutions for homes, businesses & events.",
     heroDescription:
-      "Canbri Private Limited supplies tools and hardware, fabrication services, PPE, stationery and ice blocks, with reliable delivery across Harare and Murewa. Bulk orders welcome, every day.",
+      "A diversified Zimbabwean supplier with reliable delivery across Harare and Murewa. Bulk orders welcome, every day.",
     heroImage: "/products/ice-blocks.png",
     heroBadgeText:
       "Reliable supply across five divisions. Quote-driven pricing, delivery throughout Harare and Murewa.",

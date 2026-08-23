@@ -53,8 +53,6 @@ export function PromoBanner({
           transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           className="relative z-30 overflow-hidden bg-gradient-to-r from-brand-navy via-brand-navy to-brand-navy-deep text-white"
         >
-          {/* Aurora overlay for premium feel */}
-          <div className="aurora-bg pointer-events-none absolute inset-0 opacity-50" aria-hidden />
           <div className="relative mx-auto flex max-w-7xl items-center justify-center gap-3 px-10 py-2 text-center sm:px-4">
             <Sparkles
               className="hidden h-4 w-4 shrink-0 text-brand-ice sm:block"

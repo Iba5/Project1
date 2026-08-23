@@ -64,8 +64,6 @@ CATALOGUE_ITEMS = [
         ],
         "min_order": "Single item",
         "lead_time": "Same day for stock items",
-        "rating": 4.7,
-        "review_count": 38,
         "status": "published",
     },
     {
@@ -91,8 +89,6 @@ CATALOGUE_ITEMS = [
         ],
         "min_order": "Single item",
         "lead_time": "3–10 working days",
-        "rating": 4.8,
-        "review_count": 27,
         "status": "published",
     },
     {
@@ -118,8 +114,6 @@ CATALOGUE_ITEMS = [
         ],
         "min_order": "Single item",
         "lead_time": "Same day for stock items",
-        "rating": 4.6,
-        "review_count": 41,
         "status": "published",
     },
     {
@@ -145,8 +139,6 @@ CATALOGUE_ITEMS = [
         ],
         "min_order": "Single item",
         "lead_time": "1–3 working days",
-        "rating": 4.5,
-        "review_count": 33,
         "status": "published",
     },
     {
@@ -172,8 +164,6 @@ CATALOGUE_ITEMS = [
         ],
         "min_order": "Single block",
         "lead_time": "Same day (orders before 12:00)",
-        "rating": 4.9,
-        "review_count": 56,
         "status": "published",
     },
 ]

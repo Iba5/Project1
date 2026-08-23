@@ -77,7 +77,7 @@ export function SiteHeader({
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
         <Link
           href="/"
           className="flex shrink-0 items-center gap-2.5 text-brand-heading"
@@ -111,7 +111,7 @@ export function SiteHeader({
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
+        <nav className="hidden items-center gap-2 lg:flex" aria-label="Primary">
           {navLinks.map((link) => {
             const sectionId = link.href.replace("#", "");
             const isActive = activeSection === sectionId;
@@ -148,7 +148,11 @@ export function SiteHeader({
           <CartTrigger />
           <ThemeToggle />
           {whatsappHref && (
-            <Button asChild size="sm">
+            <Button
+              asChild
+              size="sm"
+              className="bg-brand-accent text-brand-accent-fg hover:bg-brand-accent/90"
+            >
               <a
                 href={whatsappHref}
                 target="_blank"
@@ -250,7 +254,7 @@ export function SiteHeader({
               href={whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-white"
+              className="mt-2 inline-flex h-10 items-center justify-center rounded-md bg-brand-accent px-4 text-sm font-semibold text-brand-accent-fg"
               onClick={() => {
                 setOpen(false);
                 handleQuoteClick();

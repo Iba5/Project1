@@ -54,7 +54,7 @@ export function WishlistSection() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.25 }}
-                className="card-border-gradient group relative overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all hover:shadow-md"
+                className="group relative overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all hover:shadow-md"
               >
                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-secondary">
                   <SmartImage
@@ -94,7 +94,7 @@ export function WishlistSection() {
                         trackEvent("cart_add", item.name, { slug: item.slug, qty: 1, source: "wishlist" });
                         setCartOpen(true);
                       }}
-                      className="btn-shine inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-md bg-brand-accent px-3 text-xs font-semibold text-brand-accent-fg transition-all hover:bg-brand-accent/90"
+                      className="inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-md bg-brand-accent px-3 text-xs font-semibold text-brand-accent-fg transition-all hover:bg-brand-accent/90"
                     >
                       <ShoppingCart className="h-3.5 w-3.5" strokeWidth={2.25} />
                       Add to cart

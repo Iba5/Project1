@@ -55,11 +55,11 @@ export function SustainabilitySection() {
     >
       {/* Decorative organic blobs */}
       <div
-        className="pointer-events-none absolute -right-32 -top-20 h-96 w-96 rounded-full bg-emerald-400/12 blur-3xl animate-pulse-slow"
+        className="pointer-events-none absolute -right-32 -top-20 h-96 w-96 rounded-full bg-emerald-400/12 blur-3xl"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute -left-32 bottom-0 h-80 w-80 rounded-full bg-teal-400/10 blur-3xl animate-pulse-slow-delayed"
+        className="pointer-events-none absolute -left-32 bottom-0 h-80 w-80 rounded-full bg-teal-400/10 blur-3xl"
         aria-hidden
       />
       {/* Top hairline gradient */}

@@ -97,7 +97,7 @@ export function FeaturedSpotlight({ product, whatsappNumber }: FeaturedSpotlight
                   href={quoteHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group inline-flex h-12 items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-semibold text-white shadow-lg shadow-brand-navy/20 transition-all duration-200 hover:bg-primary/90 hover:shadow-xl hover:shadow-brand-navy/30 hover:-translate-y-0.5"
+                  className="group inline-flex h-12 items-center justify-center gap-2 rounded-md bg-brand-accent px-6 text-sm font-semibold text-brand-accent-fg transition-colors hover:bg-brand-accent/90"
                 >
                   <MessageCircle className="h-4 w-4" strokeWidth={2.5} fill="currentColor" />
                   Get a Quote

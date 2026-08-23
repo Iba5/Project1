@@ -112,14 +112,14 @@ export default async function HomePage() {
       />
 
       {/* ── Marquee trust strip ──────────────────────────────────────────── */}
-      <SectionDivider from="background" to="background" variant="wave" className="opacity-30 divider-animated" />
+      <SectionDivider from="background" to="background" variant="wave" className="opacity-30" />
       <MarqueeBar />
 
       {/* ── Trust bar ────────────────────────────────────────────────────── */}
       <TrustBar />
 
       {/* ── About preview ────────────────────────────────────────────────── */}
-      <section id="about" className="bg-secondary/40 pattern-dots gradient-mesh-animated relative overflow-hidden">
+      <section id="about" className="bg-secondary/40 relative overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
           <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
             <ScrollReveal direction="left" className="lg:col-span-5">
@@ -194,13 +194,14 @@ export default async function HomePage() {
 
       {/* ── Products ─────────────────────────────────────────────────────── */}
       <section id="products" className="bg-background">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <ScrollReveal>
             <SectionHeading
               kicker="Our Products"
               numeral="02"
               title="Five divisions. One reliable supplier."
               description="From tools and fabrication to PPE, stationery and ice blocks; each division is structured so new lines can be added without redesigning the site."
+              className="max-w-3xl [&_h2]:text-4xl [&_h2]:sm:text-5xl"
             />
           </ScrollReveal>
 
@@ -228,7 +229,7 @@ export default async function HomePage() {
 
       {/* ── Industries we serve ──────────────────────────────────────────── */}
       <section id="industries" className="bg-secondary/40">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
           <ScrollReveal>
             <SectionHeading
               kicker="Industries We Serve"
@@ -273,9 +274,9 @@ export default async function HomePage() {
       </section>
 
       {/* ── Why choose Canbri ────────────────────────────────────────────── */}
-      <SectionDivider from="secondary" to="navy" variant="wave" className="divider-animated" />
+      <SectionDivider from="secondary" to="navy" variant="wave" />
       <section className="surface-navy band-top relative overflow-hidden">
-        {/* Decorative grid + glow */}
+        {/* Subtle grid texture */}
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.06]"
           style={{
@@ -285,17 +286,7 @@ export default async function HomePage() {
           }}
           aria-hidden
         />
-        {/* Animated gradient mesh — premium depth effect */}
-        <div className="gradient-mesh-animated pointer-events-none absolute inset-0 opacity-60" aria-hidden />
-        <div
-          className="pointer-events-none absolute -right-24 top-1/4 h-72 w-72 rounded-full bg-brand-ice/10 blur-3xl animate-pulse-slow"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute -left-24 bottom-1/4 h-72 w-72 rounded-full bg-brand-accent/15 blur-3xl animate-pulse-slow-delayed"
-          aria-hidden
-        />
-        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+        <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
           <ScrollReveal>
             <SectionHeading
               kicker="Why Choose Canbri"
@@ -348,9 +339,9 @@ export default async function HomePage() {
       <HowItWorks />
 
       {/* ── Gallery ──────────────────────────────────────────────────────── */}
-      <SectionDivider from="navy" to="background" variant="wave" className="divider-animated" />
+      <SectionDivider from="navy" to="background" variant="wave" />
       <section id="gallery" className="bg-background">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
           <ScrollReveal>
             <SectionHeading
               kicker="Gallery"
@@ -366,7 +357,7 @@ export default async function HomePage() {
       {/* ── FAQ ──────────────────────────────────────────────────────────── */}
       <section id="faq" className="relative overflow-hidden bg-background">
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-brand-accent/5 via-transparent to-transparent" aria-hidden />
-        <div className="relative mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div className="relative mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
           <ScrollReveal>
             <SectionHeading
               kicker="Frequently Asked Questions"
@@ -497,7 +488,7 @@ export default async function HomePage() {
 
       {/* ── Contact & Quote ──────────────────────────────────────────────── */}
       <section id="contact" className="bg-background">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <ScrollReveal direction="left" className="lg:col-span-5">
               <SectionHeading

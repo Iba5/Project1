@@ -16,7 +16,6 @@ import { quoteWhatsAppHref } from "@/lib/cms";
 import { useProductStore, toStoredProduct } from "@/lib/stores/product-store";
 import { trackEvent } from "@/lib/analytics";
 import { SmartImage } from "@/components/website/smart-image";
-import { StarRating } from "@/components/website/star-rating";
 import { cn } from "@/lib/utils";
 
 type ProductCardProps = {
@@ -114,14 +113,7 @@ export function ProductCard({ product, whatsappNumber, variant = "default", onQu
   };
 
   return (
-    <article
-      onMouseMove={(e) => {
-        const r = e.currentTarget.getBoundingClientRect();
-        e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
-        e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
-      }}
-      className="card-glow card-border-gradient group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-brand-accent/40"
-    >
+    <article className="card-hover group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-soft transition-all duration-300">
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-secondary">
         <SmartImage
           src={product.image}
@@ -132,15 +124,6 @@ export function ProductCard({ product, whatsappNumber, variant = "default", onQu
             "object-cover group-hover:scale-105",
           )}
           onLoad={() => setImgLoaded(true)}
-        />
-        {/* Spotlight overlay that follows mouse on hover */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-          style={{
-            background:
-              "radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.18), transparent 60%)",
-          }}
-          aria-hidden
         />
         <div className="absolute inset-0 bg-brand-navy/0 transition-colors duration-300 group-hover:bg-brand-navy/20" />
 
@@ -216,7 +199,7 @@ export function ProductCard({ product, whatsappNumber, variant = "default", onQu
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex flex-1 flex-col p-6">
         <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand-accent-fg dark:text-brand-ice">
           <span className="h-px w-4 bg-brand-accent-fg/40 dark:bg-brand-ice/40" aria-hidden />
           {product.category}
@@ -230,17 +213,6 @@ export function ProductCard({ product, whatsappNumber, variant = "default", onQu
         >
           {product.name}
         </h3>
-
-        {/* Star rating */}
-        {product.rating !== undefined && (
-          <div className="mt-1.5">
-            <StarRating
-              rating={product.rating}
-              reviewCount={product.reviewCount}
-              size="sm"
-            />
-          </div>
-        )}
 
         <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
           {product.shortDescription}
@@ -267,7 +239,7 @@ export function ProductCard({ product, whatsappNumber, variant = "default", onQu
           <button
             type="button"
             onClick={handleAddToCart}
-            className="btn-shine inline-flex h-10 items-center justify-center gap-2 rounded-md border border-brand-accent/40 bg-brand-accent/10 px-3 text-sm font-semibold text-brand-accent-fg transition-all duration-200 hover:bg-brand-accent hover:text-brand-accent-fg hover:border-brand-accent hover:shadow-md hover:shadow-brand-accent/20"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-brand-accent px-3 text-sm font-semibold text-brand-accent-fg transition-colors hover:bg-brand-accent/90"
           >
             <ShoppingCart className="h-4 w-4" strokeWidth={2.25} />
             Add to Quote Cart
@@ -294,7 +266,7 @@ export function ProductCard({ product, whatsappNumber, variant = "default", onQu
               target="_blank"
               rel="noopener noreferrer"
               onClick={handleQuoteClick}
-              className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-white transition-all duration-200 hover:bg-primary/90 hover:shadow-md hover:shadow-brand-navy/20"
+              className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-md border border-border bg-background px-4 text-sm font-medium text-brand-heading transition-colors hover:bg-secondary hover:border-brand-accent/30"
             >
               <MessageCircle className="h-4 w-4" strokeWidth={2.25} />
               Quote
