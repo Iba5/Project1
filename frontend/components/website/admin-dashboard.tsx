@@ -250,7 +250,8 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
       setEnquiries(enqData.enquiries || []);
       setStats(statsData.stats || null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error");
+      console.error("[admin-dashboard] fetchData failed:", err);
+      setError("Couldn't load dashboard data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -288,7 +289,8 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
       if (!res.ok || !data.ok) throw new Error(data.error ?? "Failed to fetch settings");
       setSettings(data.settings || []);
     } catch (err) {
-      setSettingsError(err instanceof Error ? err.message : "Unknown error");
+      console.error("[admin-dashboard] fetchSettings failed:", err);
+      setSettingsError("Couldn't load settings. Please try again.");
     } finally {
       setSettingsLoading(false);
     }
@@ -312,7 +314,8 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
       if (!res.ok || !data.ok) throw new Error(data.error ?? "Failed to fetch storage stats");
       setStorageStats(data.stats || null);
     } catch (err) {
-      setStorageStatsError(err instanceof Error ? err.message : "Unknown error");
+      console.error("[admin-dashboard] fetchStorageStats failed:", err);
+      setStorageStatsError("Couldn't load storage metrics. Please try again.");
     } finally {
       setStorageStatsLoading(false);
     }
@@ -345,7 +348,8 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
         return next;
       });
     } catch (err) {
-      setSettingsError(err instanceof Error ? err.message : "Failed to save setting");
+      console.error("[admin-dashboard] saveSetting failed:", err);
+      setSettingsError("Couldn't save this setting. Please try again.");
     } finally {
       setSettingsSavingKey(null);
     }
@@ -372,7 +376,8 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
       setCategories(catData.categories || []);
       setCatalogueItems(itemData.items || []);
     } catch (err) {
-      setCatalogueError(err instanceof Error ? err.message : "Unknown error");
+      console.error("[admin-dashboard] fetchCatalogue failed:", err);
+      setCatalogueError("Couldn't load the catalogue. Please try again.");
     } finally {
       setCatalogueLoading(false);
     }
@@ -417,7 +422,8 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
       setMediaItems(itemData.items || []);
       setCollections(colData.collections || []);
     } catch (err) {
-      setGalleryError(err instanceof Error ? err.message : "Unknown error");
+      console.error("[admin-dashboard] fetchGallery failed:", err);
+      setGalleryError("Couldn't load the gallery. Please try again.");
     } finally {
       setGalleryLoading(false);
     }
@@ -468,7 +474,8 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
       setNewCollectionName("");
       fetchGallery();
     } catch (err) {
-      setGalleryError(err instanceof Error ? err.message : "Failed to create collection");
+      console.error("[admin-dashboard] createCollection failed:", err);
+      setGalleryError("Couldn't create the collection. Please try again.");
     }
   };
 
@@ -1573,7 +1580,8 @@ function CatalogueItemForm({
       const url = await onUploadFile(file);
       if (url) setImageUrl(url);
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Upload failed");
+      console.error("[admin-dashboard] image upload failed:", err);
+      setFormError("Couldn't upload the image. Please try again.");
     } finally {
       setUploading(false);
     }
@@ -1592,7 +1600,8 @@ function CatalogueItemForm({
       const url = await onUploadFile(file);
       if (url) setGalleryImages((prev) => [...prev, url]);
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Upload failed");
+      console.error("[admin-dashboard] gallery image upload failed:", err);
+      setFormError("Couldn't upload the image. Please try again.");
     } finally {
       setGalleryUploading(false);
       e.target.value = "";
@@ -1631,7 +1640,8 @@ function CatalogueItemForm({
       if (!res.ok || !data.ok) throw new Error(data.error ?? "Failed to save product");
       onSaved();
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Failed to save product");
+      console.error("[admin-dashboard] save product failed:", err);
+      setFormError("Couldn't save this product. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -1871,7 +1881,8 @@ function GalleryTab({
       if (!res.ok || !data.ok) throw new Error(data.error ?? "Failed to save media item");
       onRefresh();
     } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Upload failed");
+      console.error("[admin-dashboard] gallery upload failed:", err);
+      setUploadError("Couldn't upload this file. Please try again.");
     } finally {
       setUploading(false);
       e.target.value = "";

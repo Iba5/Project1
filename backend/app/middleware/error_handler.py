@@ -21,13 +21,14 @@ def register_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(ValidationError)
     async def validation_error_handler(request: Request, exc: ValidationError):
         logger.warning("Validation error", extra={"structured": {"detail": str(exc)}})
+        is_production = getattr(request.app.state, "environment", None) == "production"
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             content=ErrorResponse(
                 type="validation-error",
                 title="Validation Error",
                 status=422,
-                detail=str(exc),
+                detail="There was a problem with your request." if is_production else str(exc),
                 instance=str(request.url.path),
             ).model_dump(),
         )
@@ -35,13 +36,14 @@ def register_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(ValueError)
     async def value_error_handler(request: Request, exc: ValueError):
         logger.warning("Value error", extra={"structured": {"detail": str(exc)}})
+        is_production = getattr(request.app.state, "environment", None) == "production"
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content=ErrorResponse(
                 type="business-error",
                 title="Business Error",
                 status=400,
-                detail=str(exc),
+                detail="There was a problem with your request." if is_production else str(exc),
                 instance=str(request.url.path),
             ).model_dump(),
         )
@@ -49,13 +51,14 @@ def register_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(PermissionError)
     async def permission_error_handler(request: Request, exc: PermissionError):
         logger.warning("Permission denied", extra={"structured": {"detail": str(exc)}})
+        is_production = getattr(request.app.state, "environment", None) == "production"
         return JSONResponse(
             status_code=status.HTTP_403_FORBIDDEN,
             content=ErrorResponse(
                 type="permission-denied",
                 title="Permission Denied",
                 status=403,
-                detail=str(exc),
+                detail="You don't have permission to do that." if is_production else str(exc),
                 instance=str(request.url.path),
             ).model_dump(),
         )

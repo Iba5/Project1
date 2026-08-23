@@ -13,6 +13,11 @@ type AdminAuthFormProps = {
  * ongoing login. Signup creates the account then immediately logs in with
  * the same credentials, since /auth/register doesn't itself return a token.
  */
+// Marks a message that came straight from our own API as a curated,
+// user-safe string — distinct from a raw network/parse failure, whose
+// message must never reach the UI unfiltered.
+class ServerMessageError extends Error {}
+
 export function AdminAuthForm({ mode, onSuccess }: AdminAuthFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -30,7 +35,7 @@ export function AdminAuthForm({ mode, onSuccess }: AdminAuthFormProps) {
     });
     const data = await res.json();
     if (!res.ok || !data.ok) {
-      throw new Error(data.error ?? "Invalid credentials");
+      throw new ServerMessageError(data.error ?? "Invalid credentials");
     }
   };
 
@@ -47,13 +52,18 @@ export function AdminAuthForm({ mode, onSuccess }: AdminAuthFormProps) {
         });
         const data = await res.json();
         if (!res.ok || !data.ok) {
-          throw new Error(data.error ?? "Could not create the admin account");
+          throw new ServerMessageError(data.error ?? "Could not create the admin account");
         }
       }
       await login();
       onSuccess();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Connection error — is the API running?");
+      console.error("[admin-auth-form] submit failed:", err);
+      setError(
+        err instanceof ServerMessageError
+          ? err.message
+          : "Connection error — is the API running?",
+      );
     } finally {
       setLoading(false);
     }
