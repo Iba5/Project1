@@ -47,17 +47,24 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # ── CORS ─────────────────────────────────────────────────────
-    CORS_ORIGINS: List[str] = ["http://localhost:3000"]
+    # Kept as a raw string, not List[str]: pydantic-settings tries to
+    # JSON-decode any env var bound to a complex type (list/dict) before
+    # our own validator ever runs, so a plain unbracketed value like
+    # "https://example.com" blows up at import time with an opaque
+    # SettingsError. Parsing it ourselves in CORS_ORIGINS_LIST avoids
+    # that entirely and accepts both a JSON array and a comma-separated
+    # string.
+    CORS_ORIGINS: str = "http://localhost:3000"
 
-    @field_validator("CORS_ORIGINS", mode="before")
-    @classmethod
-    def parse_cors_origins(cls, v: object) -> object:
-        if isinstance(v, str):
-            try:
-                return json.loads(v)
-            except json.JSONDecodeError:
-                return [origin.strip() for origin in v.split(",")]
-        return v
+    @property
+    def CORS_ORIGINS_LIST(self) -> List[str]:
+        try:
+            parsed = json.loads(self.CORS_ORIGINS)
+            if isinstance(parsed, list):
+                return parsed
+        except json.JSONDecodeError:
+            pass
+        return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
 
     # ── Pagination ───────────────────────────────────────────────
     DEFAULT_PAGE_LIMIT: int = 20
