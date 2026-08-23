@@ -68,6 +68,20 @@ type SiteSetting = {
   description: string | null;
 };
 
+/** Settings are stored as raw JSON. Some rows (from an earlier seed
+ * convention) wrap scalars as {"value": ...} instead of storing them
+ * directly — unwrap that shape, then render arrays/numbers/strings as
+ * editable text uniformly. */
+function settingValueToText(raw: unknown): string {
+  let value = raw;
+  if (value && typeof value === "object" && !Array.isArray(value) && "value" in (value as Record<string, unknown>)) {
+    value = (value as Record<string, unknown>).value;
+  }
+  if (value === null || value === undefined) return "";
+  if (Array.isArray(value)) return value.join(", ");
+  return String(value);
+}
+
 type Category = {
   id: string;
   name: string;
@@ -121,12 +135,22 @@ const SETTINGS_FIELDS: Array<{ key: string; label: string; type: "text" | "texta
   { key: "site_phone", label: "Phone number", type: "text" },
   { key: "site_whatsapp", label: "WhatsApp number", type: "text" },
   { key: "site_url", label: "Site URL", type: "text" },
+  { key: "site_address", label: "Business address", type: "textarea" },
   { key: "business_hours", label: "Business hours", type: "textarea" },
   { key: "delivery_areas", label: "Delivery areas", type: "textarea" },
   { key: "founding_year", label: "Founding year", type: "text" },
   { key: "social_facebook", label: "Facebook URL", type: "text" },
   { key: "social_instagram", label: "Instagram URL", type: "text" },
+  { key: "db_storage_limit_mb", label: "Database storage limit (MB)", type: "text" },
+  { key: "image_storage_limit_mb", label: "Image storage limit (MB)", type: "text" },
 ];
+
+type StorageStats = {
+  db_used_mb: number;
+  db_limit_mb: number | null;
+  image_used_mb: number | null;
+  image_limit_mb: number | null;
+};
 
 const STATUS_CONFIG: Record<
   string,
@@ -166,6 +190,9 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
   const [settingsError, setSettingsError] = useState<string | null>(null);
   const [settingsDrafts, setSettingsDrafts] = useState<Record<string, string>>({});
   const [settingsSavingKey, setSettingsSavingKey] = useState<string | null>(null);
+  const [storageStats, setStorageStats] = useState<StorageStats | null>(null);
+  const [storageStatsLoading, setStorageStatsLoading] = useState(false);
+  const [storageStatsError, setStorageStatsError] = useState<string | null>(null);
 
   // ── Catalogue tab state ──────────────────────────────────────
   const [categories, setCategories] = useState<Category[]>([]);
@@ -271,15 +298,43 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
     if (open && tab === "settings") fetchSettings();
   }, [open, tab, fetchSettings]);
 
+  const fetchStorageStats = useCallback(async () => {
+    setStorageStatsLoading(true);
+    setStorageStatsError(null);
+    try {
+      const res = await fetch("/api/admin/storage-stats");
+      if (res.status === 401 || res.status === 403) {
+        handleSessionExpired();
+        setStorageStatsError("Session expired — please log in again.");
+        return;
+      }
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error ?? "Failed to fetch storage stats");
+      setStorageStats(data.stats || null);
+    } catch (err) {
+      setStorageStatsError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setStorageStatsLoading(false);
+    }
+  }, [handleSessionExpired]);
+
+  useEffect(() => {
+    if (open && tab === "settings") fetchStorageStats();
+  }, [open, tab, fetchStorageStats]);
+
   const saveSetting = async (key: string) => {
     const draft = settingsDrafts[key];
     if (draft === undefined) return;
     setSettingsSavingKey(key);
     try {
+      const value: unknown =
+        key === "delivery_areas"
+          ? draft.split(",").map((s) => s.trim()).filter(Boolean)
+          : draft;
       const res = await fetch("/api/admin/settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ key, value: draft }),
+        body: JSON.stringify({ key, value }),
       });
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data.error ?? "Failed to save");
@@ -418,8 +473,9 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
   };
 
   const uploadFile = async (file: File): Promise<string | null> => {
+    const toUpload = await compressImageClientSide(file);
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", toUpload);
     const res = await fetch("/api/admin/upload", {
       method: "POST",
       body: formData,
@@ -966,13 +1022,35 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
                         {settingsError}
                       </div>
                     )}
+                    <div className="mb-6 grid gap-3 sm:grid-cols-2">
+                      {storageStatsError ? (
+                        <div className="sm:col-span-2 rounded-lg border border-red-500/30 bg-red-500/5 p-3 text-sm text-red-600 dark:text-red-400">
+                          {storageStatsError}
+                        </div>
+                      ) : (
+                        <>
+                          <StorageGauge
+                            label="Database"
+                            usedMb={storageStats?.db_used_mb ?? null}
+                            limitMb={storageStats?.db_limit_mb ?? null}
+                            loading={storageStatsLoading && !storageStats}
+                          />
+                          <StorageGauge
+                            label="Images"
+                            usedMb={storageStats?.image_used_mb ?? null}
+                            limitMb={storageStats?.image_limit_mb ?? null}
+                            loading={storageStatsLoading && !storageStats}
+                          />
+                        </>
+                      )}
+                    </div>
                     {settingsLoading && settings.length === 0 ? (
                       <EmptyState icon={SettingsIcon} title="Loading settings…" description="Fetching site settings from the API." />
                     ) : (
                       <div className="space-y-3">
                         {SETTINGS_FIELDS.map((field) => {
                           const setting = settings.find((s) => s.key === field.key);
-                          const rawValue = setting ? String(setting.value ?? "") : "";
+                          const rawValue = setting ? settingValueToText(setting.value) : "";
                           const draft = settingsDrafts[field.key] ?? rawValue;
                           const dirty = settingsDrafts[field.key] !== undefined && settingsDrafts[field.key] !== rawValue;
                           return (
@@ -1905,6 +1983,93 @@ function EmptyState({
         {title}
       </h3>
       <p className="max-w-xs text-xs text-muted-foreground">{description}</p>
+    </div>
+  );
+}
+
+const CLIENT_MAX_DIMENSION = 1920;
+const CLIENT_JPEG_QUALITY = 0.85;
+
+/** Resize to a sane max dimension and re-encode before the file ever leaves
+ * the browser. The server re-compresses too, but this keeps upload payloads
+ * (and the user's data usage) small on the way in. GIFs are left untouched
+ * to avoid dropping animation frames. */
+async function compressImageClientSide(file: File): Promise<File> {
+  if (file.type === "image/gif" || !file.type.startsWith("image/")) return file;
+
+  const bitmap = await createImageBitmap(file).catch(() => null);
+  if (!bitmap) return file;
+
+  const scale = Math.min(1, CLIENT_MAX_DIMENSION / Math.max(bitmap.width, bitmap.height));
+  const width = Math.round(bitmap.width * scale);
+  const height = Math.round(bitmap.height * scale);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return file;
+  ctx.drawImage(bitmap, 0, 0, width, height);
+
+  const outputType = file.type === "image/png" || file.type === "image/webp" ? file.type : "image/jpeg";
+  const blob: Blob | null = await new Promise((resolve) =>
+    canvas.toBlob(resolve, outputType, outputType === "image/jpeg" ? CLIENT_JPEG_QUALITY : undefined),
+  );
+  if (!blob) return file;
+
+  return new File([blob], file.name, { type: outputType });
+}
+
+function StorageGauge({
+  label,
+  usedMb,
+  limitMb,
+  loading,
+}: {
+  label: string;
+  usedMb: number | null;
+  limitMb: number | null;
+  loading: boolean;
+}) {
+  const pct = usedMb !== null && limitMb ? Math.min(100, (usedMb / limitMb) * 100) : null;
+  const fmt = (mb: number) => (mb >= 1024 ? `${(mb / 1024).toFixed(2)} GB` : `${mb.toFixed(1)} MB`);
+
+  return (
+    <div className="rounded-xl border border-border bg-card p-4">
+      <div className="mb-2 flex items-center justify-between">
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
+        {pct !== null && (
+          <span className="font-mono text-[11px] text-muted-foreground">{pct.toFixed(0)}%</span>
+        )}
+      </div>
+      {loading ? (
+        <div className="h-2 w-full animate-pulse rounded-full bg-secondary" />
+      ) : usedMb === null ? (
+        <p className="text-sm text-muted-foreground">Unavailable</p>
+      ) : (
+        <>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+            <div
+              className="h-full rounded-full bg-brand-accent transition-all"
+              style={{ width: `${pct ?? 6}%` }}
+            />
+          </div>
+          <p className="mt-2 text-sm text-brand-heading">
+            {limitMb ? (
+              <>
+                {fmt(usedMb)} <span className="text-muted-foreground">/ {fmt(limitMb)} used</span>
+              </>
+            ) : (
+              <>
+                {fmt(usedMb)} used
+                <span className="ml-1 text-xs text-muted-foreground">
+                  — set a storage limit in Settings to see remaining space
+                </span>
+              </>
+            )}
+          </p>
+        </>
+      )}
     </div>
   );
 }

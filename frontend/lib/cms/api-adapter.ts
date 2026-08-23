@@ -95,7 +95,7 @@ export async function getProductCategories(): Promise<ProductCategory[]> {
   const { data, status } = await apiProxy<{ items: BackendCategory[] }>({
     method: "GET",
     path: "/catalogue/categories",
-    searchParams: { limit: "200" },
+    searchParams: { limit: "100" },
   });
   if (status < 200 || status >= 300) {
     throw new Error(`Categories request failed (${status})`);
@@ -118,7 +118,7 @@ export async function getGalleryItems(): Promise<GalleryItem[]> {
   const { data, status } = await apiProxy<{ items: BackendMediaItem[] }>({
     method: "GET",
     path: "/gallery/items",
-    searchParams: { limit: "200" },
+    searchParams: { limit: "100" },
   });
   if (status < 200 || status >= 300) {
     throw new Error(`Gallery request failed (${status})`);
@@ -137,6 +137,16 @@ function str(value: unknown, fallback = ""): string {
   return typeof value === "string" ? value : fallback;
 }
 
+/** Settings are stored as raw JSON, but some rows (from an earlier seed
+ * convention) wrap scalars as {"value": ...} instead of storing them
+ * directly — unwrap that shape so both forms of stored data read correctly. */
+function unwrapSettingValue(raw: unknown): unknown {
+  if (raw && typeof raw === "object" && !Array.isArray(raw) && "value" in (raw as Record<string, unknown>)) {
+    return (raw as Record<string, unknown>).value;
+  }
+  return raw;
+}
+
 export async function getSiteSettings(): Promise<SiteSettings> {
   const { data, status } = await apiProxy<Array<{ key: string; value: unknown }>>({
     method: "GET",
@@ -147,7 +157,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   }
   const list = Array.isArray(data) ? data : [];
   const map: Record<string, unknown> = {};
-  for (const s of list) map[s.key] = s.value;
+  for (const s of list) map[s.key] = unwrapSettingValue(s.value);
 
   const companyName = str(map.site_name);
   const whatsapp = str(map.site_whatsapp);
@@ -172,6 +182,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     facebook: str(map.social_facebook),
     instagram: str(map.social_instagram),
     businessHours: str(map.business_hours),
+    address: str(map.site_address),
     navLinks,
   };
 }

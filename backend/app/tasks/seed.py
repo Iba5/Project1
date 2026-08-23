@@ -4,27 +4,23 @@ Seed script: populate the database with initial data.
 Safety contract
 ---------------
 * Never calls Base.metadata.create_all — schema is owned by Alembic.
-* Reads ADMIN_PASSWORD from the environment (falls back to a generated
-  value and prints it once if not set, so bare `python -m app.tasks.seed`
-  works for local bootstrap).
+* Never creates a super-admin account — that only ever happens via the
+  one-time /auth/register bootstrap signup, gated by a real "no admin
+  exists yet" database check. Standing credentials in env vars or
+  deploy logs are not an acceptable way to provision an admin.
 * Exits gracefully if the tables don't exist yet (run `alembic upgrade head` first).
 """
 
 from __future__ import annotations
 
 import asyncio
-import os
-import secrets
 import sys
 
 # Ensure the project root is on the path
 sys.path.insert(0, ".")
 
-from app.core.config import settings
-from app.core.security import hash_password
 from app.dependencies.database import engine, async_session_factory
 from app.models.base import Base
-from app.models.user import User
 from app.models.catalogue import Category, CatalogueItem
 from app.models.enquiry import Enquiry
 from app.models.cms import Page, ContentBlock
@@ -35,17 +31,6 @@ from sqlalchemy import select
 
 
 # ── Seed data ─────────────────────────────────────────────────────
-
-ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@canbri.co.zw")
-# Read from env; if absent, generate a random password and print it once.
-_env_password = os.environ.get("ADMIN_PASSWORD")
-if not _env_password:
-    _env_password = secrets.token_urlsafe(16)
-    print(
-        f"[seed] ADMIN_PASSWORD not set — generated password: {_env_password}\n"
-        "       Set ADMIN_PASSWORD in .env to use a fixed value."
-    )
-ADMIN_PASSWORD = _env_password
 
 CATEGORIES = [
     {"name": "Tools & Hardware", "slug": "tools-and-hardware", "description": "Hand tools, power tools, fasteners and builders' hardware", "is_active": True, "sort_order": 1},
@@ -211,6 +196,7 @@ SITE_SETTINGS = [
     {"key": "site_phone", "value": "+263 71 427 8269", "description": "Phone number"},
     {"key": "site_whatsapp", "value": "+263 77 327 8269", "description": "WhatsApp number"},
     {"key": "site_url", "value": "https://canbri.co.zw", "description": "Website URL"},
+    {"key": "site_address", "value": "", "description": "Business street address"},
     {"key": "business_hours", "value": "Mon – Fri: 08:00 – 17:00 · Sat: 08:00 – 13:00 · Sun: Closed", "description": "Business hours"},
     {"key": "delivery_areas", "value": ["Harare", "Murewa"], "description": "Delivery areas"},
     {"key": "founding_year", "value": 2024, "description": "Founding year"},
@@ -218,6 +204,8 @@ SITE_SETTINGS = [
     {"key": "social_instagram", "value": "https://www.instagram.com/canbri", "description": "Instagram URL"},
     {"key": "tagline", "value": "Cool & Cold", "description": "Company tagline"},
     {"key": "short_name", "value": "Canbri", "description": "Short company name"},
+    {"key": "db_storage_limit_mb", "value": "", "description": "Database storage limit (MB) — admin-set plan ceiling, blank = unknown"},
+    {"key": "image_storage_limit_mb", "value": "", "description": "Image/R2 storage limit (MB) — admin-set plan ceiling, blank = unknown"},
 ]
 
 CMS_PAGES = [
@@ -247,28 +235,9 @@ async def seed() -> None:
         return
 
     async with async_session_factory() as session:
-        # ── Admin user ────────────────────────────────────────────
-        # Production relies on the one-time bootstrap signup at /admin instead
-        # of a seeded credential — never plant a known admin account there.
-        if settings.ENVIRONMENT == "production":
-            logger.info("[seed] Skipping admin user seed in production — use the /admin bootstrap signup instead")
-        else:
-            result = await session.execute(select(User).where(User.email == ADMIN_EMAIL))
-            admin = result.scalar_one_or_none()
-            if not admin:
-                admin = User(
-                    email=ADMIN_EMAIL,
-                    name="Super Admin",
-                    password_hash=hash_password(ADMIN_PASSWORD),
-                    role="super_admin",
-                    is_active=True,
-                    is_verified=True,
-                )
-                session.add(admin)
-                await session.flush()
-                logger.info("Admin user created", extra={"structured": {"email": ADMIN_EMAIL}})
-            else:
-                logger.info("Admin user already exists")
+        # The super-admin account is never seeded here — it's created once via
+        # the /auth/register bootstrap signup, gated by a real "no admin
+        # exists yet" database check.
 
         # ── Categories ────────────────────────────────────────────
         category_map: dict[str, str] = {}
@@ -300,16 +269,12 @@ async def seed() -> None:
                 session.add(MediaItem(**g_data))
 
         # ── Settings ─────────────────────────────────────────────
+        # Stored as the natural JSON value (string/number/array) — matching
+        # what PATCH /settings/{key} writes — not wrapped in {"value": ...}.
         for s_data in SITE_SETTINGS:
             result = await session.execute(select(Setting).where(Setting.key == s_data["key"]))
             if not result.scalar_one_or_none():
-                # Convert value to JSON-compatible format
-                value = s_data["value"]
-                if isinstance(value, str):
-                    value = {"value": value}
-                elif isinstance(value, (list, int)):
-                    value = {"value": value}
-                session.add(Setting(key=s_data["key"], value=value, description=s_data.get("description")))
+                session.add(Setting(key=s_data["key"], value=s_data["value"], description=s_data.get("description")))
 
         # ── CMS pages ────────────────────────────────────────────
         for p_data in CMS_PAGES:

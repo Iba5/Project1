@@ -47,6 +47,7 @@ export type SiteSettings = {
   facebook: string;
   instagram: string;
   businessHours: string;
+  address: string;
   navLinks: NavLink[];
 };
 

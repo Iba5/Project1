@@ -18,6 +18,7 @@ type SiteFooterProps = {
   facebook: string;
   instagram: string;
   businessHours: string;
+  address: string;
   navLinks: NavLinkType[];
   branches: Branch[];
 };
@@ -35,6 +36,7 @@ export function SiteFooter({
   facebook,
   instagram,
   businessHours,
+  address,
   navLinks,
   branches,
 }: SiteFooterProps) {
@@ -156,6 +158,12 @@ export function SiteFooter({
                     <Mail className="mt-0.5 h-4 w-4 shrink-0 text-brand-ice" aria-hidden />
                     <span>{email}</span>
                   </a>
+                </li>
+              )}
+              {address && (
+                <li className="flex items-start gap-2.5">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-ice" aria-hidden />
+                  <span className="text-white/70">{address}</span>
                 </li>
               )}
               {branches.map((b) => (

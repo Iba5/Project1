@@ -48,3 +48,21 @@ def upload_file(file_bytes: bytes, *, content_type: str, folder: str = "canbri")
         "key": key,
         "bytes": len(file_bytes),
     }
+
+
+def get_bucket_usage_bytes() -> int:
+    """Sum the size of every object in the R2 bucket (paginated list_objects_v2)."""
+    client = _get_client()
+    total = 0
+    continuation_token: str | None = None
+    while True:
+        kwargs = {"Bucket": settings.R2_BUCKET_NAME}
+        if continuation_token:
+            kwargs["ContinuationToken"] = continuation_token
+        page = client.list_objects_v2(**kwargs)
+        for obj in page.get("Contents", []):
+            total += obj["Size"]
+        if not page.get("IsTruncated"):
+            break
+        continuation_token = page.get("NextContinuationToken")
+    return total

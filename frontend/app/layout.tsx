@@ -207,6 +207,7 @@ export default async function RootLayout({
               facebook={site.facebook}
               instagram={site.instagram}
               businessHours={site.businessHours}
+              address={site.address}
               navLinks={site.navLinks}
               branches={contact.branches}
             />

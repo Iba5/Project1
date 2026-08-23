@@ -25,6 +25,7 @@ PUBLIC_SETTING_KEYS = [
     "founding_year",
     "social_facebook",
     "social_instagram",
+    "site_address",
 ]
 
 
