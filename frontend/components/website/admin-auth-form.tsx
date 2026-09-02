@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { LogIn, RefreshCw, UserPlus } from "lucide-react";
+import { ArrowRight, LogIn, RefreshCw, UserPlus } from "lucide-react";
 
 type AdminAuthFormProps = {
   mode: "login" | "signup";
@@ -73,58 +73,56 @@ export function AdminAuthForm({ mode, onSuccess }: AdminAuthFormProps) {
 
   return (
     <div className="w-full max-w-sm rounded-2xl bg-background shadow-2xl ring-1 ring-border overflow-hidden">
-      <div className="flex items-center gap-2.5 border-b border-border bg-secondary/40 px-5 py-4">
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-navy text-white">
-          <Icon className="h-5 w-5" strokeWidth={2.25} />
+      <div className="flex items-center gap-2.5 border-b border-border bg-brand-navy-deep px-5 py-4">
+        <span className="flex h-9 w-9 items-center justify-center rounded-md border-b-2 border-brand-cta bg-destructive text-sm font-bold text-white">
+          C
         </span>
         <div>
-          <h1 className="font-display text-base font-semibold text-brand-heading">
-            {mode === "signup" ? "Create the admin account" : "Admin Login"}
-          </h1>
-          <p className="text-xs text-muted-foreground">
-            {mode === "signup"
-              ? "One-time setup — this becomes the site's sole administrator."
-              : "Sign in to access the dashboard"}
+          <p className="font-mono text-[9px] font-semibold uppercase tracking-widest text-brand-cta">
+            {mode === "signup" ? "One-Time Setup" : "Restricted Access"}
           </p>
+          <h1 className="font-display text-base font-bold uppercase tracking-tight text-white">
+            {mode === "signup" ? "Create Admin Account." : "Admin Login."}
+          </h1>
         </div>
       </div>
       <form onSubmit={handleSubmit} className="space-y-4 p-5">
         {error && (
-          <p className="rounded-lg border border-red-500/30 bg-red-500/5 p-3 text-sm text-red-600 dark:text-red-400">
+          <p className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
             {error}
           </p>
         )}
         {mode === "signup" && (
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Name
+            <label className="font-mono text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Name <span className="text-brand-cta">*</span>
             </label>
             <input
               type="text"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-lg border border-border bg-secondary/40 px-3 py-2 text-sm text-brand-heading placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-accent"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-brand-heading placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-accent"
               placeholder="Your name"
             />
           </div>
         )}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Email
+          <label className="font-mono text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Email <span className="text-brand-cta">*</span>
           </label>
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-border bg-secondary/40 px-3 py-2 text-sm text-brand-heading placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-accent"
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-brand-heading placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="admin@example.com"
           />
         </div>
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Password
+          <label className="font-mono text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Password <span className="text-brand-cta">*</span>
           </label>
           <input
             type="password"
@@ -132,17 +130,18 @@ export function AdminAuthForm({ mode, onSuccess }: AdminAuthFormProps) {
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border border-border bg-secondary/40 px-3 py-2 text-sm text-brand-heading placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-accent"
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-brand-heading placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="••••••••"
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand-navy py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand-cta py-2.5 text-sm font-semibold uppercase tracking-wide text-brand-cta-fg transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           {loading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Icon className="h-4 w-4" />}
-          {loading ? "Please wait…" : mode === "signup" ? "Create account" : "Sign in"}
+          {loading ? "Please Wait…" : mode === "signup" ? "Create Account" : "Sign In"}
+          {!loading && <ArrowRight className="h-4 w-4" />}
         </button>
       </form>
     </div>

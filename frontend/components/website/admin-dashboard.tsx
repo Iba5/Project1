@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { getEvents, clearEvents, type AnalyticsEvent } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/website/theme-toggle";
 
 type Enquiry = {
   id: string;
@@ -616,80 +617,88 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
             aria-modal="true"
             aria-label="Admin dashboard"
           >
-            <div className="flex max-h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-background shadow-2xl ring-1 ring-border">
-              {/* Header */}
-              <div className="flex items-center justify-between border-b border-border bg-secondary/40 px-5 py-4 sm:px-6">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-navy text-white">
-                    <BarChart3 className="h-5 w-5" strokeWidth={2.25} />
+            <div className="flex max-h-[92vh] w-full max-w-6xl overflow-hidden rounded-2xl bg-background shadow-2xl ring-1 ring-border">
+              {/* Sidebar */}
+              <div className="flex w-56 shrink-0 flex-col bg-brand-navy-deep text-white">
+                {/* Logo block */}
+                <div className="flex items-center gap-2.5 border-b border-white/10 px-4 py-4">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border-b-2 border-brand-cta bg-destructive text-sm font-bold text-white">
+                    C
                   </span>
-                  <div>
-                    <h2 className="font-display text-lg font-semibold text-brand-heading">
-                      Admin Dashboard
-                    </h2>
-                    <p className="text-xs text-muted-foreground">
-                      Manage enquiries, newsletter & analytics
+                  <div className="min-w-0">
+                    <p className="font-display text-sm font-bold leading-none tracking-tight text-white">
+                      CANBRI
+                    </p>
+                    <p className="mt-1 truncate font-mono text-[9px] font-medium uppercase tracking-widest text-brand-cta">
+                      Admin Panel
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      fetchData();
-                      fetchLocalData();
-                    }}
-                    disabled={loading}
-                    aria-label="Refresh data"
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-brand-heading transition-colors hover:bg-secondary disabled:opacity-50"
-                  >
-                    <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} strokeWidth={2.25} />
-                  </button>
+
+                {/* Nav */}
+                <nav className="flex-1 space-y-0.5 overflow-y-auto p-2">
+                  <SidebarNavItem active={tab === "enquiries"} onClick={() => setTab("enquiries")} icon={Inbox} label={`Enquiries${stats ? ` (${stats.total})` : ""}`} />
+                  <SidebarNavItem active={tab === "newsletter"} onClick={() => setTab("newsletter")} icon={Mail} label={`Newsletter (${newsletter.length})`} />
+                  <SidebarNavItem active={tab === "analytics"} onClick={() => setTab("analytics")} icon={BarChart3} label={`Analytics (${events.length})`} />
+                  <SidebarNavItem active={tab === "live"} onClick={() => setTab("live")} icon={Radio} label="Live" />
+                  <SidebarNavItem active={tab === "settings"} onClick={() => setTab("settings")} icon={SettingsIcon} label="Settings" />
+                  <SidebarNavItem active={tab === "catalogue"} onClick={() => { setTab("catalogue"); setCatalogueView("list"); }} icon={Package} label={`Catalogue${catalogueItems.length ? ` (${catalogueItems.length})` : ""}`} />
+                  <SidebarNavItem active={tab === "gallery"} onClick={() => setTab("gallery")} icon={ImageIcon} label={`Gallery${mediaItems.length ? ` (${mediaItems.length})` : ""}`} />
+                </nav>
+
+                {/* Bottom utility block */}
+                <div className="space-y-2 border-t border-white/10 p-2.5">
+                  <div className="flex items-center gap-2">
+                    <ThemeToggle />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        fetchData();
+                        fetchLocalData();
+                      }}
+                      disabled={loading}
+                      aria-label="Refresh data"
+                      className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg border border-white/15 font-mono text-[10px] font-semibold uppercase tracking-wider text-white/80 transition-colors hover:bg-white/10 disabled:opacity-50"
+                    >
+                      <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} strokeWidth={2.25} />
+                      Refresh
+                    </button>
+                  </div>
                   <button
                     type="button"
                     onClick={handleLogout}
-                    aria-label="Log out"
-                    title="Log out"
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-red-500 hover:text-white"
+                    className="flex h-9 w-full items-center justify-center gap-1.5 rounded-lg bg-brand-cta font-mono text-[11px] font-semibold uppercase tracking-wider text-brand-cta-fg transition-opacity hover:opacity-90"
                   >
-                    <LogOut className="h-4 w-4" strokeWidth={2.25} />
+                    <LogOut className="h-3.5 w-3.5" strokeWidth={2.25} />
+                    Log Out
                   </button>
                   <button
                     type="button"
                     onClick={onClose}
-                    aria-label="Close dashboard"
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-brand-heading transition-colors hover:bg-secondary"
+                    className="flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-white/15 font-mono text-[11px] font-semibold uppercase tracking-wider text-white/80 transition-colors hover:bg-white/10"
                   >
-                    <X className="h-5 w-5" strokeWidth={2.25} />
+                    <X className="h-3.5 w-3.5" strokeWidth={2.25} />
+                    Close
                   </button>
                 </div>
               </div>
 
-              {/* Stats row */}
-              {stats && (
-                <div className="grid grid-cols-2 gap-3 border-b border-border bg-background px-5 py-4 sm:grid-cols-4 sm:px-6">
-                  <StatCard label="Total Enquiries" value={stats.total} icon={Inbox} accent="navy" />
-                  <StatCard label="New" value={stats.new} icon={CircleDot} accent="blue" />
-                  <StatCard label="This Week" value={stats.recent} icon={TrendingUp} accent="amber" />
-                  <StatCard label="Today" value={stats.today} icon={Clock} accent="emerald" />
-                </div>
-              )}
+              {/* Main content column */}
+              <div className="flex min-w-0 flex-1 flex-col">
+                {/* Stats row */}
+                {stats && (
+                  <div className="grid grid-cols-2 gap-3 border-b border-border bg-background px-5 py-4 sm:grid-cols-4 sm:px-6">
+                    <StatCard label="Total Enquiries" value={stats.total} icon={Inbox} accent="navy" description="All time submissions" />
+                    <StatCard label="New" value={stats.new} icon={CircleDot} accent="blue" description="Awaiting first contact" />
+                    <StatCard label="This Week" value={stats.recent} icon={TrendingUp} accent="amber" description="Last 7 days" />
+                    <StatCard label="Today" value={stats.today} icon={Clock} accent="emerald" description="Since midnight" />
+                  </div>
+                )}
 
-              {/* Tabs */}
-              <div className="flex items-center gap-1 border-b border-border bg-background px-5 sm:px-6">
-                <TabButton active={tab === "enquiries"} onClick={() => setTab("enquiries")} icon={Inbox} label={`Enquiries${stats ? ` (${stats.total})` : ""}`} />
-                <TabButton active={tab === "newsletter"} onClick={() => setTab("newsletter")} icon={Mail} label={`Newsletter (${newsletter.length})`} />
-                <TabButton active={tab === "analytics"} onClick={() => setTab("analytics")} icon={BarChart3} label={`Analytics (${events.length})`} />
-                <TabButton active={tab === "live"} onClick={() => setTab("live")} icon={Radio} label="Live" />
-                <TabButton active={tab === "settings"} onClick={() => setTab("settings")} icon={SettingsIcon} label="Settings" />
-                <TabButton active={tab === "catalogue"} onClick={() => { setTab("catalogue"); setCatalogueView("list"); }} icon={Package} label={`Catalogue${catalogueItems.length ? ` (${catalogueItems.length})` : ""}`} />
-                <TabButton active={tab === "gallery"} onClick={() => setTab("gallery")} icon={ImageIcon} label={`Gallery${mediaItems.length ? ` (${mediaItems.length})` : ""}`} />
-              </div>
-
-              {/* Body */}
-              <div className="flex-1 overflow-auto bg-secondary/20">
-                {error && (
-                  <div className="m-4 rounded-lg border border-red-500/30 bg-red-500/5 p-4 text-sm text-red-600 dark:text-red-400">
+                {/* Body */}
+                <div className="flex-1 overflow-auto bg-secondary/20">
+                  {error && (
+                    <div className="m-4 rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
                     {error}
                   </div>
                 )}
@@ -697,6 +706,7 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
                 {/* Enquiries tab */}
                 {tab === "enquiries" && (
                   <div className="p-4 sm:p-6">
+                    <SectionHeading eyebrow="Customer Enquiries" heading="Manage Enquiries." />
                     {enquiries.length > 0 && (
                       <div className="mb-4 flex items-center justify-between">
                         <p className="text-xs text-muted-foreground">
@@ -806,7 +816,7 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
                                   type="button"
                                   onClick={() => deleteEnquiry(enq.id)}
                                   aria-label="Delete enquiry"
-                                  className="ml-auto inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-red-500 hover:text-white"
+                                  className="ml-auto inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive hover:text-white"
                                 >
                                   <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
                                 </button>
@@ -822,12 +832,13 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
                 {/* Newsletter tab */}
                 {tab === "newsletter" && (
                   <div className="p-4 sm:p-6">
+                    <SectionHeading eyebrow="Mailing List" heading="Newsletter Subscribers." />
                     {newsletter.length === 0 ? (
                       <EmptyState icon={Mail} title="No newsletter subscribers yet" description="Email signups from the footer form will appear here." />
                     ) : (
                       <div className="overflow-hidden rounded-xl border border-border bg-card">
                         <table className="w-full text-sm">
-                          <thead className="bg-secondary/50 text-xs uppercase tracking-wider text-muted-foreground">
+                          <thead className="bg-secondary/50 font-mono text-xs uppercase tracking-wider text-muted-foreground">
                             <tr>
                               <th className="px-4 py-2.5 text-left font-semibold">#</th>
                               <th className="px-4 py-2.5 text-left font-semibold">Email</th>
@@ -860,7 +871,7 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
                                       localStorage.setItem("canbri-newsletter", JSON.stringify(updated));
                                     }}
                                     aria-label="Remove subscriber"
-                                    className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-red-500 hover:text-white"
+                                    className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive hover:text-white"
                                   >
                                     <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
                                   </button>
@@ -957,6 +968,7 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
                 {/* Analytics tab */}
                 {tab === "analytics" && (
                   <div className="p-4 sm:p-6">
+                    <SectionHeading eyebrow="Site Traffic" heading="Analytics Overview." />
                     {events.length === 0 ? (
                       <EmptyState icon={BarChart3} title="No analytics events yet" description="User interactions (clicks, views, submissions) will appear here." />
                     ) : (
@@ -986,7 +998,7 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
                               clearEvents();
                               setEvents([]);
                             }}
-                            className="inline-flex h-7 items-center gap-1.5 rounded-md px-2.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-red-500 hover:text-white"
+                            className="inline-flex h-7 items-center gap-1.5 rounded-md px-2.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-destructive hover:text-white"
                           >
                             <Trash2 className="h-3 w-3" strokeWidth={2.25} />
                             Clear all
@@ -1024,14 +1036,15 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
                 {/* Settings tab */}
                 {tab === "settings" && (
                   <div className="p-4 sm:p-6">
+                    <SectionHeading eyebrow="Configuration" heading="Site Settings." />
                     {settingsError && (
-                      <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/5 p-3 text-sm text-red-600 dark:text-red-400">
+                      <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
                         {settingsError}
                       </div>
                     )}
                     <div className="mb-6 grid gap-3 sm:grid-cols-2">
                       {storageStatsError ? (
-                        <div className="sm:col-span-2 rounded-lg border border-red-500/30 bg-red-500/5 p-3 text-sm text-red-600 dark:text-red-400">
+                        <div className="sm:col-span-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
                           {storageStatsError}
                         </div>
                       ) : (
@@ -1088,7 +1101,7 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
                                   type="button"
                                   onClick={() => saveSetting(field.key)}
                                   disabled={!dirty || settingsSavingKey === field.key}
-                                  className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg bg-brand-navy px-3 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+                                  className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg bg-brand-cta px-3 text-xs font-semibold uppercase tracking-wide text-brand-cta-fg transition-opacity hover:opacity-90 disabled:opacity-40"
                                 >
                                   {settingsSavingKey === field.key ? (
                                     <RefreshCw className="h-3.5 w-3.5 animate-spin" />
@@ -1145,13 +1158,14 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
                     onRefresh={fetchGallery}
                   />
                 )}
-              </div>
+                </div>
 
-              {/* Footer */}
-              <div className="border-t border-border bg-secondary/30 px-5 py-3 sm:px-6">
-                <p className="text-[10px] text-muted-foreground">
-                  Admin access via <kbd className="rounded border border-border bg-background px-1 py-0.5 text-[9px] font-semibold">Ctrl+Shift+A</kbd> or the footer link.
-                </p>
+                {/* Footer */}
+                <div className="border-t border-border bg-secondary/30 px-5 py-3 sm:px-6">
+                  <p className="text-[10px] text-muted-foreground">
+                    Admin access via <kbd className="rounded border border-border bg-background px-1 py-0.5 text-[9px] font-semibold">Ctrl+Shift+A</kbd> or the footer link.
+                  </p>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -1161,16 +1175,29 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
   );
 }
 
+function SectionHeading({ eyebrow, heading }: { eyebrow: string; heading: string }) {
+  return (
+    <div className="mb-4">
+      <p className="font-mono text-[10px] font-semibold uppercase tracking-widest text-brand-cta">{eyebrow}</p>
+      <h2 className="font-display text-xl font-bold uppercase leading-tight tracking-tight text-brand-heading">
+        {heading}
+      </h2>
+    </div>
+  );
+}
+
 function StatCard({
   label,
   value,
   icon: Icon,
   accent,
+  description,
 }: {
   label: string;
   value: number;
   icon: typeof Inbox;
   accent: "navy" | "blue" | "amber" | "emerald";
+  description?: string;
 }) {
   const accentClasses = {
     navy: "bg-brand-navy/10 text-brand-navy dark:text-brand-ice",
@@ -1179,23 +1206,26 @@ function StatCard({
     emerald: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
   };
   return (
-    <div className="flex items-center gap-2.5 rounded-lg border border-border bg-card p-3">
-      <span className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-md", accentClasses[accent])}>
-        <Icon className="h-4 w-4" strokeWidth={2.25} />
-      </span>
-      <div className="min-w-0">
-        <p className="font-display text-xl font-bold leading-none text-brand-heading">
-          {value}
-        </p>
-        <p className="mt-0.5 truncate text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-          {label}
-        </p>
+    <div className="rounded-lg border border-border bg-card p-3.5">
+      <div className="mb-2 flex items-center justify-between">
+        <span className={cn("flex h-7 w-7 shrink-0 items-center justify-center rounded-md", accentClasses[accent])}>
+          <Icon className="h-3.5 w-3.5" strokeWidth={2.25} />
+        </span>
       </div>
+      <p className="font-display text-3xl font-bold leading-none text-brand-heading">
+        {value}
+      </p>
+      <p className="mt-1.5 truncate font-mono text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        {label}
+      </p>
+      {description && (
+        <p className="mt-0.5 truncate text-[10px] text-muted-foreground/70">{description}</p>
+      )}
     </div>
   );
 }
 
-function TabButton({
+function SidebarNavItem({
   active,
   onClick,
   icon: Icon,
@@ -1211,21 +1241,21 @@ function TabButton({
       type="button"
       onClick={onClick}
       className={cn(
-        "relative inline-flex items-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors",
+        "relative flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 font-mono text-[11px] font-medium uppercase tracking-wider transition-colors",
         active
-          ? "text-brand-heading"
-          : "text-muted-foreground hover:text-brand-heading",
+          ? "bg-white/10 text-brand-cta"
+          : "text-white/60 hover:bg-white/5 hover:text-white/90",
       )}
     >
-      <Icon className="h-4 w-4" strokeWidth={2.25} />
-      {label}
       {active && (
         <motion.span
-          layoutId="admin-tab-indicator"
-          className="absolute inset-x-0 bottom-0 h-0.5 bg-brand-accent"
+          layoutId="admin-nav-indicator"
+          className="absolute inset-y-1 left-0 w-0.5 rounded-full bg-brand-cta"
           transition={{ duration: 0.2 }}
         />
       )}
+      <Icon className="h-4 w-4 shrink-0" strokeWidth={2.25} />
+      <span className="truncate">{label}</span>
     </button>
   );
 }
@@ -1298,8 +1328,9 @@ function CatalogueTab({
 
   return (
     <div className="p-4 sm:p-6">
+      <SectionHeading eyebrow="Product Catalogue" heading="Manage Products." />
       {error && (
-        <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/5 p-3 text-sm text-red-600 dark:text-red-400">
+        <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
           {error}
         </div>
       )}
@@ -1325,16 +1356,26 @@ function CatalogueTab({
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
         </select>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-lg border border-border bg-secondary/40 px-2.5 py-2 text-sm text-brand-heading focus:outline-none focus:ring-2 focus:ring-brand-accent"
-        >
-          <option value="">All statuses</option>
-          {CATALOGUE_STATUSES.map((s) => (
-            <option key={s} value={s}>{s}</option>
+        {/* Fixed, bounded set of statuses (draft/published/archived) — chips
+            per the design system. Category filter above stays a dropdown
+            since categories are user-created and can grow unbounded. */}
+        <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Filter by status">
+          {(["", ...CATALOGUE_STATUSES] as const).map((s) => (
+            <button
+              key={s || "all"}
+              type="button"
+              onClick={() => setStatusFilter(s)}
+              className={cn(
+                "rounded-full px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-wider transition-colors",
+                statusFilter === s
+                  ? "bg-brand-navy text-white"
+                  : "border border-border bg-background text-brand-heading hover:bg-secondary",
+              )}
+            >
+              {s || "All"}
+            </button>
           ))}
-        </select>
+        </div>
         <button
           type="button"
           onClick={() => setShowCategories((v) => !v)}
@@ -1346,7 +1387,7 @@ function CatalogueTab({
         <button
           type="button"
           onClick={() => { setEditingItem(null); setView("form"); }}
-          className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-brand-navy px-3 text-xs font-semibold text-white transition-opacity hover:opacity-90"
+          className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-brand-cta px-3 text-xs font-semibold uppercase tracking-wide text-brand-cta-fg transition-opacity hover:opacity-90"
         >
           <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
           New Product
@@ -1395,7 +1436,7 @@ function CatalogueTab({
                     {item.status}
                   </span>
                   {item.is_out_of_stock && (
-                    <span className="rounded-full bg-red-500/15 px-2 py-0.5 font-semibold uppercase tracking-wider text-red-600 dark:text-red-400">
+                    <span className="rounded-full bg-destructive/15 px-2 py-0.5 font-semibold uppercase tracking-wider text-destructive">
                       Out of stock
                     </span>
                   )}
@@ -1414,7 +1455,7 @@ function CatalogueTab({
                   type="button"
                   onClick={() => onDelete(item.id)}
                   aria-label="Delete product"
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-red-500 hover:text-white"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive hover:text-white"
                 >
                   <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
                 </button>
@@ -1530,7 +1571,7 @@ function CategoryManager({ categories, onRefresh }: { categories: Category[]; on
           type="button"
           onClick={createCategory}
           disabled={saving || !newName.trim()}
-          className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-brand-navy px-2.5 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+          className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-brand-cta px-2.5 text-xs font-semibold uppercase tracking-wide text-brand-cta-fg transition-opacity hover:opacity-90 disabled:opacity-40"
         >
           <FolderPlus className="h-3.5 w-3.5" />
           Add
@@ -1659,7 +1700,7 @@ function CatalogueItemForm({
       </div>
 
       {formError && (
-        <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-3 text-sm text-red-600 dark:text-red-400">
+        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
           {formError}
         </div>
       )}
@@ -1745,7 +1786,7 @@ function CatalogueItemForm({
               onChange={(e) => setFeatures((prev) => prev.map((x, idx) => (idx === i ? e.target.value : x)))}
               className="flex-1 rounded-lg border border-border bg-secondary/40 px-3 py-1.5 text-sm text-brand-heading focus:outline-none focus:ring-2 focus:ring-brand-accent"
             />
-            <button type="button" onClick={() => setFeatures((prev) => prev.filter((_, idx) => idx !== i))} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-red-500 hover:text-white">
+            <button type="button" onClick={() => setFeatures((prev) => prev.filter((_, idx) => idx !== i))} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive hover:text-white">
               <Trash2 className="h-3.5 w-3.5" />
             </button>
           </div>
@@ -1771,7 +1812,7 @@ function CatalogueItemForm({
               onChange={(e) => setSpecs((prev) => prev.map((x, idx) => (idx === i ? { ...x, value: e.target.value } : x)))}
               className="flex-1 rounded-lg border border-border bg-secondary/40 px-3 py-1.5 text-sm text-brand-heading focus:outline-none focus:ring-2 focus:ring-brand-accent"
             />
-            <button type="button" onClick={() => setSpecs((prev) => prev.filter((_, idx) => idx !== i))} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-red-500 hover:text-white">
+            <button type="button" onClick={() => setSpecs((prev) => prev.filter((_, idx) => idx !== i))} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive hover:text-white">
               <Trash2 className="h-3.5 w-3.5" />
             </button>
           </div>
@@ -1826,7 +1867,7 @@ function CatalogueItemForm({
           type="button"
           onClick={handleSave}
           disabled={saving}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-brand-navy px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-brand-cta px-4 py-2 text-sm font-semibold uppercase tracking-wide text-brand-cta-fg transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           {saving ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
           {saving ? "Saving…" : "Save product"}
@@ -1891,8 +1932,9 @@ function GalleryTab({
 
   return (
     <div className="p-4 sm:p-6">
+      <SectionHeading eyebrow="Media Library" heading="Manage Gallery." />
       {(error || uploadError) && (
-        <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/5 p-3 text-sm text-red-600 dark:text-red-400">
+        <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
           {error || uploadError}
         </div>
       )}
@@ -1912,7 +1954,7 @@ function GalleryTab({
               type="button"
               onClick={onCreateCollection}
               disabled={!newCollectionName.trim()}
-              className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-brand-navy px-2.5 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+              className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-brand-cta px-2.5 text-xs font-semibold uppercase tracking-wide text-brand-cta-fg transition-opacity hover:opacity-90 disabled:opacity-40"
             >
               <FolderPlus className="h-3.5 w-3.5" /> Add
             </button>
@@ -1930,7 +1972,7 @@ function GalleryTab({
                   type="button"
                   onClick={() => onDeleteCollection(c.id)}
                   aria-label="Delete collection"
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-red-500 hover:text-white"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive hover:text-white"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
@@ -1942,7 +1984,7 @@ function GalleryTab({
 
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-heading">Media items</h3>
-        <label className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-brand-navy px-3 text-xs font-semibold text-white transition-opacity hover:opacity-90">
+        <label className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-brand-cta px-3 text-xs font-semibold uppercase tracking-wide text-brand-cta-fg transition-opacity hover:opacity-90">
           {uploading ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <UploadIcon className="h-3.5 w-3.5" />}
           {uploading ? "Uploading…" : "Upload image"}
           <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={handleFileChange} />
@@ -1964,7 +2006,7 @@ function GalleryTab({
                 type="button"
                 onClick={() => onDeleteMediaItem(m.id)}
                 aria-label="Delete media item"
-                className="absolute right-1.5 top-1.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white opacity-0 transition-opacity hover:bg-red-500 group-hover:opacity-100"
+                className="absolute right-1.5 top-1.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white opacity-0 transition-opacity hover:bg-destructive group-hover:opacity-100"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>

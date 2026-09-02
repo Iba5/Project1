@@ -61,6 +61,8 @@
   --color-brand-surface-soft-fg: var(--brand-surface-soft-fg);
   --color-brand-accent: var(--brand-accent);
   --color-brand-accent-fg: var(--brand-accent-fg);
+  --color-brand-cta: var(--brand-cta);
+  --color-brand-cta-fg: var(--brand-cta-fg);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -87,6 +89,12 @@
   --brand-surface-soft-fg: var(--brand-navy);
   --brand-accent: var(--brand-ice);
   --brand-accent-fg: var(--brand-navy);
+
+  /* Admin-only amber CTA accent — Tailwind's built-in amber-500 (#f99c00),
+     already used elsewhere in this codebase (sustainability-section.tsx,
+     admin-dashboard.tsx status pills use amber-500/600). Not a new color. */
+  --brand-cta: #f99c00;
+  --brand-cta-fg: var(--brand-navy-deep);
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.20 0.04 250);
@@ -148,6 +156,8 @@
   --brand-surface-soft-fg: oklch(0.99 0 0);
   --brand-accent: var(--brand-ice);
   --brand-accent-fg: var(--brand-navy);
+  --brand-cta: #f99c00;
+  --brand-cta-fg: var(--brand-navy-deep);
 
   --primary: oklch(0.36 0.10 250);
   --primary-foreground: oklch(0.99 0 0);
