@@ -35,15 +35,13 @@ class SettingsService:
         self.repo = SettingRepository(session)
 
     async def get_public_settings(self) -> List[dict]:
-        results = []
-        for key in PUBLIC_SETTING_KEYS:
-            setting = await self.repo.get_by_key(key)
-            if setting:
-                results.append({
-                    "key": setting.key,
-                    "value": setting.value,
-                })
-        return results
+        settings = await self.repo.get_by_keys(PUBLIC_SETTING_KEYS)
+        by_key = {setting.key: setting for setting in settings}
+        return [
+            {"key": key, "value": by_key[key].value}
+            for key in PUBLIC_SETTING_KEYS
+            if key in by_key
+        ]
 
     async def get_all_settings(self) -> List[dict]:
         items = await self.repo.get_many(limit=1000)

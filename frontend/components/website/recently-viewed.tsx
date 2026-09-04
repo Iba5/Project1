@@ -152,7 +152,7 @@ export function RecentlyViewed({ onPick }: RecentlyViewedProps) {
                     </span>
                   </div>
                   <div className="p-2.5">
-                    <p className="truncate text-[10px] font-semibold uppercase tracking-wider text-brand-accent-fg dark:text-brand-ice">
+                    <p className="truncate text-[10px] font-semibold uppercase tracking-wider text-brand-accent">
                       {p.category}
                     </p>
                     <h3 className="mt-0.5 truncate font-display text-sm font-semibold text-brand-heading">

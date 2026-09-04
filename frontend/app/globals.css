@@ -73,10 +73,10 @@
 :root {
   --radius: 0.75rem;
 
-  /* Brand palette — Dark Blue / White / Ice Blue */
-  --brand-navy: oklch(0.28 0.13 250);
-  --brand-navy-deep: oklch(0.20 0.10 255);
-  --brand-ice: oklch(0.88 0.08 220);
+  /* Brand palette — Deep Navy / Orange Accent / Ice Blue (matches canbri.vercel.app) */
+  --brand-navy: #0f1f3a;
+  --brand-navy-deep: #0a1628;
+  --brand-ice: #7dd3fc;
   --brand-ice-soft: oklch(0.95 0.04 220);
   --brand-frost: oklch(0.97 0.02 220);
 
@@ -87,14 +87,14 @@
   --brand-surface-strong-fg: oklch(0.99 0 0);
   --brand-surface-soft: var(--brand-ice-soft);
   --brand-surface-soft-fg: var(--brand-navy);
-  --brand-accent: var(--brand-ice);
-  --brand-accent-fg: var(--brand-navy);
+  --brand-accent: #f5a623;
+  --brand-accent-fg: #17110a;
 
-  /* Admin-only amber CTA accent — Tailwind's built-in amber-500 (#f99c00),
-     already used elsewhere in this codebase (sustainability-section.tsx,
-     admin-dashboard.tsx status pills use amber-500/600). Not a new color. */
-  --brand-cta: #f99c00;
-  --brand-cta-fg: var(--brand-navy-deep);
+  /* CTA accent — same bright orange as brand-accent, kept as a distinct
+     token since it's referenced independently in a few places (sustainability
+     section, admin status pills). */
+  --brand-cta: #f5a623;
+  --brand-cta-fg: #17110a;
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.20 0.04 250);
@@ -113,8 +113,8 @@
 
   --muted: oklch(0.97 0.01 230);
   --muted-foreground: oklch(0.45 0.04 245);
-  --accent: var(--brand-ice);
-  --accent-foreground: var(--brand-navy);
+  --accent: #f5a623;
+  --accent-foreground: #17110a;
 
   --destructive: oklch(0.55 0.22 25);
   --border: oklch(0.92 0.02 230);
@@ -154,10 +154,10 @@
   --brand-surface-strong-fg: oklch(0.99 0 0);
   --brand-surface-soft: oklch(0.30 0.06 250);
   --brand-surface-soft-fg: oklch(0.99 0 0);
-  --brand-accent: var(--brand-ice);
-  --brand-accent-fg: var(--brand-navy);
-  --brand-cta: #f99c00;
-  --brand-cta-fg: var(--brand-navy-deep);
+  --brand-accent: #f5a623;
+  --brand-accent-fg: #17110a;
+  --brand-cta: #f5a623;
+  --brand-cta-fg: #17110a;
 
   --primary: oklch(0.36 0.10 250);
   --primary-foreground: oklch(0.99 0 0);
@@ -167,8 +167,8 @@
 
   --muted: oklch(0.28 0.05 250);
   --muted-foreground: oklch(0.78 0.04 225);
-  --accent: var(--brand-ice);
-  --accent-foreground: var(--brand-navy);
+  --accent: #f5a623;
+  --accent-foreground: #17110a;
 
   --destructive: oklch(0.70 0.19 22);
   --border: oklch(1 0 0 / 12%);

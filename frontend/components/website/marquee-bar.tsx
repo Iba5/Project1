@@ -1,45 +1,37 @@
 "use client";
 
-import { Sparkles, Hammer, ShieldCheck, Snowflake, BookOpen, Factory } from "lucide-react";
-
-const ITEMS = [
-  { icon: Hammer, label: "Tools & Hardware" },
-  { icon: Factory, label: "Fabrication" },
-  { icon: ShieldCheck, label: "PPE & Safety" },
-  { icon: BookOpen, label: "Stationery" },
-  { icon: Snowflake, label: "Ice Blocks" },
-  { icon: Sparkles, label: "Bulk Orders Welcome" },
-  { icon: ShieldCheck, label: "Trusted Brands" },
-  { icon: Factory, label: "Site Supply" },
+const DEFAULT_ITEMS = [
+  "PPE-01 · PPE",
+  "STA-02 · STATIONERY",
+  "TLS-03 · TOOLS & HARDWARE",
+  "FAB-04 · FABRICATION",
+  "ICE-05 · ICE MANUFACTURING",
 ];
 
-export function MarqueeBar() {
-  // Duplicate items for seamless infinite loop
-  const items = [...ITEMS, ...ITEMS];
+const STRIPE_BG =
+  "repeating-linear-gradient(-45deg, var(--brand-accent) 0 10px, var(--brand-navy) 10px 20px)";
+
+export function MarqueeBar({ items = DEFAULT_ITEMS }: { items?: string[] }) {
+  const loop = [...items, ...items];
 
   return (
-    <div
-      className="relative overflow-hidden border-y border-border bg-brand-navy py-4"
-      aria-hidden
-    >
-      {/* Edge fade masks */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-brand-navy to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-brand-navy to-transparent" />
-
-      <div className="marquee-track flex w-max items-center gap-10">
-        {items.map((item, i) => (
-          <div key={i} className="flex shrink-0 items-center gap-2.5">
-            <item.icon
-              className="h-5 w-5 text-brand-ice/80"
-              strokeWidth={1.75}
-            />
-            <span className="font-display text-sm font-semibold uppercase tracking-[0.18em] text-brand-ice/90">
-              {item.label}
-            </span>
-            <span className="ml-6 h-1 w-1 rounded-full bg-brand-accent/60" />
-          </div>
-        ))}
+    <div className="relative" aria-hidden>
+      <div className="h-2" style={{ backgroundImage: STRIPE_BG }} />
+      <div className="relative overflow-hidden bg-[var(--brand-navy-deep)] py-3">
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-[var(--brand-navy-deep)] to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-[var(--brand-navy-deep)] to-transparent" />
+        <div className="marquee-track flex w-max items-center gap-10">
+          {loop.map((item, i) => (
+            <div key={i} className="flex shrink-0 items-center gap-10">
+              <span className="font-display text-xs font-bold uppercase tracking-[0.18em] text-white/85">
+                {item}
+              </span>
+              <span className="h-1.5 w-1.5 rounded-full bg-brand-accent" />
+            </div>
+          ))}
+        </div>
       </div>
+      <div className="h-2" style={{ backgroundImage: STRIPE_BG }} />
 
       <style>{`
         @keyframes marquee-scroll {
@@ -47,7 +39,7 @@ export function MarqueeBar() {
           100% { transform: translateX(-50%); }
         }
         .marquee-track {
-          animation: marquee-scroll 32s linear infinite;
+          animation: marquee-scroll 28s linear infinite;
         }
         .marquee-track:hover {
           animation-play-state: paused;

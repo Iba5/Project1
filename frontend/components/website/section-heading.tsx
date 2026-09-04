@@ -43,14 +43,14 @@ export function SectionHeading({
       {kicker && (
         <p
           className={cn(
-            "relative inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em]",
-            tone === "white" ? "text-brand-ice" : "text-brand-accent-fg dark:text-brand-ice",
+            "relative inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em]",
+            tone === "white" ? "text-brand-ice" : "text-brand-accent",
           )}
         >
           <span
             className={cn(
               "h-px w-6 transition-all duration-300",
-              tone === "white" ? "bg-brand-ice/60" : "bg-brand-accent-fg/40 dark:bg-brand-ice/40",
+              tone === "white" ? "bg-brand-ice/60" : "bg-brand-accent/50",
             )}
             aria-hidden
           />
@@ -58,7 +58,7 @@ export function SectionHeading({
           <span
             className={cn(
               "h-px w-6 transition-all duration-300",
-              tone === "white" ? "bg-brand-ice/60" : "bg-brand-accent-fg/40 dark:bg-brand-ice/40",
+              tone === "white" ? "bg-brand-ice/60" : "bg-brand-accent/50",
             )}
             aria-hidden
           />

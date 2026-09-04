@@ -209,7 +209,7 @@ export function CompareDrawer({ whatsappNumber, fullProducts = [] }: CompareDraw
                           />
                         </div>
                         <div className="p-3">
-                          <p className="text-[10px] font-semibold uppercase tracking-wider text-brand-accent-fg dark:text-brand-ice">
+                          <p className="text-[10px] font-semibold uppercase tracking-wider text-brand-accent">
                             {p.category}
                           </p>
                           <h3 className="mt-1 font-display text-sm font-semibold leading-tight text-brand-heading">

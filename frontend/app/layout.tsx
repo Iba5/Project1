@@ -5,8 +5,7 @@ import { SITE_URL as siteUrl } from "@/lib/site-url";
 import "./globals.css";
 import { Toaster as SonnerToaster } from "sonner";
 import { ThemeProvider } from "@/components/website/theme-provider";
-import { SiteHeader } from "@/components/website/site-header";
-import { SiteFooter } from "@/components/website/site-footer";
+import { SiteChrome } from "@/components/website/site-chrome";
 import { FloatingActions } from "@/components/website/floating-actions";
 import { BackToTop } from "@/components/website/back-to-top";
 import { CookieConsent } from "@/components/website/cookie-consent";
@@ -15,13 +14,10 @@ import { SectionNavigator } from "@/components/website/section-navigator";
 import { MobileBottomNav } from "@/components/website/mobile-bottom-nav";
 import { CompareTray } from "@/components/website/compare-tray";
 import { KeyboardShortcutsModal } from "@/components/website/keyboard-shortcuts-modal";
-import { PromoBanner } from "@/components/website/promo-banner";
 import { QuoteCartDrawer } from "@/components/website/quote-cart-drawer";
 import {
   getSiteSettings,
   getContact,
-  getProducts,
-  getIndustries,
   quoteWhatsAppHref,
 } from "@/lib/cms";
 
@@ -141,31 +137,15 @@ const orgJsonLd = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const [site, contact, products, industries] = await Promise.all([
+  const [site, contact] = await Promise.all([
     getSiteSettings(),
     getContact(),
-    getProducts(),
-    getIndustries(),
   ]);
   const whatsappHref = quoteWhatsAppHref(site.whatsappNumber);
   // next-themes injects an inline anti-flash-of-wrong-theme script that
   // Next.js's own CSP nonce auto-injection doesn't cover — pass the
   // per-request nonce (set in proxy.ts) through explicitly.
   const nonce = (await headers()).get("x-nonce") ?? undefined;
-
-  // Map to minimal searchable shape (avoid passing full Product objects)
-  const searchableProducts = products.map((p) => ({
-    slug: p.slug,
-    name: p.name,
-    category: p.category,
-    image: p.image,
-    shortDescription: p.shortDescription,
-  }));
-  const searchableIndustries = industries.map((i) => ({
-    slug: i.slug,
-    name: i.name,
-    description: i.description,
-  }));
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -177,41 +157,31 @@ export default async function RootLayout({
         </a>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
           nonce={nonce}
         >
-          <div className="flex min-h-screen flex-col">
-            <PromoBanner />
-            <SiteHeader
-              companyName={site.companyName}
-              shortName={site.shortName}
-              tagline={site.tagline}
-              navLinks={site.navLinks}
-              whatsappHref={whatsappHref}
-              products={searchableProducts}
-              industries={searchableIndustries}
-            />
-            <main id="main-content" className="flex-1">{children}</main>
-            <SiteFooter
-              companyName={site.companyName}
-              legalName={site.legalName}
-              tagline={site.tagline}
-              description={site.description}
-              deliveryAreas={site.deliveryAreas}
-              email={site.email}
-              emailHref={site.emailHref}
-              callDisplay={site.callDisplay}
-              callHref={site.callHref}
-              facebook={site.facebook}
-              instagram={site.instagram}
-              businessHours={site.businessHours}
-              address={site.address}
-              navLinks={site.navLinks}
-              branches={contact.branches}
-            />
-          </div>
+          <SiteChrome
+            companyName={site.companyName}
+            legalName={site.legalName}
+            tagline={site.tagline}
+            description={site.description}
+            deliveryAreas={site.deliveryAreas}
+            email={site.email}
+            emailHref={site.emailHref}
+            callDisplay={site.callDisplay}
+            callHref={site.callHref}
+            facebook={site.facebook}
+            instagram={site.instagram}
+            businessHours={site.businessHours}
+            address={site.address}
+            navLinks={site.navLinks}
+            branches={contact.branches}
+            whatsappHref={whatsappHref}
+          >
+            {children}
+          </SiteChrome>
           <ScrollProgress />
           <SectionNavigator />
           <FloatingActions

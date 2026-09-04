@@ -28,8 +28,8 @@ export function WishlistSection() {
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-8 flex items-center justify-between gap-4">
           <div>
-            <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-brand-accent-fg dark:text-brand-ice">
-              <span className="h-px w-6 bg-brand-accent-fg/40 dark:bg-brand-ice/40" aria-hidden />
+            <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-brand-accent">
+              <span className="h-px w-6 bg-brand-accent/50" aria-hidden />
               Saved for later
             </p>
             <h2 className="mt-2 font-display text-2xl font-semibold text-brand-heading sm:text-3xl">
@@ -77,7 +77,7 @@ export function WishlistSection() {
                   </button>
                 </div>
                 <div className="p-4">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-brand-accent-fg dark:text-brand-ice">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-brand-accent">
                     {item.category}
                   </p>
                   <h3 className="mt-1 font-display text-base font-semibold text-brand-heading">

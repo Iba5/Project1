@@ -32,8 +32,9 @@ export async function getHomepage(): Promise<Homepage> {
     ctaTwoLink: "",
     ctaTwoStyle: "whatsapp",
     stats: [
-      { label: "Delivery", value: "Harare & Murewa" },
-      { label: "Catalogue", value: "5 divisions" },
+      { label: "Divisions", value: "5" },
+      { label: "Locations", value: "2" },
+      { label: "Pricing", value: "Quote-based" },
       { label: "Orders", value: "Bulk welcome" },
     ],
     aboutPreviewTitle: "A diversified Zimbabwean supplier built on reliability.",

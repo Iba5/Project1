@@ -49,9 +49,11 @@ export const siteConfig = {
 
 export const navLinks: NavLink[] = [
   { label: "Home", href: "#home" },
-  { label: "About Us", href: "#about" },
+  { label: "Divisions", href: "#divisions" },
   { label: "Products", href: "#products" },
   { label: "Industries", href: "#industries" },
+  { label: "Ice", href: "#ice" },
+  { label: "About", href: "#about" },
   { label: "Gallery", href: "#gallery" },
   { label: "FAQ", href: "#faq" },
   { label: "Contact", href: "#contact" },

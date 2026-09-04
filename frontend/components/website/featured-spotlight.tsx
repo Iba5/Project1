@@ -68,8 +68,8 @@ export function FeaturedSpotlight({ product, whatsappNumber }: FeaturedSpotlight
 
             {/* Right — content */}
             <div className="flex flex-col justify-center p-6 sm:p-8 lg:col-span-5 lg:p-10">
-              <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-brand-accent-fg dark:text-brand-ice">
-                <span className="h-px w-6 bg-brand-accent-fg/40 dark:bg-brand-ice/40" aria-hidden />
+              <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-brand-accent">
+                <span className="h-px w-6 bg-brand-accent/50" aria-hidden />
                 Spotlight
               </p>
               <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-brand-heading sm:text-4xl">

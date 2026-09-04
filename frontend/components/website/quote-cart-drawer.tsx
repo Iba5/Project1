@@ -162,7 +162,7 @@ export function QuoteCartDrawer({ whatsappNumber }: QuoteCartDrawerProps) {
                       <div className="flex flex-1 flex-col">
                         <div className="flex items-start justify-between gap-2">
                           <div>
-                            <p className="text-[10px] font-semibold uppercase tracking-wider text-brand-accent-fg dark:text-brand-ice">
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-brand-accent">
                               {item.category}
                             </p>
                             <h4 className="font-display text-sm font-semibold text-brand-heading">

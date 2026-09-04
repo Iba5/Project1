@@ -148,7 +148,7 @@ export function ProductCard({ product, whatsappNumber, variant = "default", onQu
         )}
         <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-background/95 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-brand-heading shadow-sm backdrop-blur-sm">
           <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
-          In Stock
+          Available
         </span>
 
         {/* Top-right action cluster: wishlist + compare */}
@@ -200,8 +200,8 @@ export function ProductCard({ product, whatsappNumber, variant = "default", onQu
       </div>
 
       <div className="flex flex-1 flex-col p-6">
-        <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand-accent-fg dark:text-brand-ice">
-          <span className="h-px w-4 bg-brand-accent-fg/40 dark:bg-brand-ice/40" aria-hidden />
+        <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand-accent">
+          <span className="h-px w-4 bg-brand-accent/50" aria-hidden />
           {product.category}
         </p>
         <h3

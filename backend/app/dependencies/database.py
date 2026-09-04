@@ -5,6 +5,7 @@ Database dependency: async session generator (PostgreSQL via asyncpg).
 from __future__ import annotations
 
 from typing import AsyncGenerator
+from uuid import uuid4
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -12,6 +13,10 @@ from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 
 # ── Engine & session factory ──────────────────────────────────────
+# Supabase's pooler runs pgbouncer in transaction mode, which doesn't keep
+# prepared statements tied to one physical connection. asyncpg's default
+# sequential statement names collide across pooled connections, so give
+# every prepared statement a unique name instead of caching/reusing them.
 engine = create_async_engine(
     settings.DATABASE_URL,
     echo=False,  # Set to True for SQL debugging
@@ -19,6 +24,11 @@ engine = create_async_engine(
     pool_size=10,
     max_overflow=20,
     pool_pre_ping=True,  # reconnect on stale connections
+    connect_args={
+        "statement_cache_size": 0,
+        "prepared_statement_cache_size": 0,
+        "prepared_statement_name_func": lambda: f"__asyncpg_{uuid4()}__",
+    },
 )
 
 async_session_factory = sessionmaker(

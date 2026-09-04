@@ -27,8 +27,9 @@ import { FaqSectionClient } from "@/components/website/faq-section-client";
 import { GalleryGrid } from "@/components/website/gallery-lightbox";
 import { ProductFilter } from "@/components/website/product-filter";
 import { FaqJsonLd, ProductCatalogJsonLd, BreadcrumbJsonLd } from "@/components/website/seo-schema";
-import { TrustBar } from "@/components/website/trust-bar";
 import { MarqueeBar } from "@/components/website/marquee-bar";
+import { StatsBar } from "@/components/website/stats-bar";
+import { DivisionsGrid } from "@/components/website/divisions-grid";
 import { FeaturedSpotlight } from "@/components/website/featured-spotlight";
 import { QuoteWizard } from "@/components/website/quote-wizard";
 import { SpotlightCard } from "@/components/website/spotlight-card";
@@ -36,6 +37,7 @@ import { HowItWorks } from "@/components/website/how-it-works";
 import { HeroSection } from "@/components/website/hero-section";
 import { DeliveryAreas } from "@/components/website/delivery-areas";
 import { SustainabilitySection } from "@/components/website/sustainability-section";
+import { IceBand } from "@/components/website/ice-band";
 import {
   getFeaturedProducts,
   getProducts,
@@ -83,40 +85,56 @@ export default async function HomePage() {
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <HeroSection
-        heroKicker={homepage.heroKicker}
+        heroKicker={`${site.companyName.toUpperCase()} — HARARE & MUREWA`}
         heroDescription={homepage.heroDescription}
-        rotatingWords={["tools", "hardware", "fabrication", "PPE", "stationery", "ice blocks"]}
-        heroTitlePrefix="Premium supply for"
-        heroTitleSuffix="across Zimbabwe."
-        stats={homepage.stats.map((stat, i) => {
-          const numericMatch = stat.value.match(/^\d+/);
-          return {
-            label: stat.label,
-            value: stat.value,
-            numeric: numericMatch && i === 0 ? parseInt(numericMatch[0], 10) : undefined,
-          };
-        })}
         ctaOne={homepage.ctaOne}
         ctaOneLink={homepage.ctaOneLink}
         ctaOneStyle={homepage.ctaOneStyle}
-        ctaTwo={homepage.ctaTwo}
-        ctaTwoLink={homepage.ctaTwoLink}
-        ctaTwoStyle={homepage.ctaTwoStyle}
         whatsappHref={whatsappHref}
-        heroImage={homepage.heroImage}
-        heroBadgeText={homepage.heroBadgeText ?? undefined}
-        heroBadgeLabel={`Latest from ${site.shortName}`}
-        divisionsCount={5}
-        companyName={site.companyName}
-        shortName={site.shortName}
+        callHref={site.callHref}
+        callDisplay={site.callDisplay}
+        divisionsCount={categories.length}
+      />
+
+      {/* ── Stats bar ────────────────────────────────────────────────────── */}
+      <StatsBar
+        stats={
+          homepage.stats.length > 0
+            ? homepage.stats.map((s) => ({
+                value: s.value,
+                label: s.label,
+                description:
+                  {
+                    Divisions: "Under one roof",
+                    Locations: "Harare & Murewa",
+                    Pricing: "Accurate to your order",
+                    Orders: "Standing orders too",
+                  }[s.label] ?? "",
+              }))
+            : undefined
+        }
       />
 
       {/* ── Marquee trust strip ──────────────────────────────────────────── */}
-      <SectionDivider from="background" to="background" variant="wave" className="opacity-30" />
-      <MarqueeBar />
+      <MarqueeBar
+        items={categories.map(
+          (c, i) => `${["PPE", "STA", "TLS", "FAB", "ICE"][i % 5]}-0${i + 1} · ${c.toUpperCase()}`,
+        )}
+      />
 
-      {/* ── Trust bar ────────────────────────────────────────────────────── */}
-      <TrustBar />
+      {/* ── Divisions ────────────────────────────────────────────────────── */}
+      <section id="divisions" className="bg-background">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+          <ScrollReveal>
+            <SectionHeading
+              kicker="Our Divisions"
+              title="Five divisions. One manifest."
+              description="Every job on your site draws from one of five Canbri divisions. Tap a tag to see what's inside."
+            />
+          </ScrollReveal>
+          <DivisionsGrid categories={categories} products={allProducts} />
+        </div>
+      </section>
 
       {/* ── About preview ────────────────────────────────────────────────── */}
       <section id="about" className="bg-secondary/40 relative overflow-hidden">
@@ -192,15 +210,14 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Products ─────────────────────────────────────────────────────── */}
-      <section id="products" className="bg-background">
+      {/* ── Products / quote builder ─────────────────────────────────────── */}
+      <section id="products" className="bg-secondary/30">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <ScrollReveal>
             <SectionHeading
-              kicker="Our Products"
-              numeral="02"
-              title="Five divisions. One reliable supplier."
-              description="From tools and fabrication to PPE, stationery and ice blocks; each division is structured so new lines can be added without redesigning the site."
+              kicker="Sample Catalogue"
+              title="Build your quote request."
+              description="Search or filter the catalogue, add what you need, then send your list straight to WhatsApp."
               className="max-w-3xl [&_h2]:text-4xl [&_h2]:sm:text-5xl"
             />
           </ScrollReveal>
@@ -232,9 +249,8 @@ export default async function HomePage() {
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
           <ScrollReveal>
             <SectionHeading
-              kicker="Industries We Serve"
-              numeral="03"
-              title="Built for the sectors that keep Zimbabwe running."
+              kicker="Who We Serve"
+              title="Built for real industries."
               description="From construction sites to hospitality, schools to fisheries; Canbri supplies the tools, materials, PPE and ice that keep operations moving."
               align="center"
               className="mx-auto"
@@ -273,6 +289,9 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── Ice highlight band ───────────────────────────────────────────── */}
+      <IceBand whatsappHref={whatsappHref} />
+
       {/* ── Why choose Canbri ────────────────────────────────────────────── */}
       <SectionDivider from="secondary" to="navy" variant="wave" />
       <section className="surface-navy band-top relative overflow-hidden">
@@ -289,9 +308,9 @@ export default async function HomePage() {
         <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
           <ScrollReveal>
             <SectionHeading
-              kicker="Why Choose Canbri"
-              numeral="04"
-              title="Four reasons businesses and households stay with us."
+              kicker="Why Canbri"
+              title="One call covers the whole job."
+              description="Five divisions under one supplier means one relationship, one delivery schedule, and one number to call."
               tone="white"
             />
           </ScrollReveal>
@@ -360,8 +379,7 @@ export default async function HomePage() {
         <div className="relative mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
           <ScrollReveal>
             <SectionHeading
-              kicker="Frequently Asked Questions"
-              numeral="06"
+              kicker="FAQ"
               title="Common questions, answered."
               description="Everything you need to know about ordering, delivery, and working with Canbri."
               align="center"
@@ -493,8 +511,7 @@ export default async function HomePage() {
             <ScrollReveal direction="left" className="lg:col-span-5">
               <SectionHeading
                 kicker="Get in Touch"
-                numeral="08"
-                title="Contact us or request a quote."
+                title="Talk to Canbri."
                 description={contact.intro}
               />
 
