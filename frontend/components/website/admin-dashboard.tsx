@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  X,
   Inbox,
   Mail,
   BarChart3,
@@ -18,7 +18,6 @@ import {
   Download,
   TrendingUp,
   LogOut,
-  Radio,
   Settings as SettingsIcon,
   ImageIcon,
   Plus,
@@ -55,11 +54,10 @@ type Stats = {
   today: number;
 };
 
-type Tab = "enquiries" | "newsletter" | "analytics" | "live" | "settings" | "catalogue" | "gallery";
+type Tab = "enquiries" | "analytics" | "settings" | "catalogue" | "gallery";
 
 type AdminDashboardProps = {
   open: boolean;
-  onClose: () => void;
 };
 
 type SiteSetting = {
@@ -174,16 +172,14 @@ const STATUS_CONFIG: Record<
   },
 };
 
-export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
+export function AdminDashboard({ open }: AdminDashboardProps) {
+  const router = useRouter();
   const [tab, setTab] = useState<Tab>("enquiries");
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [newsletter, setNewsletter] = useState<Array<{ email: string; ts: string }>>([]);
   const [events, setEvents] = useState<AnalyticsEvent[]>([]);
-  const [liveEvents, setLiveEvents] = useState<AnalyticsEvent[]>([]);
-  const [liveConnected, setLiveConnected] = useState(false);
 
   // ── Settings tab state ───────────────────────────────────────
   const [settings, setSettings] = useState<SiteSetting[]>([]);
@@ -222,14 +218,14 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
   // show the login form again.
   const handleSessionExpired = useCallback(() => {
     fetch("/api/admin/logout", { method: "POST" }).catch(() => {});
-    onClose();
-  }, [onClose]);
+    router.push("/");
+  }, [router]);
 
   const handleLogout = () => {
     fetch("/api/admin/logout", { method: "POST" }).catch(() => {});
     setEnquiries([]);
     setStats(null);
-    onClose();
+    router.push("/");
   };
 
   const fetchData = useCallback(async () => {
@@ -259,12 +255,6 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
   }, []);
 
   const fetchLocalData = useCallback(() => {
-    try {
-      const raw = localStorage.getItem("canbri-newsletter");
-      setNewsletter(raw ? JSON.parse(raw) : []);
-    } catch {
-      setNewsletter([]);
-    }
     setEvents(getEvents());
   }, []);
 
@@ -493,42 +483,6 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
     return data.url as string;
   };
 
-  // Live event feed — subscribe to real-time analytics events
-  useEffect(() => {
-    if (!open || tab !== "live") return;
-    setLiveConnected(true);
-    // Seed with the most recent events
-    setLiveEvents(getEvents().slice(-20).reverse());
-    const handler = (e: Event) => {
-      const ev = (e as CustomEvent<AnalyticsEvent>).detail;
-      if (!ev) return;
-      setLiveEvents((prev) => [ev, ...prev].slice(0, 50));
-    };
-    const clearedHandler = () => setLiveEvents([]);
-    window.addEventListener("canbri:analytics", handler as EventListener);
-    window.addEventListener("canbri:analytics-cleared", clearedHandler as EventListener);
-    return () => {
-      setLiveConnected(false);
-      window.removeEventListener("canbri:analytics", handler as EventListener);
-      window.removeEventListener("canbri:analytics-cleared", clearedHandler as EventListener);
-    };
-  }, [open, tab]);
-
-  // Lock body scroll + Escape to close
-  useEffect(() => {
-    if (!open) return;
-    const original = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = original;
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [open, onClose]);
-
   const updateStatus = async (id: string, status: string) => {
     // Optimistic update
     setEnquiries((prev) =>
@@ -591,35 +545,12 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
     return acc;
   }, {});
 
-  return (
-    <AnimatePresence>
-      {open && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={onClose}
-            className="fixed inset-0 z-[110] bg-brand-navy/70 backdrop-blur-sm"
-            aria-hidden
-          />
+  if (!open) return null;
 
-          {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96, y: 12 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 12 }}
-            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 z-[120] flex items-center justify-center p-3 sm:p-6"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Admin dashboard"
-          >
-            <div className="flex max-h-[92vh] w-full max-w-6xl overflow-hidden rounded-2xl bg-background shadow-2xl ring-1 ring-border">
-              {/* Sidebar */}
-              <div className="flex w-56 shrink-0 flex-col bg-brand-navy-deep text-white">
+  return (
+    <div className="flex min-h-screen">
+      {/* Sidebar */}
+      <div className="sticky top-0 flex h-screen w-56 shrink-0 flex-col bg-brand-navy-deep text-white">
                 {/* Logo block */}
                 <div className="flex items-center gap-2.5 border-b border-white/10 px-4 py-4">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border-b-2 border-brand-cta bg-destructive text-sm font-bold text-white">
@@ -638,9 +569,7 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
                 {/* Nav */}
                 <nav className="flex-1 space-y-0.5 overflow-y-auto p-2">
                   <SidebarNavItem active={tab === "enquiries"} onClick={() => setTab("enquiries")} icon={Inbox} label={`Enquiries${stats ? ` (${stats.total})` : ""}`} />
-                  <SidebarNavItem active={tab === "newsletter"} onClick={() => setTab("newsletter")} icon={Mail} label={`Newsletter (${newsletter.length})`} />
                   <SidebarNavItem active={tab === "analytics"} onClick={() => setTab("analytics")} icon={BarChart3} label={`Analytics (${events.length})`} />
-                  <SidebarNavItem active={tab === "live"} onClick={() => setTab("live")} icon={Radio} label="Live" />
                   <SidebarNavItem active={tab === "settings"} onClick={() => setTab("settings")} icon={SettingsIcon} label="Settings" />
                   <SidebarNavItem active={tab === "catalogue"} onClick={() => { setTab("catalogue"); setCatalogueView("list"); }} icon={Package} label={`Catalogue${catalogueItems.length ? ` (${catalogueItems.length})` : ""}`} />
                   <SidebarNavItem active={tab === "gallery"} onClick={() => setTab("gallery")} icon={ImageIcon} label={`Gallery${mediaItems.length ? ` (${mediaItems.length})` : ""}`} />
@@ -672,19 +601,11 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
                     <LogOut className="h-3.5 w-3.5" strokeWidth={2.25} />
                     Log Out
                   </button>
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    className="flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-white/15 font-mono text-[11px] font-semibold uppercase tracking-wider text-white/80 transition-colors hover:bg-white/10"
-                  >
-                    <X className="h-3.5 w-3.5" strokeWidth={2.25} />
-                    Close
-                  </button>
                 </div>
               </div>
 
               {/* Main content column */}
-              <div className="flex min-w-0 flex-1 flex-col">
+              <div className="flex min-w-0 flex-1 flex-col min-h-screen">
                 {/* Stats row */}
                 {stats && (
                   <div className="grid grid-cols-2 gap-3 border-b border-border bg-background px-5 py-4 sm:grid-cols-4 sm:px-6">
@@ -824,142 +745,6 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
                             </div>
                           );
                         })}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Newsletter tab */}
-                {tab === "newsletter" && (
-                  <div className="p-4 sm:p-6">
-                    <SectionHeading eyebrow="Mailing List" heading="Newsletter Subscribers." />
-                    {newsletter.length === 0 ? (
-                      <EmptyState icon={Mail} title="No newsletter subscribers yet" description="Email signups from the footer form will appear here." />
-                    ) : (
-                      <div className="overflow-hidden rounded-xl border border-border bg-card">
-                        <table className="w-full text-sm">
-                          <thead className="bg-secondary/50 font-mono text-xs uppercase tracking-wider text-muted-foreground">
-                            <tr>
-                              <th className="px-4 py-2.5 text-left font-semibold">#</th>
-                              <th className="px-4 py-2.5 text-left font-semibold">Email</th>
-                              <th className="px-4 py-2.5 text-left font-semibold">Subscribed</th>
-                              <th className="px-4 py-2.5 text-right font-semibold">Action</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-border">
-                            {newsletter.map((sub, i) => (
-                              <tr key={sub.email + i} className="hover:bg-secondary/30">
-                                <td className="px-4 py-2.5 text-xs text-muted-foreground">{i + 1}</td>
-                                <td className="px-4 py-2.5">
-                                  <a href={`mailto:${sub.email}`} className="font-medium text-brand-heading hover:underline">
-                                    {sub.email}
-                                  </a>
-                                </td>
-                                <td className="px-4 py-2.5 text-xs text-muted-foreground">
-                                  {new Date(sub.ts).toLocaleString(undefined, {
-                                    year: "numeric",
-                                    month: "short",
-                                    day: "numeric",
-                                  })}
-                                </td>
-                                <td className="px-4 py-2.5 text-right">
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const updated = newsletter.filter((_, idx) => idx !== i);
-                                      setNewsletter(updated);
-                                      localStorage.setItem("canbri-newsletter", JSON.stringify(updated));
-                                    }}
-                                    aria-label="Remove subscriber"
-                                    className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive hover:text-white"
-                                  >
-                                    <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Live event feed tab */}
-                {tab === "live" && (
-                  <div className="p-4 sm:p-6">
-                    <div className="mb-4 flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2.5">
-                        <span className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-                          <Radio className="h-4 w-4" strokeWidth={2.25} />
-                          {liveConnected && (
-                            <span className="absolute -right-0.5 -top-0.5 flex h-3 w-3">
-                              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                              <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-500" />
-                            </span>
-                          )}
-                        </span>
-                        <div>
-                          <h3 className="font-display text-sm font-semibold text-brand-heading">
-                            Live event feed
-                          </h3>
-                          <p className="text-xs text-muted-foreground">
-                            Real-time stream of user interactions on the site
-                          </p>
-                        </div>
-                      </div>
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
-                        {liveConnected ? "Listening" : "Paused"}
-                      </span>
-                    </div>
-
-                    {/* Helpful tip */}
-                    <div className="mb-4 rounded-lg border border-dashed border-border bg-secondary/30 p-3 text-xs text-muted-foreground">
-                      <span className="font-medium text-brand-heading">Tip:</span> Open the site in another tab and interact with products, search, or the contact form — events will stream here in real-time.
-                    </div>
-
-                    {liveEvents.length === 0 ? (
-                      <EmptyState icon={Radio} title="Waiting for events…" description="Interact with the site to see live events appear here." />
-                    ) : (
-                      <div className="space-y-1.5">
-                        <AnimatePresence initial={false}>
-                          {liveEvents.map((ev, i) => (
-                            <motion.div
-                              key={`${ev.ts}-${i}`}
-                              layout
-                              initial={{ opacity: 0, x: -20, backgroundColor: "rgba(16, 185, 129, 0.12)" }}
-                              animate={{ opacity: 1, x: 0, backgroundColor: "rgba(0, 0, 0, 0)" }}
-                              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                              className="flex items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2 text-xs"
-                            >
-                              <span className={cn(
-                                "shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider",
-                                ev.type.startsWith("whatsapp") || ev.type.startsWith("call")
-                                  ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                                  : ev.type.startsWith("product")
-                                  ? "bg-blue-500/15 text-blue-600 dark:text-blue-400"
-                                  : ev.type.startsWith("newsletter") || ev.type.startsWith("contact")
-                                  ? "bg-amber-500/15 text-amber-600 dark:text-amber-400"
-                                  : "bg-brand-accent/20 text-brand-accent-fg",
-                              )}>
-                                {ev.type.replace(/_/g, " ")}
-                              </span>
-                              {ev.label && (
-                                <span className="min-w-0 flex-1 truncate font-medium text-brand-heading">
-                                  {ev.label}
-                                </span>
-                              )}
-                              <span className="ml-auto shrink-0 font-mono text-[10px] text-muted-foreground">
-                                {new Date(ev.ts).toLocaleTimeString(undefined, {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                  second: "2-digit",
-                                })}
-                              </span>
-                            </motion.div>
-                          ))}
-                        </AnimatePresence>
                       </div>
                     )}
                   </div>
@@ -1167,11 +952,7 @@ export function AdminDashboard({ open, onClose }: AdminDashboardProps) {
                   </p>
                 </div>
               </div>
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+    </div>
   );
 }
 

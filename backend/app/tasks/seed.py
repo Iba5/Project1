@@ -163,17 +163,7 @@ CATALOGUE_ITEMS = [
     },
 ]
 
-GALLERY_ITEMS = [
-    {"title": "Canbri Facility", "alt_text": "Canbri production and dispatch facility", "file_url": "/gallery/factory.png", "file_type": "image", "category": "Factory"},
-    {"title": "Ice Production", "alt_text": "Ice block manufacturing under hygienic conditions", "file_url": "/gallery/production.png", "file_type": "image", "category": "Production"},
-    {"title": "Packaging", "alt_text": "Sealed, labelled and ready for cold-chain dispatch", "file_url": "/gallery/packaging.png", "file_type": "image", "category": "Packaging"},
-    {"title": "Deliveries", "alt_text": "Daily delivery routes across Harare and Murewa", "file_url": "/gallery/deliveries.png", "file_type": "image", "category": "Deliveries"},
-    {"title": "Tools & Hardware", "alt_text": "Hand tools, power tools and builders' hardware range", "file_url": "/gallery/tools.png", "file_type": "image", "category": "Products"},
-    {"title": "PPE Range", "alt_text": "Protective wear, gloves, eyewear and footwear", "file_url": "/gallery/ppe.png", "file_type": "image", "category": "Products"},
-    {"title": "Fabrication Work", "alt_text": "Gates, frames, brackets and structural fabrication", "file_url": "/gallery/fabrication.png", "file_type": "image", "category": "Products"},
-    {"title": "Stationery", "alt_text": "Office and school stationery supplies", "file_url": "/gallery/stationery.png", "file_type": "image", "category": "Products"},
-]
-
+GALLERY_ITEMS: list[dict] = []
 SITE_SETTINGS = [
     {"key": "site_name", "value": "Canbri Private Limited", "description": "Company name"},
     {"key": "site_description", "value": "Canbri Private Limited supplies tools and hardware, fabrication services, personal protective equipment, stationery and ice blocks. We serve businesses and households across Harare and Murewa with reliable delivery and bulk-order support.", "description": "Site meta description"},

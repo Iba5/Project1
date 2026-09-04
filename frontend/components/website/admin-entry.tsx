@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
 import { RefreshCw } from "lucide-react";
 import { AdminAuthForm } from "@/components/website/admin-auth-form";
 
@@ -20,7 +19,6 @@ type Status = "checking" | "needs-setup" | "needs-login" | "authed";
  */
 export function AdminEntry() {
   const [status, setStatus] = useState<Status>("checking");
-  const router = useRouter();
 
   const checkStatus = useCallback(async () => {
     try {
@@ -52,7 +50,7 @@ export function AdminEntry() {
   }
 
   if (status === "authed") {
-    return <AdminDashboard open onClose={() => router.push("/")} />;
+    return <AdminDashboard open />;
   }
 
   return (

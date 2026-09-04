@@ -22,7 +22,6 @@ export async function getHomepage(): Promise<Homepage> {
     heroTitle: "Premium supply solutions for homes, businesses & events.",
     heroDescription:
       "A diversified Zimbabwean supplier with reliable delivery across Harare and Murewa. Bulk orders welcome, every day.",
-    heroImage: "/products/ice-blocks.png",
     heroBadgeText:
       "Reliable supply across five divisions. Quote-driven pricing, delivery throughout Harare and Murewa.",
     ctaOne: "Request a Quote",

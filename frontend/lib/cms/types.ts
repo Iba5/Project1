@@ -55,7 +55,6 @@ export type Homepage = {
   heroKicker: string;
   heroTitle: string;
   heroDescription: string;
-  heroImage: string;
   heroBadgeText: string;
   ctaOne: string;
   ctaOneLink: string;

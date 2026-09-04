@@ -52,7 +52,7 @@ function mapItem(item: BackendCatalogueItem): Product {
     category: item.category?.name ?? "Uncategorized",
     shortDescription: item.short_description ?? "",
     longDescription: item.long_description ?? undefined,
-    image: item.image_url ?? "/products/placeholder.svg",
+    image: item.image_url ?? "",
     images: item.gallery_image_urls ?? undefined,
     placeholder: !item.image_url,
     featured: item.is_featured,
