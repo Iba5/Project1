@@ -31,12 +31,8 @@ import { MarqueeBar } from "@/components/website/marquee-bar";
 import { StatsBar } from "@/components/website/stats-bar";
 import { DivisionsGrid } from "@/components/website/divisions-grid";
 import { FeaturedSpotlight } from "@/components/website/featured-spotlight";
-import { QuoteWizard } from "@/components/website/quote-wizard";
 import { SpotlightCard } from "@/components/website/spotlight-card";
-import { HowItWorks } from "@/components/website/how-it-works";
 import { HeroSection } from "@/components/website/hero-section";
-import { DeliveryAreas } from "@/components/website/delivery-areas";
-import { SustainabilitySection } from "@/components/website/sustainability-section";
 import { IceBand } from "@/components/website/ice-band";
 import {
   getFeaturedProducts,
@@ -230,10 +226,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Featured product spotlight ───────────────────────────────────── */}
-      {featuredProducts[0] && (
+      {/* ── Featured product spotlight (auto-rotates through all featured items) ── */}
+      {featuredProducts.length > 0 && (
         <FeaturedSpotlight
-          product={featuredProducts[0]}
+          products={featuredProducts}
           whatsappNumber={site.whatsappNumber}
         />
       )}
@@ -354,17 +350,13 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── How It Works ──────────────────────────────────────────────── */}
-      <HowItWorks />
-
       {/* ── Gallery ──────────────────────────────────────────────────────── */}
       <SectionDivider from="navy" to="background" variant="wave" />
-      <section id="gallery" className="bg-background">
+      <section id="gallery" className="bg-secondary/40">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
           <ScrollReveal>
             <SectionHeading
               kicker="Gallery"
-              numeral="05"
               title="Inside Canbri."
               description="Click any image to view full-size. More photos will be added as the company shares them."
             />
@@ -379,7 +371,7 @@ export default async function HomePage() {
         <div className="relative mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
           <ScrollReveal>
             <SectionHeading
-              kicker="FAQ"
+              kicker="Frequently Asked Questions"
               title="Common questions, answered."
               description="Everything you need to know about ordering, delivery, and working with Canbri."
               align="center"
@@ -394,217 +386,109 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Branches ─────────────────────────────────────────────────────── */}
-      <section className="bg-secondary/40 relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 pattern-dots opacity-50" aria-hidden />
-        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+      {/* ── CTA band ─────────────────────────────────────────────────────── */}
+      <section className="bg-background">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
           <ScrollReveal>
-            <SectionHeading
-              kicker="Visit Us"
-              numeral="07"
-              title="Come see us, or call ahead."
-              description="Visit our Harare office, or call ahead and we will have your order ready for collection or delivery."
+            <CtaBand
+              title={homepage.ctaBandTitle}
+              description={homepage.ctaBandDescription}
+              primaryLabel={whatsappHref ? "WhatsApp Us" : "Get in Touch"}
+              primaryHref={whatsappHref || "#contact"}
+              external={Boolean(whatsappHref)}
+              secondaryLabel="Go to Contact"
+              secondaryHref="#contact"
             />
           </ScrollReveal>
-          <StaggerContainer className="mt-10 grid gap-6 sm:max-w-xl" staggerDelay={0.15}>
-            {contact.branches.map((b) => (
-              <StaggerItem key={b.city}>
-                <div className="group card-hover relative h-full overflow-hidden rounded-xl border border-border bg-card p-6 sm:p-8">
-                  {/* Decorative corner accent */}
-                  <div
-                    className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-brand-accent/20 blur-2xl transition-opacity duration-300 group-hover:opacity-100 opacity-0"
-                    aria-hidden
-                  />
-                  <div className="relative flex items-start gap-4">
-                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-accent text-brand-accent-fg transition-transform duration-300 group-hover:scale-110">
-                      <MapPin className="h-6 w-6" strokeWidth={2.25} />
-                    </span>
-                    <div className="flex-1">
-                      <h3 className="font-display text-xl font-semibold text-brand-heading">
-                        {b.label}
-                      </h3>
-                      <address className="mt-2 not-italic text-sm leading-relaxed text-muted-foreground">
-                        {b.addressLines.map((line) => (
-                          <span key={line} className="block">
-                            {line}
-                          </span>
-                        ))}
-                      </address>
-                      {b.phone && (
-                        <p className="mt-4 text-sm text-muted-foreground">
-                          <span className="font-medium text-brand-heading">Phone:</span>{" "}
-                          <a href={b.phoneHref} className="link-hover-underline hover:text-brand-heading">
-                            {b.phone}
-                          </a>
-                        </p>
-                      )}
-                      {b.hours && (
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          <span className="font-medium text-brand-heading">Hours:</span>{" "}
-                          {b.hours}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
-        </div>
-      </section>
-
-      {/* ── Delivery Areas ──────────────────────────────────────────────── */}
-      <DeliveryAreas />
-
-      {/* ── Sustainability & Impact ─────────────────────────────────────── */}
-      <SustainabilitySection />
-
-      {/* ── Quick Quote Wizard ───────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-brand-navy py-16 text-brand-ice lg:py-20">
-        {/* Decorative gradient blobs */}
-        <div className="pointer-events-none absolute inset-0" aria-hidden>
-          <div className="absolute -left-20 top-0 h-72 w-72 rounded-full bg-brand-accent/15 blur-3xl" />
-          <div className="absolute -right-20 bottom-0 h-72 w-72 rounded-full bg-brand-ice/10 blur-3xl" />
-          <div className="absolute inset-0 pattern-grid opacity-[0.06]" />
-        </div>
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
-            <ScrollReveal direction="left" className="lg:col-span-5">
-              <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-brand-ice">
-                <span className="h-px w-6 bg-brand-ice/40" aria-hidden />
-                Quick Quote
-              </p>
-              <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Get a quote in 30 seconds.
-              </h2>
-              <p className="mt-4 max-w-md text-base leading-relaxed text-brand-ice/80">
-                Tell us what you need across three quick steps. We&apos;ll compose a WhatsApp message with all the details so you can send it in one tap.
-              </p>
-              <ul className="mt-6 space-y-3">
-                {[
-                  "No account needed",
-                  "No spam — we only contact you about your enquiry",
-                  "Response during business hours, every working day",
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-2.5 text-sm text-brand-ice/90">
-                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-accent/25 text-brand-ice">
-                      <svg className="h-3 w-3" viewBox="0 0 12 12" fill="none" aria-hidden>
-                        <path d="M2.5 6.5L5 9L9.5 3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </ScrollReveal>
-            <ScrollReveal direction="right" delay={0.15} className="lg:col-span-7">
-              <QuoteWizard categories={categories} whatsappNumber={site.whatsappNumber} />
-            </ScrollReveal>
-          </div>
         </div>
       </section>
 
       {/* ── Contact & Quote ──────────────────────────────────────────────── */}
-      <section id="contact" className="bg-background">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+      <section id="contact" className="surface-navy band-top relative overflow-hidden">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+          aria-hidden
+        />
+        <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <ScrollReveal direction="left" className="lg:col-span-5">
-              <SectionHeading
-                kicker="Get in Touch"
-                title="Talk to Canbri."
-                description={contact.intro}
-              />
+              <SectionHeading kicker="Get in Touch" title="Talk to Canbri." tone="white" />
 
-              <div className="mt-8 space-y-4">
-                {site.callHref && (
-                  <a
-                    href={site.callHref}
-                    className="group card-hover flex items-center gap-3 rounded-lg border border-border bg-card p-4"
-                  >
-                    <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-accent text-brand-accent-fg transition-colors group-hover:bg-primary group-hover:text-white">
-                      <Phone className="h-5 w-5" strokeWidth={2.25} />
-                    </span>
-                    <div>
-                      <p className="text-sm font-medium text-brand-heading">Call Us</p>
-                      <p className="text-sm text-muted-foreground">{site.callDisplay}</p>
-                    </div>
-                  </a>
-                )}
-
-                {whatsappHref && (
-                  <a
-                    href={whatsappHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group card-hover flex items-center gap-3 rounded-lg border border-border bg-card p-4"
-                  >
-                    <span className="flex h-10 w-10 items-center justify-center rounded-md bg-[#25D366] text-white">
-                      <MessageCircle className="h-5 w-5" strokeWidth={2.25} />
-                    </span>
-                    <div>
-                      <p className="text-sm font-medium text-brand-heading">WhatsApp</p>
-                      <p className="text-sm text-muted-foreground">{site.whatsappDisplay}</p>
-                    </div>
-                  </a>
-                )}
-
-                {site.emailHref && (
-                  <a
-                    href={site.emailHref}
-                    className="group card-hover flex items-center gap-3 rounded-lg border border-border bg-card p-4"
-                  >
-                    <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-accent text-brand-accent-fg transition-colors group-hover:bg-primary group-hover:text-white">
-                      <Mail className="h-5 w-5" strokeWidth={2.25} />
-                    </span>
-                    <div>
-                      <p className="text-sm font-medium text-brand-heading">Email</p>
-                      <p className="text-sm text-muted-foreground">{site.email}</p>
-                    </div>
-                  </a>
-                )}
-
-                <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-accent text-brand-accent-fg">
-                    <Clock className="h-5 w-5" strokeWidth={2.25} />
-                  </span>
-                  <div>
-                    <p className="text-sm font-medium text-brand-heading">Business Hours</p>
-                    <p className="text-sm text-muted-foreground">{site.businessHours}</p>
+              <div className="mt-8 rounded-xl border border-white/10 bg-white/[0.04] p-6">
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-accent">
+                  Head Office
+                </p>
+                <div className="mt-4 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-ice" strokeWidth={2.25} />
+                    <p className="text-sm text-white/80">{site.address}</p>
+                  </div>
+                  {site.callHref && (
+                    <a href={site.callHref} className="flex items-center gap-3 text-sm text-white/80 hover:text-white">
+                      <Phone className="h-4 w-4 shrink-0 text-brand-ice" strokeWidth={2.25} />
+                      {site.callDisplay}
+                    </a>
+                  )}
+                  {site.emailHref && (
+                    <a href={site.emailHref} className="flex items-center gap-3 text-sm text-white/80 hover:text-white">
+                      <Mail className="h-4 w-4 shrink-0 text-brand-ice" strokeWidth={2.25} />
+                      {site.email}
+                    </a>
+                  )}
+                  <div className="flex items-center gap-3 text-sm text-white/80">
+                    <Clock className="h-4 w-4 shrink-0 text-brand-ice" strokeWidth={2.25} />
+                    {site.businessHours}
                   </div>
                 </div>
               </div>
+
+              {contact.branches
+                .filter((b) => /murewa|murehwa/i.test(b.city))
+                .map((b) => (
+                  <div key={b.city} className="mt-4 rounded-xl border border-white/10 bg-white/[0.04] p-6">
+                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-accent">
+                      Ice Depot &mdash; {b.city}
+                    </p>
+                    <div className="mt-4 flex items-start gap-3">
+                      <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-ice" strokeWidth={2.25} />
+                      <p className="text-sm text-white/80">{b.addressLines.join(", ")}</p>
+                    </div>
+                  </div>
+                ))}
+
+              {whatsappHref && (
+                <a
+                  href={whatsappHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-flex h-11 items-center gap-2 rounded-md border border-white/25 px-5 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+                >
+                  <MessageCircle className="h-4 w-4" strokeWidth={2.25} />
+                  WhatsApp {site.whatsappDisplay}
+                </a>
+              )}
             </ScrollReveal>
 
             <ScrollReveal direction="right" delay={0.15} className="lg:col-span-7">
-              <div className="rounded-xl border border-border bg-card p-6 shadow-sm sm:p-8">
-                <h3 className="font-display text-lg font-semibold text-brand-heading">
-                  Send Us a Message
-                </h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Fill in the form below and we&apos;ll get back to you during business hours.
+              <div className="rounded-xl bg-white p-6 shadow-xl sm:p-8">
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-accent">
+                  Request a Quote
                 </p>
+                <h3 className="mt-1 font-display text-lg font-bold uppercase text-brand-heading">
+                  Tell us what you need
+                </h3>
                 <div className="mt-6">
-                  <ContactForm />
+                  <ContactForm categories={categories} />
                 </div>
               </div>
             </ScrollReveal>
           </div>
         </div>
-      </section>
-
-      {/* ── CTA band ─────────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-        <ScrollReveal>
-          <CtaBand
-            title={homepage.ctaBandTitle}
-            description={homepage.ctaBandDescription}
-            primaryLabel={whatsappHref ? "WhatsApp Us" : "Get in Touch"}
-            primaryHref={whatsappHref || "#contact"}
-            external={Boolean(whatsappHref)}
-            secondaryLabel="Go to Contact"
-            secondaryHref="#contact"
-          />
-        </ScrollReveal>
       </section>
 
       {/* ── Compare drawer (slide-over) ─────────────────────────────────── */}

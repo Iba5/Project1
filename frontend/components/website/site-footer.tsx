@@ -62,9 +62,9 @@ export function SiteFooter({
           </div>
         </div>
 
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-10 md:grid-cols-3">
           {/* Brand */}
-          <div className="lg:col-span-1">
+          <div>
             <div className="flex items-center gap-2.5 text-white">
               <span className="relative flex h-9 w-9 shrink-0 items-center justify-center" aria-hidden>
                 <Image
@@ -177,23 +177,6 @@ export function SiteFooter({
                 </li>
               ))}
             </ul>
-          </div>
-
-          {/* Hours + delivery */}
-          <div>
-            <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-white">
-              Hours &amp; Delivery
-            </h2>
-            <p className="mt-4 text-sm leading-relaxed text-white/75">
-              {businessHours}
-            </p>
-            {deliveryAreas.length > 0 && (
-              <p className="mt-3 text-sm leading-relaxed text-white/75">
-                Deliveries across{" "}
-                <span className="text-white">{deliveryAreas.join(" and ")}</span>.
-                Bulk orders welcome.
-              </p>
-            )}
           </div>
         </div>
 
