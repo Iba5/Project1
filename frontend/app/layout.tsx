@@ -6,7 +6,6 @@ import "./globals.css";
 import { Toaster as SonnerToaster } from "sonner";
 import { ThemeProvider } from "@/components/website/theme-provider";
 import { SiteChrome } from "@/components/website/site-chrome";
-import { FloatingActions } from "@/components/website/floating-actions";
 import { BackToTop } from "@/components/website/back-to-top";
 import { CookieConsent } from "@/components/website/cookie-consent";
 import { ScrollProgress } from "@/components/website/scroll-progress";
@@ -184,11 +183,6 @@ export default async function RootLayout({
           </SiteChrome>
           <ScrollProgress />
           <SectionNavigator />
-          <FloatingActions
-            callHref={site.callHref}
-            callDisplay={site.callDisplay}
-            whatsappHref={whatsappHref}
-          />
           <CompareTray />
           <MobileBottomNav callHref={site.callHref} />
           <BackToTop />
