@@ -52,7 +52,6 @@ export const navLinks: NavLink[] = [
   { label: "Divisions", href: "#divisions" },
   { label: "Products", href: "#products" },
   { label: "Industries", href: "#industries" },
-  { label: "Ice", href: "#ice" },
   { label: "About", href: "#about" },
   { label: "FAQ", href: "#faq" },
   { label: "Contact", href: "#contact" },

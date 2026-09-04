@@ -2,6 +2,7 @@
 
 import { ArrowRight, Phone } from "lucide-react";
 import { motion } from "framer-motion";
+import { RotatingWords } from "@/components/website/rotating-words";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -15,6 +16,7 @@ type HeroSectionProps = {
   callHref: string;
   callDisplay: string;
   divisionsCount?: number;
+  divisionNames?: string[];
 };
 
 const heroContainerVariants = {
@@ -37,6 +39,7 @@ export function HeroSection({
   callHref,
   callDisplay,
   divisionsCount = 5,
+  divisionNames = [],
 }: HeroSectionProps) {
   const ctaOneIsWhatsapp = ctaOneStyle === "whatsapp" && Boolean(whatsappHref);
   const ctaOneHref = ctaOneIsWhatsapp ? whatsappHref : ctaOneStyle === "whatsapp" ? "#contact" : ctaOneLink;
@@ -69,7 +72,17 @@ export function HeroSection({
           variants={heroItemVariants}
           className="mt-4 text-sm font-semibold uppercase tracking-wide text-white/70"
         >
-          Premium supply for <span className="text-white">fabrication.</span>
+          Premium supply for{" "}
+          <span className="text-white">
+            {divisionNames.length > 0 ? (
+              <RotatingWords
+                words={divisionNames.map((n) => `${n.toLowerCase()}.`)}
+                className="font-semibold"
+              />
+            ) : (
+              "fabrication."
+            )}
+          </span>
         </motion.p>
 
         <motion.h1

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { MessageCircle, ArrowRight, Check } from "lucide-react";
+import { MessageCircle, ArrowRight, Check, ImageOff } from "lucide-react";
 import type { Product } from "@/lib/cms";
 import { quoteWhatsAppHref } from "@/lib/cms";
 
@@ -53,15 +53,26 @@ export function FeaturedSpotlight({
             <div className="grid lg:grid-cols-12">
               {/* Left — image with floating accents */}
               <div className="relative lg:col-span-7">
-                <div className="relative aspect-[16/10] w-full overflow-hidden bg-secondary lg:aspect-[16/12]">
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    fill
-                    sizes="(min-width: 1024px) 60vw, 100vw"
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/40 via-transparent to-transparent lg:bg-gradient-to-r" />
+                <div className="relative aspect-[16/10] w-full overflow-hidden bg-brand-navy lg:aspect-[16/12]">
+                  {product.placeholder ? (
+                    <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-center">
+                      <ImageOff className="h-8 w-8 text-brand-ice/70" strokeWidth={1.75} />
+                      <p className="text-xs font-semibold uppercase tracking-wider text-white/50">
+                        Photo not available yet
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        sizes="(min-width: 1024px) 60vw, 100vw"
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/40 via-transparent to-transparent lg:bg-gradient-to-r" />
+                    </>
+                  )}
                 </div>
 
                 {/* Floating badge — Featured */}

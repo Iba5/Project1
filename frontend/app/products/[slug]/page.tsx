@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { MessageCircle, ArrowLeft, Check } from "lucide-react";
+import { MessageCircle, ArrowLeft, Check, ImageOff } from "lucide-react";
 import { getProducts, getSiteSettings, quoteWhatsAppHref } from "@/lib/cms";
 import { ProductGallery } from "@/components/website/product-gallery";
 
@@ -34,15 +34,25 @@ export default async function ProductPage({ params }: ProductPageProps) {
     <>
       {/* ── Banner ───────────────────────────────────────────────────────── */}
       <section className="relative h-[46vh] min-h-[320px] w-full overflow-hidden bg-brand-navy">
-        <Image
-          src={product.image}
-          alt={product.name}
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
+        {!product.placeholder && (
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-brand-navy via-brand-navy/40 to-transparent" />
+        {product.placeholder && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-center">
+            <ImageOff className="h-9 w-9 text-brand-ice/60" strokeWidth={1.5} />
+            <p className="text-xs font-semibold uppercase tracking-wider text-white/40">
+              Photo not available yet
+            </p>
+          </div>
+        )}
 
         <div className="absolute inset-x-0 bottom-0">
           <div className="mx-auto max-w-5xl px-4 pb-10 sm:px-6 lg:px-8">

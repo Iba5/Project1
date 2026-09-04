@@ -47,7 +47,6 @@ CATALOGUE_ITEMS = [
         "category_slug": "tools-and-hardware",
         "short_description": "Hand tools, power tools, fasteners and builders' hardware for tradespeople, contractors and home users.",
         "long_description": "A dependable range of hand tools, power tools, fasteners and builders' hardware, sourced from trusted manufacturers. Stocked for tradespeople, contractors, retail hardware stores and household projects. Bulk orders and recurring supply for sites are welcome.",
-        "image_url": "/products/tools-and-hardware.png",
         "is_featured": True,
         "features": [
             "Hand tools: hammers, screwdrivers, spanners, pliers, saws",
@@ -72,7 +71,6 @@ CATALOGUE_ITEMS = [
         "category_slug": "fabrication",
         "short_description": "Mild-steel and stainless fabrication, gates, frames, brackets and custom structural work.",
         "long_description": "Custom metal fabrication in mild and stainless steel: gates, window frames, brackets, stairs, railings and structural components. Built to spec from drawings or site measurements, with finishing and delivery available across Harare and Murewa.",
-        "image_url": "/products/fabrication.png",
         "is_featured": True,
         "features": [
             "Mild steel & stainless steel fabrication",
@@ -97,7 +95,6 @@ CATALOGUE_ITEMS = [
         "category_slug": "ppe",
         "short_description": "Personal protective equipment, safety wear, gloves, eyewear, footwear and respiratory protection.",
         "long_description": "Personal protective equipment for industrial, construction, food-handling and healthcare settings. Coveralls, high-visibility wear, safety gloves, protective eyewear, safety footwear and respiratory protection. Supplied in case and bulk quantities with ongoing contracts available.",
-        "image_url": "/products/ppe.png",
         "is_featured": True,
         "features": [
             "Coveralls & high-visibility wear",
@@ -122,7 +119,6 @@ CATALOGUE_ITEMS = [
         "category_slug": "stationery",
         "short_description": "Office and school stationery, printer consumables and writing supplies in bulk.",
         "long_description": "General office and school stationery, printer consumables, writing instruments, paper products and filing supplies. Ideal for offices, schools, retailers and procurement teams. Bulk pricing and standing orders are supported.",
-        "image_url": "/products/stationery.png",
         "is_featured": True,
         "features": [
             "Office & school stationery supplies",
@@ -147,7 +143,6 @@ CATALOGUE_ITEMS = [
         "category_slug": "ice-blocks",
         "short_description": "Manufactured ice blocks for commercial, retail and events use, delivered cold across Harare and Murewa.",
         "long_description": "Manufactured ice blocks produced under hygienic conditions and supplied to restaurants, hotels, bars, supermarkets, fisheries, caterers, event organisers and households. Delivered cold across Harare and Murewa. Bulk orders and recurring deliveries are welcome.",
-        "image_url": "/products/ice-blocks.png",
         "is_featured": True,
         "features": [
             "Manufactured ice blocks under hygienic conditions",

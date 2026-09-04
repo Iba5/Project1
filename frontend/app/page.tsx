@@ -87,6 +87,7 @@ export default async function HomePage() {
         callHref={site.callHref}
         callDisplay={site.callDisplay}
         divisionsCount={categories.length}
+        divisionNames={categories}
       />
 
       {/* ── Stats bar ────────────────────────────────────────────────────── */}
@@ -210,7 +211,7 @@ export default async function HomePage() {
             <SectionHeading
               kicker="Sample Catalogue"
               title="Build your quote request."
-              description="Search or filter the catalogue, add what you need, then send your list straight to WhatsApp."
+              description="Add what you need from the list below, then send your quote straight to WhatsApp."
               className="max-w-3xl [&_h2]:text-4xl [&_h2]:sm:text-5xl"
             />
           </ScrollReveal>
@@ -222,6 +223,9 @@ export default async function HomePage() {
           />
         </div>
       </section>
+
+      {/* ── Ice highlight band (folded into Products — Ice has no top-level nav entry) ── */}
+      <IceBand whatsappHref={whatsappHref} />
 
       {/* ── Featured product spotlight (auto-rotates through all featured items) ── */}
       {featuredProducts.length > 0 && (
@@ -281,9 +285,6 @@ export default async function HomePage() {
           </StaggerContainer>
         </div>
       </section>
-
-      {/* ── Ice highlight band ───────────────────────────────────────────── */}
-      <IceBand whatsappHref={whatsappHref} />
 
       {/* ── Why choose Canbri ────────────────────────────────────────────── */}
       <SectionDivider from="secondary" to="navy" variant="wave" />
