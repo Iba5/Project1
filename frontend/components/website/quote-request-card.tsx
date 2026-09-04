@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Plus, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import type { Product } from "@/lib/cms";
@@ -20,7 +21,9 @@ export function QuoteRequestCard({ product }: QuoteRequestCardProps) {
   const cart = useProductStore((s) => s.cart);
   const cartQty = cart.find((i) => i.slug === product.slug)?.quantity ?? 0;
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     addToCart(toStoredProduct(product), 1);
     trackEvent("cart_add", product.name, { slug: product.slug, qty: 1 });
     toast.success(`Added ${product.name} to quote cart`, {
@@ -34,7 +37,10 @@ export function QuoteRequestCard({ product }: QuoteRequestCardProps) {
   };
 
   return (
-    <article className="card-hover flex flex-col rounded-xl border border-border bg-card p-5 shadow-soft transition-all duration-300">
+    <Link
+      href={`/products/${product.slug}`}
+      className="card-hover flex flex-col rounded-xl border border-border bg-card p-5 shadow-soft transition-all duration-300"
+    >
       <div className="flex items-start justify-between">
         <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-brand-navy text-white">
           <Icon className="h-5 w-5" strokeWidth={2} />
@@ -71,6 +77,6 @@ export function QuoteRequestCard({ product }: QuoteRequestCardProps) {
         )}
         <Plus className="h-3 w-3" strokeWidth={2.75} aria-hidden />
       </button>
-    </article>
+    </Link>
   );
 }

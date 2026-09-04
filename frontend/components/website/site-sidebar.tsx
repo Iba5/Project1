@@ -10,7 +10,6 @@ import {
   Wrench,
   Snowflake,
   Info,
-  Images,
   HelpCircle,
   Mail,
   ChevronLeft,
@@ -32,7 +31,6 @@ const ICONS: Record<string, typeof Home> = {
   Industries: Wrench,
   Ice: Snowflake,
   About: Info,
-  Gallery: Images,
   FAQ: HelpCircle,
   Contact: Mail,
 };

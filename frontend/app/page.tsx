@@ -24,7 +24,6 @@ import { SectionHeading } from "@/components/website/section-heading";
 import { CtaBand } from "@/components/website/cta-band";
 import { ContactForm } from "@/components/website/contact-form";
 import { FaqSectionClient } from "@/components/website/faq-section-client";
-import { GalleryGrid } from "@/components/website/gallery-lightbox";
 import { ProductFilter } from "@/components/website/product-filter";
 import { FaqJsonLd, ProductCatalogJsonLd, BreadcrumbJsonLd } from "@/components/website/seo-schema";
 import { MarqueeBar } from "@/components/website/marquee-bar";
@@ -40,7 +39,6 @@ import {
   getProductCategories,
   getIndustries,
   getCompanyValues,
-  getGalleryItems,
   getHomepage,
   getAbout,
   getSiteSettings,
@@ -59,13 +57,12 @@ import { SectionDivider } from "@/components/website/section-divider";
 import { cn } from "@/lib/utils";
 
 export default async function HomePage() {
-  const [featuredProducts, allProducts, categories, industries, values, gallery, homepage, about, site, contact] = await Promise.all([
+  const [featuredProducts, allProducts, categories, industries, values, homepage, about, site, contact] = await Promise.all([
     getFeaturedProducts(),
     getProducts(),
     getProductCategories(),
     getIndustries(),
     getCompanyValues(),
-    getGalleryItems(),
     getHomepage(),
     getAbout(),
     getSiteSettings(),
@@ -350,20 +347,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Gallery ──────────────────────────────────────────────────────── */}
       <SectionDivider from="navy" to="background" variant="wave" />
-      <section id="gallery" className="bg-secondary/40">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-          <ScrollReveal>
-            <SectionHeading
-              kicker="Gallery"
-              title="Inside Canbri."
-              description="Click any image to view full-size. More photos will be added as the company shares them."
-            />
-          </ScrollReveal>
-          <GalleryGrid items={gallery} />
-        </div>
-      </section>
 
       {/* ── FAQ ──────────────────────────────────────────────────────────── */}
       <section id="faq" className="relative overflow-hidden bg-background">
