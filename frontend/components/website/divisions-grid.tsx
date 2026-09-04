@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, HardHat, BookOpen, Wrench, Flame, Snowflake, type LucideIcon } from "lucide-react";
+import { ChevronDown, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Product } from "@/lib/cms";
+import { iconForDivision } from "@/lib/division-icon";
 
 type Division = {
   code: string;
@@ -13,14 +14,6 @@ type Division = {
   details: string[];
 };
 
-const ICON_BY_KEYWORD: Array<{ match: RegExp; icon: LucideIcon }> = [
-  { match: /ppe|safety|protect/i, icon: HardHat },
-  { match: /station/i, icon: BookOpen },
-  { match: /tool|hardware/i, icon: Wrench },
-  { match: /fabricat/i, icon: Flame },
-  { match: /ice/i, icon: Snowflake },
-];
-
 const CODE_PREFIX_BY_KEYWORD: Array<{ match: RegExp; prefix: string }> = [
   { match: /ppe|safety|protect/i, prefix: "PPE" },
   { match: /station/i, prefix: "STA" },
@@ -29,9 +22,7 @@ const CODE_PREFIX_BY_KEYWORD: Array<{ match: RegExp; prefix: string }> = [
   { match: /ice/i, prefix: "ICE" },
 ];
 
-function iconFor(name: string): LucideIcon {
-  return ICON_BY_KEYWORD.find((e) => e.match.test(name))?.icon ?? Wrench;
-}
+const iconFor = iconForDivision;
 
 function codeFor(name: string, index: number): string {
   const prefix = CODE_PREFIX_BY_KEYWORD.find((e) => e.match.test(name))?.prefix ?? name.slice(0, 3).toUpperCase();
