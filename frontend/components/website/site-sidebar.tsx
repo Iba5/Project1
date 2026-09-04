@@ -88,7 +88,14 @@ export function SiteSidebar({ companyName, navLinks, callHref, whatsappHref }: S
             )}
           >
             <Icon className="h-[18px] w-[18px] shrink-0" strokeWidth={2} />
-            {!collapsed && <span>{link.label}</span>}
+            <span
+              className={cn(
+                "overflow-hidden whitespace-nowrap transition-[max-width,opacity] duration-200 ease-in-out",
+                collapsed ? "max-w-0 opacity-0" : "max-w-[140px] opacity-100",
+              )}
+            >
+              {link.label}
+            </span>
           </Link>
         );
       })}
@@ -163,14 +170,17 @@ export function SiteSidebar({ companyName, navLinks, callHref, whatsappHref }: S
           <span className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md bg-brand-accent">
             <Image src="/logo-mark.png" alt="" fill sizes="36px" className="object-contain p-1" priority />
           </span>
-          {!collapsed && (
-            <span className="flex flex-col leading-tight text-white">
-              <span className="font-display text-sm font-extrabold tracking-tight">CANBRI</span>
-              <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/55">
-                Private Limited
-              </span>
+          <span
+            className={cn(
+              "flex flex-col justify-center overflow-hidden whitespace-nowrap leading-tight text-white transition-[max-width,opacity] duration-200 ease-in-out",
+              collapsed ? "max-w-0 opacity-0" : "max-w-[160px] opacity-100",
+            )}
+          >
+            <span className="font-display text-sm font-extrabold tracking-tight">CANBRI</span>
+            <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/55">
+              Private Limited
             </span>
-          )}
+          </span>
           <button
             type="button"
             onClick={() => setCollapsed((v) => !v)}

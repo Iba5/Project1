@@ -32,7 +32,6 @@ import { DivisionsGrid } from "@/components/website/divisions-grid";
 import { FeaturedSpotlight } from "@/components/website/featured-spotlight";
 import { SpotlightCard } from "@/components/website/spotlight-card";
 import { HeroSection } from "@/components/website/hero-section";
-import { IceBand } from "@/components/website/ice-band";
 import {
   getFeaturedProducts,
   getProducts,
@@ -223,9 +222,6 @@ export default async function HomePage() {
           />
         </div>
       </section>
-
-      {/* ── Ice highlight band (folded into Products — Ice has no top-level nav entry) ── */}
-      <IceBand whatsappHref={whatsappHref} />
 
       {/* ── Featured product spotlight (auto-rotates through all featured items) ── */}
       {featuredProducts.length > 0 && (
