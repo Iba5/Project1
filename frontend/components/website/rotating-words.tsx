@@ -34,13 +34,13 @@ export function RotatingWords({ words, interval = 2200, className }: RotatingWor
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: "-100%", opacity: 0 }}
           transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          className="inline-block bg-gradient-to-r from-brand-accent-fg to-brand-ice bg-clip-text text-transparent dark:from-brand-ice dark:to-white"
+          className="inline-block text-brand-ice"
         >
           {words[index]}
         </motion.span>
       </AnimatePresence>
       <span
-        className="typewriter-cursor bg-brand-accent-fg dark:bg-brand-ice"
+        className="typewriter-cursor bg-brand-ice"
         aria-hidden
       />
     </span>

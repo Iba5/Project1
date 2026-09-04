@@ -68,7 +68,7 @@ class Settings(BaseSettings):
 
     # ── Pagination ───────────────────────────────────────────────
     DEFAULT_PAGE_LIMIT: int = 20
-    MAX_PAGE_LIMIT: int = 100
+    MAX_PAGE_LIMIT: int = 500
 
     # ── Security ─────────────────────────────────────────────────
     MAX_FAILED_LOGIN_ATTEMPTS: int = 5
