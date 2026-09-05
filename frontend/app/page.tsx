@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import {
   MessageCircle,
   ShieldCheck,
@@ -456,11 +457,25 @@ export default async function HomePage() {
             </ScrollReveal>
 
             <ScrollReveal direction="right" delay={0.15} className="lg:col-span-7">
-              <div className="rounded-xl bg-white p-6 shadow-xl sm:p-8">
+              <div
+                className="rounded-xl bg-white p-6 shadow-xl sm:p-8"
+                style={{
+                  // This card is always a light surface regardless of site
+                  // theme — pin the light-mode token values here so its
+                  // text/border colors (and the shared Label/Input/Select
+                  // components inside ContactForm) don't flip to their
+                  // dark-mode values and disappear against the white card.
+                  "--foreground": "oklch(0.20 0.04 250)",
+                  "--muted-foreground": "oklch(0.45 0.04 245)",
+                  "--border": "oklch(0.92 0.02 230)",
+                  "--input": "oklch(0.94 0.02 230)",
+                  color: "oklch(0.20 0.04 250)",
+                } as CSSProperties}
+              >
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-accent">
                   Request a Quote
                 </p>
-                <h3 className="mt-1 font-display text-lg font-bold uppercase text-brand-heading">
+                <h3 className="mt-1 font-display text-lg font-bold uppercase text-[var(--brand-navy)]">
                   Tell us what you need
                 </h3>
                 <div className="mt-6">
