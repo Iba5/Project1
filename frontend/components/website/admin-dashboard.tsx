@@ -28,6 +28,10 @@ import {
   Upload as UploadIcon,
   Search,
   Layers,
+  WifiOff,
+  ShieldAlert,
+  AlertTriangle,
+  ServerCrash,
 } from "lucide-react";
 import { getEvents, clearEvents, type AnalyticsEvent } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
@@ -172,6 +176,165 @@ const STATUS_CONFIG: Record<
   },
 };
 
+/**
+ * Thrown by adminFetch with a short, plain-language, status-aware message
+ * already attached — callers just show err.message, no guessing needed.
+ * This exists specifically to fix a real incident: a 422 from a bad
+ * pagination limit got swallowed into a generic "please try again" message,
+ * which made the bug impossible for the admin to describe when reporting it.
+ */
+class AdminApiError extends Error {
+  status: number | null;
+  constructor(message: string, status: number | null) {
+    super(message);
+    this.status = status;
+  }
+}
+
+/** Turns a status code + backend detail string into a short, specific,
+ * plain-language message — never a raw stack trace, never a vague
+ * "something went wrong". */
+function describeStatus(status: number, action: string, detail?: string): string {
+  switch (status) {
+    case 401:
+      return "Your session expired — please log in again.";
+    case 403:
+      return `Couldn't ${action} — you don't have permission (403).`;
+    case 404:
+      return `Couldn't ${action} — not found (404).`;
+    case 422:
+      return `Couldn't ${action} — the data was rejected${detail ? `: ${detail}` : ""} (422).`;
+    case 429:
+      return `Couldn't ${action} — too many requests, wait a moment and try again (429).`;
+    default:
+      if (status >= 500) return `Couldn't ${action} — server error (${status}). Try again shortly.`;
+      return `Couldn't ${action}${detail ? ` — ${detail}` : ""} (error ${status}).`;
+  }
+}
+
+/** Fetch wrapper for every admin API call. Always resolves to the parsed
+ * JSON body on success, or throws an AdminApiError carrying a message
+ * that's already safe and specific to show the admin directly. */
+async function adminFetch(url: string, init: RequestInit | undefined, action: string): Promise<any> {
+  let res: Response;
+  try {
+    res = await fetch(url, init);
+  } catch {
+    throw new AdminApiError(`Couldn't ${action} — no connection to the server. Check your internet.`, null);
+  }
+  let data: any = null;
+  try {
+    data = await res.json();
+  } catch {
+    // No JSON body (e.g. a 502 from an upstream proxy) — fall through with data = null.
+  }
+  if (res.ok && (data === null || data.ok !== false)) return data ?? {};
+  const detail = typeof data?.error === "string" ? data.error : undefined;
+  throw new AdminApiError(describeStatus(res.status, action, detail), res.status);
+}
+
+/** Reads an AdminApiError's message, or falls back to a short generic
+ * message for anything unexpected (never swallowed silently, always logged). */
+function errorMessage(err: unknown, action: string): string {
+  if (err instanceof AdminApiError) return err.message;
+  if (err instanceof Error) return `Couldn't ${action} — unexpected error: ${err.message}`;
+  return `Couldn't ${action} — unknown error.`;
+}
+
+type ConfirmState = {
+  title: string;
+  description: string;
+  confirmLabel: string;
+  onConfirm: () => void;
+} | null;
+
+/** Unmistakable destructive-action confirmation: red icon, short plain
+ * language, big obvious buttons — replaces bare browser confirm() dialogs
+ * which are easy to misread or dismiss by accident. */
+function ConfirmDialog({ state, onClose }: { state: ConfirmState; onClose: () => void }) {
+  return (
+    <AnimatePresence>
+      {state && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 8 }}
+            transition={{ duration: 0.15 }}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-2xl"
+          >
+            <div className="mb-3 flex items-center gap-3">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-destructive/15 text-destructive">
+                <Trash2 className="h-5 w-5" strokeWidth={2.25} />
+              </span>
+              <h3 className="font-display text-base font-bold text-brand-heading">{state.title}</h3>
+            </div>
+            <p className="mb-5 text-sm text-muted-foreground">{state.description}</p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex h-11 flex-1 items-center justify-center rounded-xl border border-border bg-background text-sm font-semibold text-brand-heading transition-colors hover:bg-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  state.onConfirm();
+                  onClose();
+                }}
+                className="flex h-11 flex-1 items-center justify-center gap-1.5 rounded-xl bg-destructive text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              >
+                <Trash2 className="h-4 w-4" strokeWidth={2.25} />
+                {state.confirmLabel}
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+/** Color-coded, icon-led error banner. Picks an icon/color by failure type
+ * (network vs. auth vs. server vs. generic) so an admin can recognize what
+ * kind of problem it is at a glance, even without reading closely — while
+ * the text underneath stays short and specific about what actually broke. */
+function ErrorBanner({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  const isAuth = /session expired|permission/i.test(message);
+  const isNetwork = /no connection/i.test(message);
+  const isServer = /server error/i.test(message);
+  const Icon = isAuth ? ShieldAlert : isNetwork ? WifiOff : isServer ? ServerCrash : AlertTriangle;
+  return (
+    <div className="mb-4 flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-3.5">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-destructive/15 text-destructive">
+        <Icon className="h-4 w-4" strokeWidth={2.25} />
+      </span>
+      <div className="min-w-0 flex-1 pt-1">
+        <p className="text-sm font-medium text-destructive">{message}</p>
+      </div>
+      {onRetry && (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-destructive/30 bg-background px-2.5 text-xs font-semibold text-destructive transition-colors hover:bg-destructive hover:text-white"
+        >
+          <RefreshCw className="h-3.5 w-3.5" strokeWidth={2.25} />
+          Retry
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function AdminDashboard({ open }: AdminDashboardProps) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("enquiries");
@@ -228,31 +391,26 @@ export function AdminDashboard({ open }: AdminDashboardProps) {
     router.push("/");
   };
 
+  const [confirmState, setConfirmState] = useState<ConfirmState>(null);
+
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const [enqRes, statsRes] = await Promise.all([
-        fetch("/api/admin/enquiries?limit=100"),
-        fetch("/api/admin/stats"),
+      const [enqData, statsData] = await Promise.all([
+        adminFetch("/api/admin/enquiries?limit=100", undefined, "load enquiries"),
+        adminFetch("/api/admin/stats", undefined, "load enquiry stats"),
       ]);
-      if (enqRes.status === 401 || enqRes.status === 403) {
-        handleSessionExpired();
-        setError("Session expired — please log in again.");
-        return;
-      }
-      if (!enqRes.ok || !statsRes.ok) throw new Error("Failed to fetch");
-      const enqData = await enqRes.json();
-      const statsData = await statsRes.json();
       setEnquiries(enqData.enquiries || []);
       setStats(statsData.stats || null);
     } catch (err) {
       console.error("[admin-dashboard] fetchData failed:", err);
-      setError("Couldn't load dashboard data. Please try again.");
+      if (err instanceof AdminApiError && err.status === 401) handleSessionExpired();
+      setError(errorMessage(err, "load dashboard data"));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [handleSessionExpired]);
 
   const fetchLocalData = useCallback(() => {
     setEvents(getEvents());
@@ -270,22 +428,16 @@ export function AdminDashboard({ open }: AdminDashboardProps) {
     setSettingsLoading(true);
     setSettingsError(null);
     try {
-      const res = await fetch("/api/admin/settings");
-      if (res.status === 401 || res.status === 403) {
-        handleSessionExpired();
-        setSettingsError("Session expired — please log in again.");
-        return;
-      }
-      const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data.error ?? "Failed to fetch settings");
+      const data = await adminFetch("/api/admin/settings", undefined, "load settings");
       setSettings(data.settings || []);
     } catch (err) {
       console.error("[admin-dashboard] fetchSettings failed:", err);
-      setSettingsError("Couldn't load settings. Please try again.");
+      if (err instanceof AdminApiError && err.status === 401) handleSessionExpired();
+      setSettingsError(errorMessage(err, "load settings"));
     } finally {
       setSettingsLoading(false);
     }
-  }, []);
+  }, [handleSessionExpired]);
 
   useEffect(() => {
     if (open && tab === "settings") fetchSettings();
@@ -295,18 +447,12 @@ export function AdminDashboard({ open }: AdminDashboardProps) {
     setStorageStatsLoading(true);
     setStorageStatsError(null);
     try {
-      const res = await fetch("/api/admin/storage-stats");
-      if (res.status === 401 || res.status === 403) {
-        handleSessionExpired();
-        setStorageStatsError("Session expired — please log in again.");
-        return;
-      }
-      const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data.error ?? "Failed to fetch storage stats");
+      const data = await adminFetch("/api/admin/storage-stats", undefined, "load storage usage");
       setStorageStats(data.stats || null);
     } catch (err) {
       console.error("[admin-dashboard] fetchStorageStats failed:", err);
-      setStorageStatsError("Couldn't load storage metrics. Please try again.");
+      if (err instanceof AdminApiError && err.status === 401) handleSessionExpired();
+      setStorageStatsError(errorMessage(err, "load storage usage"));
     } finally {
       setStorageStatsLoading(false);
     }
@@ -325,13 +471,11 @@ export function AdminDashboard({ open }: AdminDashboardProps) {
         key === "delivery_areas"
           ? draft.split(",").map((s) => s.trim()).filter(Boolean)
           : draft;
-      const res = await fetch("/api/admin/settings", {
+      await adminFetch("/api/admin/settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key, value }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data.error ?? "Failed to save");
+      }, `save ${key.replace(/_/g, " ")}`);
       await fetchSettings();
       setSettingsDrafts((prev) => {
         const next = { ...prev };
@@ -340,7 +484,8 @@ export function AdminDashboard({ open }: AdminDashboardProps) {
       });
     } catch (err) {
       console.error("[admin-dashboard] saveSetting failed:", err);
-      setSettingsError("Couldn't save this setting. Please try again.");
+      if (err instanceof AdminApiError && err.status === 401) handleSessionExpired();
+      setSettingsError(errorMessage(err, `save ${key.replace(/_/g, " ")}`));
     } finally {
       setSettingsSavingKey(null);
     }
@@ -351,45 +496,47 @@ export function AdminDashboard({ open }: AdminDashboardProps) {
     setCatalogueLoading(true);
     setCatalogueError(null);
     try {
-      const [catRes, itemRes] = await Promise.all([
-        fetch("/api/admin/catalogue/categories"),
-        fetch("/api/admin/catalogue/items"),
+      const [catData, itemData] = await Promise.all([
+        adminFetch("/api/admin/catalogue/categories", undefined, "load categories"),
+        adminFetch("/api/admin/catalogue/items", undefined, "load products"),
       ]);
-      if (catRes.status === 401 || catRes.status === 403) {
-        handleSessionExpired();
-        setCatalogueError("Session expired — please log in again.");
-        return;
-      }
-      const catData = await catRes.json();
-      const itemData = await itemRes.json();
-      if (!catRes.ok || !catData.ok) throw new Error(catData.error ?? "Failed to fetch categories");
-      if (!itemRes.ok || !itemData.ok) throw new Error(itemData.error ?? "Failed to fetch items");
       setCategories(catData.categories || []);
       setCatalogueItems(itemData.items || []);
     } catch (err) {
       console.error("[admin-dashboard] fetchCatalogue failed:", err);
-      setCatalogueError("Couldn't load the catalogue. Please try again.");
+      if (err instanceof AdminApiError && err.status === 401) handleSessionExpired();
+      setCatalogueError(errorMessage(err, "load the catalogue"));
     } finally {
       setCatalogueLoading(false);
     }
-  }, []);
+  }, [handleSessionExpired]);
 
   useEffect(() => {
     if (open && tab === "catalogue") fetchCatalogue();
   }, [open, tab, fetchCatalogue]);
 
-  const deleteCatalogueItem = async (id: string) => {
-    if (!confirm("Delete this catalogue item? This cannot be undone.")) return;
-    setCatalogueItems((prev) => prev.filter((i) => i.id !== id));
-    try {
-      await fetch("/api/admin/catalogue/items", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
-      });
-    } finally {
-      fetchCatalogue();
-    }
+  const deleteCatalogueItem = (id: string, name: string) => {
+    setConfirmState({
+      title: "Delete this product?",
+      description: `"${name}" will be removed from the catalogue. This cannot be undone.`,
+      confirmLabel: "Delete product",
+      onConfirm: async () => {
+        setCatalogueItems((prev) => prev.filter((i) => i.id !== id));
+        try {
+          await adminFetch("/api/admin/catalogue/items", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id }),
+          }, "delete product");
+        } catch (err) {
+          console.error("[admin-dashboard] deleteCatalogueItem failed:", err);
+          if (err instanceof AdminApiError && err.status === 401) handleSessionExpired();
+          setCatalogueError(errorMessage(err, "delete product"));
+        } finally {
+          fetchCatalogue();
+        }
+      },
+    });
   };
 
   // ── Gallery tab data ──────────────────────────────────────────
@@ -397,76 +544,87 @@ export function AdminDashboard({ open }: AdminDashboardProps) {
     setGalleryLoading(true);
     setGalleryError(null);
     try {
-      const [itemRes, colRes] = await Promise.all([
-        fetch("/api/admin/gallery/items"),
-        fetch("/api/admin/gallery/collections"),
+      const [itemData, colData] = await Promise.all([
+        adminFetch("/api/admin/gallery/items", undefined, "load media items"),
+        adminFetch("/api/admin/gallery/collections", undefined, "load collections"),
       ]);
-      if (itemRes.status === 401 || itemRes.status === 403) {
-        handleSessionExpired();
-        setGalleryError("Session expired — please log in again.");
-        return;
-      }
-      const itemData = await itemRes.json();
-      const colData = await colRes.json();
-      if (!itemRes.ok || !itemData.ok) throw new Error(itemData.error ?? "Failed to fetch media items");
-      if (!colRes.ok || !colData.ok) throw new Error(colData.error ?? "Failed to fetch collections");
       setMediaItems(itemData.items || []);
       setCollections(colData.collections || []);
     } catch (err) {
       console.error("[admin-dashboard] fetchGallery failed:", err);
-      setGalleryError("Couldn't load the gallery. Please try again.");
+      if (err instanceof AdminApiError && err.status === 401) handleSessionExpired();
+      setGalleryError(errorMessage(err, "load the gallery"));
     } finally {
       setGalleryLoading(false);
     }
-  }, []);
+  }, [handleSessionExpired]);
 
   useEffect(() => {
     if (open && tab === "gallery") fetchGallery();
   }, [open, tab, fetchGallery]);
 
-  const deleteMediaItem = async (id: string) => {
-    if (!confirm("Delete this media item?")) return;
-    setMediaItems((prev) => prev.filter((i) => i.id !== id));
-    try {
-      await fetch("/api/admin/gallery/items", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
-      });
-    } finally {
-      fetchGallery();
-    }
+  const deleteMediaItem = (id: string, title: string) => {
+    setConfirmState({
+      title: "Delete this photo?",
+      description: `"${title}" will be permanently removed from the gallery.`,
+      confirmLabel: "Delete photo",
+      onConfirm: async () => {
+        setMediaItems((prev) => prev.filter((i) => i.id !== id));
+        try {
+          await adminFetch("/api/admin/gallery/items", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id }),
+          }, "delete photo");
+        } catch (err) {
+          console.error("[admin-dashboard] deleteMediaItem failed:", err);
+          if (err instanceof AdminApiError && err.status === 401) handleSessionExpired();
+          setGalleryError(errorMessage(err, "delete photo"));
+        } finally {
+          fetchGallery();
+        }
+      },
+    });
   };
 
-  const deleteCollection = async (id: string) => {
-    if (!confirm("Delete this collection?")) return;
-    setCollections((prev) => prev.filter((c) => c.id !== id));
-    try {
-      await fetch("/api/admin/gallery/collections", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
-      });
-    } finally {
-      fetchGallery();
-    }
+  const deleteCollection = (id: string, name: string) => {
+    setConfirmState({
+      title: "Delete this collection?",
+      description: `"${name}" will be deleted. Photos inside it are not deleted, only the grouping.`,
+      confirmLabel: "Delete collection",
+      onConfirm: async () => {
+        setCollections((prev) => prev.filter((c) => c.id !== id));
+        try {
+          await adminFetch("/api/admin/gallery/collections", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id }),
+          }, "delete collection");
+        } catch (err) {
+          console.error("[admin-dashboard] deleteCollection failed:", err);
+          if (err instanceof AdminApiError && err.status === 401) handleSessionExpired();
+          setGalleryError(errorMessage(err, "delete collection"));
+        } finally {
+          fetchGallery();
+        }
+      },
+    });
   };
 
   const createCollection = async () => {
     if (!newCollectionName.trim()) return;
     try {
-      const res = await fetch("/api/admin/gallery/collections", {
+      await adminFetch("/api/admin/gallery/collections", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newCollectionName.trim() }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data.error ?? "Failed to create collection");
+      }, "create collection");
       setNewCollectionName("");
       fetchGallery();
     } catch (err) {
       console.error("[admin-dashboard] createCollection failed:", err);
-      setGalleryError("Couldn't create the collection. Please try again.");
+      if (err instanceof AdminApiError && err.status === 401) handleSessionExpired();
+      setGalleryError(errorMessage(err, "create the collection"));
     }
   };
 
@@ -474,45 +632,54 @@ export function AdminDashboard({ open }: AdminDashboardProps) {
     const toUpload = await compressImageClientSide(file);
     const formData = new FormData();
     formData.append("file", toUpload);
-    const res = await fetch("/api/admin/upload", {
-      method: "POST",
-      body: formData,
-    });
-    const data = await res.json();
-    if (!res.ok || !data.ok) throw new Error(data.error ?? "Upload failed");
+    const data = await adminFetch("/api/admin/upload", { method: "POST", body: formData }, "upload the image");
     return data.url as string;
   };
 
   const updateStatus = async (id: string, status: string) => {
     // Optimistic update
+    const previous = enquiries;
     setEnquiries((prev) =>
       prev.map((e) => (e.id === id ? { ...e, status } : e)),
     );
     try {
-      const res = await fetch("/api/admin/enquiries", {
+      await adminFetch("/api/admin/enquiries", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, status }),
-      });
-      if (!res.ok) throw new Error("Failed to update");
+      }, "update enquiry status");
       fetchData();
-    } catch {
-      fetchData();
+    } catch (err) {
+      console.error("[admin-dashboard] updateStatus failed:", err);
+      if (err instanceof AdminApiError && err.status === 401) handleSessionExpired();
+      setEnquiries(previous);
+      setError(errorMessage(err, "update enquiry status"));
     }
   };
 
-  const deleteEnquiry = async (id: string) => {
-    setEnquiries((prev) => prev.filter((e) => e.id !== id));
-    try {
-      await fetch("/api/admin/enquiries", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
-      });
-      fetchData();
-    } catch {
-      fetchData();
-    }
+  const deleteEnquiry = (id: string, name: string) => {
+    setConfirmState({
+      title: "Delete this enquiry?",
+      description: `The enquiry from "${name}" will be permanently removed.`,
+      confirmLabel: "Delete enquiry",
+      onConfirm: async () => {
+        const previous = enquiries;
+        setEnquiries((prev) => prev.filter((e) => e.id !== id));
+        try {
+          await adminFetch("/api/admin/enquiries", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id }),
+          }, "delete enquiry");
+          fetchData();
+        } catch (err) {
+          console.error("[admin-dashboard] deleteEnquiry failed:", err);
+          if (err instanceof AdminApiError && err.status === 401) handleSessionExpired();
+          setEnquiries(previous);
+          setError(errorMessage(err, "delete enquiry"));
+        }
+      },
+    });
   };
 
   const exportCSV = () => {
@@ -619,10 +786,10 @@ export function AdminDashboard({ open }: AdminDashboardProps) {
                 {/* Body */}
                 <div className="flex-1 overflow-auto bg-secondary/20">
                   {error && (
-                    <div className="m-4 rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-                    {error}
-                  </div>
-                )}
+                    <div className="m-4">
+                      <ErrorBanner message={error} onRetry={fetchData} />
+                    </div>
+                  )}
 
                 {/* Enquiries tab */}
                 {tab === "enquiries" && (
@@ -735,9 +902,9 @@ export function AdminDashboard({ open }: AdminDashboardProps) {
                                 })}
                                 <button
                                   type="button"
-                                  onClick={() => deleteEnquiry(enq.id)}
+                                  onClick={() => deleteEnquiry(enq.id, enq.name)}
                                   aria-label="Delete enquiry"
-                                  className="ml-auto inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive hover:text-white"
+                                  className="ml-auto inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive hover:text-white"
                                 >
                                   <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
                                 </button>
@@ -822,15 +989,11 @@ export function AdminDashboard({ open }: AdminDashboardProps) {
                 {tab === "settings" && (
                   <div className="p-4 sm:p-6">
                     <SectionHeading eyebrow="Configuration" heading="Site Settings." />
-                    {settingsError && (
-                      <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
-                        {settingsError}
-                      </div>
-                    )}
+                    {settingsError && <ErrorBanner message={settingsError} onRetry={fetchSettings} />}
                     <div className="mb-6 grid gap-3 sm:grid-cols-2">
                       {storageStatsError ? (
-                        <div className="sm:col-span-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
-                          {storageStatsError}
+                        <div className="sm:col-span-2">
+                          <ErrorBanner message={storageStatsError} onRetry={fetchStorageStats} />
                         </div>
                       ) : (
                         <>
@@ -952,6 +1115,7 @@ export function AdminDashboard({ open }: AdminDashboardProps) {
                   </p>
                 </div>
               </div>
+    <ConfirmDialog state={confirmState} onClose={() => setConfirmState(null)} />
     </div>
   );
 }
@@ -1077,7 +1241,7 @@ function CatalogueTab({
   setCategoryFilter: (v: string) => void;
   statusFilter: string;
   setStatusFilter: (v: string) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: string, name: string) => void;
   onUploadFile: (file: File) => Promise<string | null>;
   onRefresh: () => void;
 }) {
@@ -1110,11 +1274,7 @@ function CatalogueTab({
   return (
     <div className="p-4 sm:p-6">
       <SectionHeading eyebrow="Product Catalogue" heading="Manage Products." />
-      {error && (
-        <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
-          {error}
-        </div>
-      )}
+      {error && <ErrorBanner message={error} onRetry={onRefresh} />}
 
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <div className="relative flex-1 min-w-[180px]">
@@ -1234,9 +1394,9 @@ function CatalogueTab({
                 </button>
                 <button
                   type="button"
-                  onClick={() => onDelete(item.id)}
+                  onClick={() => onDelete(item.id, item.name)}
                   aria-label="Delete product"
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive hover:text-white"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive hover:text-white"
                 >
                   <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
                 </button>
@@ -1254,20 +1414,23 @@ function CategoryManager({ categories, onRefresh }: { categories: Category[]; on
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
+  const [categoryError, setCategoryError] = useState<string | null>(null);
 
   const createCategory = async () => {
     if (!newName.trim()) return;
     setSaving(true);
+    setCategoryError(null);
     try {
-      const res = await fetch("/api/admin/catalogue/categories", {
+      await adminFetch("/api/admin/catalogue/categories", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newName.trim() }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data.error ?? "Failed to create category");
+      }, "create category");
       setNewName("");
       onRefresh();
+    } catch (err) {
+      console.error("[admin-dashboard] createCategory failed:", err);
+      setCategoryError(errorMessage(err, "create the category"));
     } finally {
       setSaving(false);
     }
@@ -1275,13 +1438,19 @@ function CategoryManager({ categories, onRefresh }: { categories: Category[]; on
 
   const renameCategory = async (id: string) => {
     if (!editingName.trim()) return;
-    await fetch("/api/admin/catalogue/categories", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, name: editingName.trim() }),
-    });
-    setEditingId(null);
-    onRefresh();
+    try {
+      await adminFetch("/api/admin/catalogue/categories", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, name: editingName.trim() }),
+      }, "rename category");
+      onRefresh();
+    } catch (err) {
+      console.error("[admin-dashboard] renameCategory failed:", err);
+      setCategoryError(errorMessage(err, "rename the category"));
+    } finally {
+      setEditingId(null);
+    }
   };
 
   const moveCategory = async (id: string, direction: -1 | 1) => {
@@ -1291,25 +1460,31 @@ function CategoryManager({ categories, onRefresh }: { categories: Category[]; on
     if (idx < 0 || swapIdx < 0 || swapIdx >= sorted.length) return;
     const a = sorted[idx];
     const b = sorted[swapIdx];
-    await Promise.all([
-      fetch("/api/admin/catalogue/categories", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: a.id, sort_order: b.sort_order }),
-      }),
-      fetch("/api/admin/catalogue/categories", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: b.id, sort_order: a.sort_order }),
-      }),
-    ]);
-    onRefresh();
+    try {
+      await Promise.all([
+        adminFetch("/api/admin/catalogue/categories", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: a.id, sort_order: b.sort_order }),
+        }, "reorder categories"),
+        adminFetch("/api/admin/catalogue/categories", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: b.id, sort_order: a.sort_order }),
+        }, "reorder categories"),
+      ]);
+      onRefresh();
+    } catch (err) {
+      console.error("[admin-dashboard] moveCategory failed:", err);
+      setCategoryError(errorMessage(err, "reorder categories"));
+    }
   };
 
   const sorted = [...categories].sort((a, b) => a.sort_order - b.sort_order);
 
   return (
     <div className="mb-4 rounded-xl border border-border bg-card p-4">
+      {categoryError && <ErrorBanner message={categoryError} />}
       <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-brand-heading">Categories</h3>
       <div className="space-y-1.5">
         {sorted.map((cat, i) => (
@@ -1403,7 +1578,7 @@ function CatalogueItemForm({
       if (url) setImageUrl(url);
     } catch (err) {
       console.error("[admin-dashboard] image upload failed:", err);
-      setFormError("Couldn't upload the image. Please try again.");
+      setFormError(errorMessage(err, "upload the image"));
     } finally {
       setUploading(false);
     }
@@ -1423,7 +1598,7 @@ function CatalogueItemForm({
       if (url) setGalleryImages((prev) => [...prev, url]);
     } catch (err) {
       console.error("[admin-dashboard] gallery image upload failed:", err);
-      setFormError("Couldn't upload the image. Please try again.");
+      setFormError(errorMessage(err, "upload the image"));
     } finally {
       setGalleryUploading(false);
       e.target.value = "";
@@ -1453,17 +1628,15 @@ function CatalogueItemForm({
         features: features.filter((f) => f.trim()),
         specs: specs.filter((s) => s.key.trim()),
       };
-      const res = await fetch("/api/admin/catalogue/items", {
+      await adminFetch("/api/admin/catalogue/items", {
         method: item ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(item ? { id: item.id, ...payload, version: item.version } : payload),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data.error ?? "Failed to save product");
+      }, item ? "save changes to this product" : "create this product");
       onSaved();
     } catch (err) {
       console.error("[admin-dashboard] save product failed:", err);
-      setFormError("Couldn't save this product. Please try again.");
+      setFormError(errorMessage(err, item ? "save changes" : "create this product"));
     } finally {
       setSaving(false);
     }
@@ -1480,11 +1653,7 @@ function CatalogueItemForm({
         </button>
       </div>
 
-      {formError && (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
-          {formError}
-        </div>
-      )}
+      {formError && <ErrorBanner message={formError} />}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
@@ -1678,8 +1847,8 @@ function GalleryTab({
   newCollectionName: string;
   setNewCollectionName: (v: string) => void;
   onCreateCollection: () => void;
-  onDeleteMediaItem: (id: string) => void;
-  onDeleteCollection: (id: string) => void;
+  onDeleteMediaItem: (id: string, title: string) => void;
+  onDeleteCollection: (id: string, name: string) => void;
   onUploadFile: (file: File) => Promise<string | null>;
   onRefresh: () => void;
 }) {
@@ -1694,17 +1863,15 @@ function GalleryTab({
     try {
       const url = await onUploadFile(file);
       if (!url) return;
-      const res = await fetch("/api/admin/gallery/items", {
+      await adminFetch("/api/admin/gallery/items", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: file.name, file_url: url, mime_type: file.type }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data.error ?? "Failed to save media item");
+      }, "save this photo to the gallery");
       onRefresh();
     } catch (err) {
       console.error("[admin-dashboard] gallery upload failed:", err);
-      setUploadError("Couldn't upload this file. Please try again.");
+      setUploadError(errorMessage(err, "upload this file"));
     } finally {
       setUploading(false);
       e.target.value = "";
@@ -1714,11 +1881,7 @@ function GalleryTab({
   return (
     <div className="p-4 sm:p-6">
       <SectionHeading eyebrow="Media Library" heading="Manage Gallery." />
-      {(error || uploadError) && (
-        <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
-          {error || uploadError}
-        </div>
-      )}
+      {(error || uploadError) && <ErrorBanner message={(error || uploadError)!} onRetry={error ? onRefresh : undefined} />}
 
       <div className="mb-6 rounded-xl border border-border bg-card p-4">
         <div className="mb-3 flex items-center justify-between">
@@ -1751,9 +1914,9 @@ function GalleryTab({
                 <span className="text-xs text-muted-foreground">{c.items?.length ?? 0} items</span>
                 <button
                   type="button"
-                  onClick={() => onDeleteCollection(c.id)}
+                  onClick={() => onDeleteCollection(c.id, c.name)}
                   aria-label="Delete collection"
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive hover:text-white"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive hover:text-white"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
@@ -1785,9 +1948,9 @@ function GalleryTab({
               </div>
               <button
                 type="button"
-                onClick={() => onDeleteMediaItem(m.id)}
+                onClick={() => onDeleteMediaItem(m.id, m.title)}
                 aria-label="Delete media item"
-                className="absolute right-1.5 top-1.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white opacity-0 transition-opacity hover:bg-destructive group-hover:opacity-100"
+                className="absolute right-1.5 top-1.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white opacity-0 transition-opacity hover:bg-destructive group-hover:opacity-100 sm:opacity-100"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>

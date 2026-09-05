@@ -106,7 +106,7 @@ export function SiteSidebar({ companyName, navLinks, callHref, whatsappHref }: S
     <>
       {/* Mobile top bar */}
       <div className="flex items-center justify-between gap-3 bg-[var(--brand-navy-deep)] px-4 py-3 lg:hidden">
-        <Link href="/" className="flex items-center gap-2 text-white" aria-label={`${companyName} home`}>
+        <Link href="/admin" className="flex items-center gap-2 text-white" aria-label="Admin dashboard" title="Admin dashboard">
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-brand-accent text-sm font-black text-brand-accent-fg">
             C
           </span>
@@ -167,20 +167,27 @@ export function SiteSidebar({ companyName, navLinks, callHref, whatsappHref }: S
         )}
       >
         <div className={cn("flex items-center gap-2.5 px-4 py-5", collapsed && "justify-center px-2")}>
-          <span className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md bg-brand-accent">
-            <Image src="/logo-mark.png" alt="" fill sizes="36px" className="object-contain p-1" priority />
-          </span>
-          <span
-            className={cn(
-              "flex flex-col justify-center overflow-hidden whitespace-nowrap leading-tight text-white transition-[max-width,opacity] duration-200 ease-in-out",
-              collapsed ? "max-w-0 opacity-0" : "max-w-[160px] opacity-100",
-            )}
+          <Link
+            href="/admin"
+            className="flex items-center gap-2.5"
+            aria-label="Admin dashboard"
+            title="Admin dashboard"
           >
-            <span className="font-display text-sm font-extrabold tracking-tight">CANBRI</span>
-            <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/55">
-              Private Limited
+            <span className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md bg-brand-accent">
+              <Image src="/logo-mark.png" alt="" fill sizes="36px" className="object-contain p-1" priority />
             </span>
-          </span>
+            <span
+              className={cn(
+                "flex flex-col justify-center overflow-hidden whitespace-nowrap leading-tight text-white transition-[max-width,opacity] duration-200 ease-in-out",
+                collapsed ? "max-w-0 opacity-0" : "max-w-[160px] opacity-100",
+              )}
+            >
+              <span className="font-display text-sm font-extrabold tracking-tight">CANBRI</span>
+              <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/55">
+                Private Limited
+              </span>
+            </span>
+          </Link>
           <button
             type="button"
             onClick={() => setCollapsed((v) => !v)}

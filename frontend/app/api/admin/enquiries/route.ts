@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { apiProxy } from "@/lib/api-proxy";
 import { getBackendAuthHeaders } from "@/lib/admin-auth-server";
 
+function errorFrom(data: unknown, fallback: string): string {
+  const error = (data as Record<string, unknown>)?.detail ?? fallback;
+  return typeof error === "string" ? error : String(error);
+}
+
 /**
  * GET /api/admin/enquiries
  *
@@ -137,7 +142,7 @@ export async function DELETE(request: NextRequest) {
 
     const headers = await getBackendAuthHeaders();
 
-    const { status } = await apiProxy({
+    const { data, status } = await apiProxy({
       method: "DELETE",
       path: `/enquiries/${encodeURIComponent(id)}`,
       headers,
@@ -148,7 +153,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { ok: false, error: "Failed to delete enquiry" },
+      { ok: false, error: errorFrom(data, "Failed to delete enquiry") },
       { status },
     );
   } catch (err) {

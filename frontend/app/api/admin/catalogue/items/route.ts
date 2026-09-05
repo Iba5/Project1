@@ -73,13 +73,13 @@ export async function DELETE(request: NextRequest) {
   try {
     const { id } = await request.json();
     if (!id) return NextResponse.json({ ok: false, error: "Missing id" }, { status: 400 });
-    const { status } = await apiProxy({
+    const { data, status } = await apiProxy({
       method: "DELETE",
       path: `/catalogue/items/${encodeURIComponent(id)}`,
       headers: await getBackendAuthHeaders(),
     });
     if (status >= 200 && status < 300) return NextResponse.json({ ok: true });
-    return NextResponse.json({ ok: false, error: "Failed to delete item" }, { status });
+    return NextResponse.json({ ok: false, error: errorFrom(data, "Failed to delete item") }, { status });
   } catch (err) {
     console.error("[/api/admin/catalogue/items DELETE] Proxy error:", err);
     return NextResponse.json({ ok: false, error: "Service unavailable" }, { status: 503 });
